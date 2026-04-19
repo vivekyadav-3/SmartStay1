@@ -1,0 +1,98 @@
+generator client {
+  provider   = "prisma-client-js"
+  engineType = "library"
+}
+
+datasource db {
+  provider  = "postgresql"
+  url       = env("DATABASE_URL")
+  directUrl = env("DIRECT_URL")
+}
+
+model User {
+  id             String           @id @default(cuid())
+  name           String?
+  email          String           @unique
+  password       String?
+  image          String?
+  role           Role             @default(STUDENT)
+  roomNo         String?
+  complaints     Complaint[]
+  laundry        LaundryBooking[]
+  visitors       VisitorPass[]
+  fees           Fee[]
+  createdAt      DateTime         @default(now())
+}
+
+enum Role {
+  STUDENT
+  ADMIN
+}
+
+model Fee {
+  id          String   @id @default(cuid())
+  userId      String
+  month       String
+  amount      Float
+  status      String   @default("PENDING") // PAID, PENDING, OVERDUE
+  type        String   @default("HOSTEL")  // MESS, HOSTEL, ELECTRICITY
+  dueDate     DateTime
+  createdAt   DateTime @default(now())
+
+  user        User     @relation(fields: [userId], references: [id])
+}
+
+model Notice {
+  id        String   @id @default(cuid())
+  title     String
+  content   String
+  priority  String   @default("NORMAL") // URGENT, NORMAL
+  createdAt DateTime @default(now())
+}
+
+model Complaint {
+  id          String   @id @default(cuid())
+  userId      String
+  title       String
+  desc        String
+  category    String   @default("OTHER") // PLUMBING, ELECTRICAL, FURNITURE, OTHER
+  priority    String   @default("LOW")    // LOW, MEDIUM, HIGH
+  status      ComplaintStatus @default(PENDING)
+  image       String?
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  user        User     @relation(fields: [userId], references: [id])
+}
+
+enum ComplaintStatus {
+  PENDING
+  RESOLVED
+}
+
+model LaundryBooking {
+  id          String   @id @default(cuid())
+  userId      String
+  date        DateTime
+  slot        String
+  createdAt   DateTime @default(now())
+
+  user        User     @relation(fields: [userId], references: [id])
+}
+
+model VisitorPass {
+  id          String   @id @default(cuid())
+  userId      String
+  visitorName String
+  date        DateTime
+  status      VisitorStatus @default(PENDING)
+  createdAt   DateTime @default(now())
+
+  user        User     @relation(fields: [userId], references: [id])
+}
+
+enum VisitorStatus {
+  PENDING
+  APPROVED
+  REJECTED
+}
