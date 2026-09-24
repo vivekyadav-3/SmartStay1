@@ -184,21 +184,11 @@ export default function WardenDashboardPage() {
             </Badge>
           </div>
           <h1 className="text-3xl font-extrabold tracking-tight mt-1 text-foreground">
-            Warden Oversight Dashboard
+            Warden Approval
           </h1>
           <p className="text-sm text-muted-foreground mt-1">
             Superintendent: <strong>Prof. S. K. Mohapatra</strong> • King's Palace 7 (Campus 12)
           </p>
-        </div>
-
-        <div className="flex items-center gap-2">
-          <a
-            href="/dashboard/security-gate"
-            className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-blue-600/20 text-blue-400 border border-blue-500/30 hover:bg-blue-600/30 text-xs font-semibold transition-all"
-          >
-            <span>Live Security Gate</span>
-            <ExternalLink className="size-3" />
-          </a>
         </div>
       </div>
 
@@ -210,121 +200,23 @@ export default function WardenDashboardPage() {
         </div>
       )}
 
-      {/* KPI Overview Grid (User specified numbers) */}
-      <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-3.5">
-        <Card className="bg-card/70 border-white/10">
-          <CardHeader className="pb-1 pt-3.5 px-4">
-            <CardTitle className="text-[11px] font-semibold text-muted-foreground uppercase tracking-wider">
-              Total Residents
-            </CardTitle>
-          </CardHeader>
-          <CardContent className="px-4 pb-3.5">
-            <span className="text-2xl font-bold font-mono text-foreground">1,284</span>
-            <span className="text-[10px] text-muted-foreground block mt-0.5">KP-7 Enrolled</span>
-          </CardContent>
-        </Card>
-
-        <Card className="bg-card/70 border-white/10">
-          <CardHeader className="pb-1 pt-3.5 px-4">
-            <CardTitle className="text-[11px] font-semibold text-muted-foreground uppercase tracking-wider">
-              Inside Hostel
-            </CardTitle>
-          </CardHeader>
-          <CardContent className="px-4 pb-3.5">
-            <span className="text-2xl font-bold font-mono text-emerald-400">1,198</span>
-            <span className="text-[10px] text-emerald-400/80 block mt-0.5">Biometric Punched IN</span>
-          </CardContent>
-        </Card>
-
-        <Card className="bg-card/70 border-white/10">
-          <CardHeader className="pb-1 pt-3.5 px-4">
-            <CardTitle className="text-[11px] font-semibold text-muted-foreground uppercase tracking-wider">
-              Currently Outside
-            </CardTitle>
-          </CardHeader>
-          <CardContent className="px-4 pb-3.5">
-            <span className="text-2xl font-bold font-mono text-amber-400">86</span>
-            <span className="text-[10px] text-amber-400/80 block mt-0.5">Active Gate Passes</span>
-          </CardContent>
-        </Card>
-
-        <Card className="bg-card/70 border-white/10">
-          <CardHeader className="pb-1 pt-3.5 px-4">
-            <CardTitle className="text-[11px] font-semibold text-muted-foreground uppercase tracking-wider">
-              Late Curfew Flags
-            </CardTitle>
-          </CardHeader>
-          <CardContent className="px-4 pb-3.5">
-            <span className="text-2xl font-bold font-mono text-rose-400">12</span>
-            <span className="text-[10px] text-rose-400/80 block mt-0.5">Beyond 08:30 PM</span>
-          </CardContent>
-        </Card>
-
-        <Card className="bg-card/70 border-white/10 col-span-2 sm:col-span-1">
-          <CardHeader className="pb-1 pt-3.5 px-4">
-            <CardTitle className="text-[11px] font-semibold text-muted-foreground uppercase tracking-wider">
-              Open Complaints
-            </CardTitle>
-          </CardHeader>
-          <CardContent className="px-4 pb-3.5">
-            <span className="text-2xl font-bold font-mono text-blue-400">37</span>
-            <span className="text-[10px] text-blue-400/80 block mt-0.5">Active Maintenance</span>
-          </CardContent>
-        </Card>
-      </div>
-
-      {/* Tabs */}
-      <div className="flex items-center gap-2 border-b border-white/10 pb-2">
-        <button
-          onClick={() => setActiveTab("PASSES")}
-          className={`flex items-center gap-2 px-4 py-2 rounded-xl text-xs font-bold transition-all ${
-            activeTab === "PASSES"
-              ? "bg-amber-500/20 text-amber-400 border border-amber-500/40"
-              : "text-muted-foreground hover:text-foreground"
-          }`}
-        >
-          <FileCheck2 className="size-4" />
-          <span>Pending Gate Passes ({pendingPasses.filter((p) => p.status === "PENDING").length})</span>
-        </button>
-
-        <button
-          onClick={() => setActiveTab("OUTINGS")}
-          className={`flex items-center gap-2 px-4 py-2 rounded-xl text-xs font-bold transition-all ${
-            activeTab === "OUTINGS"
-              ? "bg-amber-500/20 text-amber-400 border border-amber-500/40"
-              : "text-muted-foreground hover:text-foreground"
-          }`}
-        >
-          <Clock className="size-4" />
-          <span>Active Outing Roster (86 Outside)</span>
-        </button>
-
-        <button
-          onClick={() => setActiveTab("COMPLAINTS")}
-          className={`flex items-center gap-2 px-4 py-2 rounded-xl text-xs font-bold transition-all ${
-            activeTab === "COMPLAINTS"
-              ? "bg-amber-500/20 text-amber-400 border border-amber-500/40"
-              : "text-muted-foreground hover:text-foreground"
-          }`}
-        >
-          <Wrench className="size-4" />
-          <span>Maintenance Oversight (37 Tickets)</span>
-        </button>
-      </div>
-
-      {/* Tab 1: Gate Pass Approvals Queue */}
-      {activeTab === "PASSES" && (
-        <div className="space-y-4">
-          <div className="flex items-center justify-between">
-            <h3 className="text-sm font-bold text-foreground">
-              Review Resident Gate Pass Requests
-            </h3>
-            <span className="text-xs text-muted-foreground">
-              Approved passes are automatically pushed to Security Turnstiles
-            </span>
+      {/* Gate Pass Approvals Queue */}
+      <div className="space-y-4">
+        <div className="flex items-center justify-between border-b border-white/10 pb-3">
+          <div>
+            <h2 className="text-lg font-bold text-foreground">
+              Pending Gate Pass Requests
+            </h2>
+            <p className="text-xs text-muted-foreground">
+              Review and authorize student outing permissions
+            </p>
           </div>
+          <Badge className="bg-amber-500/20 text-amber-300 border-amber-500/40 text-xs font-mono">
+            {pendingPasses.filter((p) => p.status === "PENDING").length} PENDING
+          </Badge>
+        </div>
 
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             {pendingPasses.map((pass) => (
               <Card
                 key={pass.id}
@@ -429,146 +321,8 @@ export default function WardenDashboardPage() {
                 </CardContent>
               </Card>
             ))}
-          </div>
         </div>
-      )}
-
-      {/* Tab 2: Active Outings Roster */}
-      {activeTab === "OUTINGS" && (
-        <Card className="bg-card/70 border-white/10">
-          <CardHeader className="pb-3">
-            <CardTitle className="text-sm font-bold text-foreground flex items-center justify-between">
-              <span>Residents Outside KP-7 Campus</span>
-              <Badge className="bg-amber-500/20 text-amber-400 border-amber-500/30 text-xs">
-                Curfew In-Time: 08:30 PM
-              </Badge>
-            </CardTitle>
-          </CardHeader>
-          <CardContent>
-            <div className="overflow-x-auto">
-              <table className="w-full text-left text-xs">
-                <thead className="text-[10px] text-muted-foreground uppercase border-b border-white/10 bg-white/5 font-semibold">
-                  <tr>
-                    <th className="py-2.5 px-3">Student Name</th>
-                    <th className="py-2.5 px-3">Roll & Room</th>
-                    <th className="py-2.5 px-3">Destination</th>
-                    <th className="py-2.5 px-3">Out-Time</th>
-                    <th className="py-2.5 px-3">Expected Return</th>
-                    <th className="py-2.5 px-3">Contact</th>
-                    <th className="py-2.5 px-3">Status</th>
-                  </tr>
-                </thead>
-                <tbody className="divide-y divide-white/5">
-                  <tr className="hover:bg-white/5">
-                    <td className="py-2.5 px-3 font-semibold text-foreground">Vivek Yadav</td>
-                    <td className="py-2.5 px-3 font-mono text-muted-foreground">22051934 • Room 412</td>
-                    <td className="py-2.5 px-3 text-muted-foreground">KIIT Central Library</td>
-                    <td className="py-2.5 px-3 font-mono">06:15 PM</td>
-                    <td className="py-2.5 px-3 font-mono text-emerald-400">08:30 PM</td>
-                    <td className="py-2.5 px-3 font-mono">+91 98765 43210</td>
-                    <td className="py-2.5 px-3">
-                      <Badge className="bg-emerald-500/10 text-emerald-400 border-emerald-500/30 text-[10px]">
-                        ON TRACK
-                      </Badge>
-                    </td>
-                  </tr>
-                  <tr className="hover:bg-white/5">
-                    <td className="py-2.5 px-3 font-semibold text-foreground">Subham Biswal</td>
-                    <td className="py-2.5 px-3 font-mono text-muted-foreground">22050811 • Room 104</td>
-                    <td className="py-2.5 px-3 text-muted-foreground">Campus 15 Sports Complex</td>
-                    <td className="py-2.5 px-3 font-mono">05:30 PM</td>
-                    <td className="py-2.5 px-3 font-mono text-emerald-400">08:00 PM</td>
-                    <td className="py-2.5 px-3 font-mono">+91 98611 11223</td>
-                    <td className="py-2.5 px-3">
-                      <Badge className="bg-emerald-500/10 text-emerald-400 border-emerald-500/30 text-[10px]">
-                        ON TRACK
-                      </Badge>
-                    </td>
-                  </tr>
-                  <tr className="hover:bg-white/5">
-                    <td className="py-2.5 px-3 font-semibold text-foreground">Priyanshu Dash</td>
-                    <td className="py-2.5 px-3 font-mono text-muted-foreground">22053120 • Room 521</td>
-                    <td className="py-2.5 px-3 text-muted-foreground">Patia Market (Personal)</td>
-                    <td className="py-2.5 px-3 font-mono">04:45 PM</td>
-                    <td className="py-2.5 px-3 font-mono text-rose-400">07:45 PM</td>
-                    <td className="py-2.5 px-3 font-mono">+91 97780 44332</td>
-                    <td className="py-2.5 px-3">
-                      <Badge className="bg-rose-500/10 text-rose-400 border-rose-500/30 text-[10px]">
-                        LATE RETURN
-                      </Badge>
-                    </td>
-                  </tr>
-                </tbody>
-              </table>
-            </div>
-          </CardContent>
-        </Card>
-      )}
-
-      {/* Tab 3: Complaints Oversight */}
-      {activeTab === "COMPLAINTS" && (
-        <Card className="bg-card/70 border-white/10">
-          <CardHeader className="pb-3">
-            <CardTitle className="text-sm font-bold text-foreground">
-              Hostel Facility & Maintenance Dispatch Log
-            </CardTitle>
-          </CardHeader>
-          <CardContent className="space-y-3">
-            {[
-              {
-                id: "KIIT-KP7-1001",
-                title: "AC Not Cooling & Filter Choked",
-                room: "Room 412 (Vivek Yadav)",
-                category: "ELECTRICAL",
-                tech: "Ramesh Behera (KP-7 Electrician)",
-                otp: "4829",
-                status: "IN_PROGRESS",
-              },
-              {
-                id: "KIIT-KP7-1002",
-                title: "Bathroom Tap Leakage & Water Pressure Low",
-                room: "Room 308 (Floor 3)",
-                category: "PLUMBING",
-                tech: "Pradeep Sahoo (Plumber)",
-                otp: "8120",
-                status: "ASSIGNED",
-              },
-              {
-                id: "KIIT-KP7-1003",
-                title: "Ceiling Geyser Thermostat Tripping",
-                room: "Room 514 (Floor 5)",
-                category: "ELECTRICAL",
-                tech: "Ramesh Behera (KP-7 Electrician)",
-                otp: "9931",
-                status: "PENDING",
-              },
-            ].map((ticket) => (
-              <div
-                key={ticket.id}
-                className="p-3.5 rounded-xl bg-black/40 border border-white/5 flex flex-col sm:flex-row sm:items-center justify-between gap-3"
-              >
-                <div>
-                  <div className="flex items-center gap-2">
-                    <span className="text-xs font-mono font-bold text-emerald-400">{ticket.id}</span>
-                    <Badge variant="outline" className="text-[10px]">{ticket.category}</Badge>
-                  </div>
-                  <h4 className="text-sm font-bold text-foreground mt-0.5">{ticket.title}</h4>
-                  <span className="text-xs text-muted-foreground">{ticket.room}</span>
-                </div>
-
-                <div className="text-left sm:text-right">
-                  <span className="text-[11px] text-muted-foreground block">
-                    Technician: <strong>{ticket.tech}</strong>
-                  </span>
-                  <span className="text-[10px] font-mono text-amber-400">
-                    Resolution OTP: [{ticket.otp}]
-                  </span>
-                </div>
-              </div>
-            ))}
-          </CardContent>
-        </Card>
-      )}
+      </div>
     </div>
   );
 }

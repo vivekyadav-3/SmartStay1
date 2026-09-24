@@ -60,10 +60,10 @@ export default async function ProfilePage() {
           <Card className="bg-card/80 border-white/10 backdrop-blur-xl">
             <CardHeader className="pb-3 border-b border-white/5">
               <CardTitle className="text-base font-bold text-foreground">
-                Institutional Academic Record
+                Student Academic & Hostel Record
               </CardTitle>
               <CardDescription>
-                Synchronized with KIIT SAP Portal and Chief Warden Registry
+                Hostel allotment and resident credentials
               </CardDescription>
             </CardHeader>
             <CardContent className="pt-5 space-y-6">
@@ -156,7 +156,7 @@ export default async function ProfilePage() {
         <div className="lg:col-span-5 space-y-4">
           <div className="flex items-center justify-between">
             <span className="text-xs font-bold uppercase tracking-wider text-muted-foreground">
-              Official Digital Smart ID
+              SmartStay Resident ID
             </span>
             <Badge variant="outline" className="text-[10px] text-emerald-400 border-emerald-500/30">
               Valid 2023 - 2027

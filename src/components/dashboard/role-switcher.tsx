@@ -51,9 +51,9 @@ export function RoleSwitcher({ currentRole = "STUDENT" }: { currentRole?: string
 
   return (
     <div className="flex flex-col sm:flex-row items-start sm:items-center gap-2 p-1.5 rounded-2xl bg-black/60 border border-white/10 backdrop-blur-xl">
-      <div className="flex items-center gap-1.5 px-2 py-0.5 text-[11px] font-semibold tracking-wider text-muted-foreground uppercase">
-        <span className="size-2 rounded-full bg-emerald-400 animate-ping" />
-        <span>Demo Persona:</span>
+      <div className="flex items-center gap-1.5 px-2 py-0.5 text-[10px] font-medium tracking-wider text-muted-foreground uppercase">
+        <span className="size-1.5 rounded-full bg-emerald-400" />
+        <span>Demo Role:</span>
       </div>
 
       <div className="flex items-center gap-1.5 w-full sm:w-auto">
