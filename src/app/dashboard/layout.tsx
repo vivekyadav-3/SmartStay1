@@ -24,20 +24,13 @@ import { cn } from "@/lib/utils";
 import { useState } from "react";
 
 const residentLinks = [
-  { name: "Dashboard", href: "/dashboard", icon: LayoutDashboard },
-  { name: "Hostel Mess Menu", href: "/dashboard/mess-menu", icon: UtensilsCrossed },
-  { name: "Timings & Curfew", href: "/dashboard/timings", icon: Clock },
-  { name: "Complaints & Maintenance", href: "/dashboard/complaints", icon: MessageSquareWarning },
-  { name: "Laundry Service", href: "/dashboard/laundry", icon: CalendarClock },
-  { name: "Announcements & Notices", href: "/dashboard/announcements", icon: Megaphone },
-  { name: "Food Review & Rating", href: "/dashboard/food-review", icon: Star },
-  { name: "Digital Gate Pass", href: "/dashboard/visitor-pass", icon: UserSquare2 },
-  { name: "Hostel & Mess Fees", href: "/dashboard/fees", icon: IndianRupee },
+  { name: "Student Dashboard", href: "/dashboard", icon: LayoutDashboard },
+  { name: "Gate Pass & Timings", href: "/dashboard/timings", icon: Clock },
   { name: "Student ID & Profile", href: "/dashboard/profile", icon: ShieldCheck },
 ];
 
 const managementLinks = [
-  { name: "Warden Oversight", href: "/dashboard/warden", icon: ShieldAlert, badge: "Warden" },
+  { name: "Warden Approval Portal", href: "/dashboard/warden", icon: ShieldAlert, badge: "Warden" },
   { name: "Security Checkpoint", href: "/dashboard/security-gate", icon: QrCode, badge: "Security" },
 ];
 
