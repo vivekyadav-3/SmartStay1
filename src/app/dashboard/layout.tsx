@@ -24,14 +24,13 @@ import { cn } from "@/lib/utils";
 import { useState } from "react";
 
 const residentLinks = [
-  { name: "Student Dashboard", href: "/dashboard", icon: LayoutDashboard },
-  { name: "Gate Pass & Timings", href: "/dashboard/timings", icon: Clock },
-  { name: "Student ID & Profile", href: "/dashboard/profile", icon: ShieldCheck },
+  { name: "Dashboard", href: "/dashboard", icon: LayoutDashboard },
+  { name: "Gate Pass", href: "/dashboard/timings", icon: Clock },
+  { name: "Profile", href: "/dashboard/profile", icon: ShieldCheck },
 ];
 
 const managementLinks = [
-  { name: "Warden Approval Portal", href: "/dashboard/warden", icon: ShieldAlert, badge: "Warden" },
-  { name: "Security Checkpoint", href: "/dashboard/security-gate", icon: QrCode, badge: "Security" },
+  { name: "Warden Approval", href: "/dashboard/warden", icon: ShieldAlert, badge: "Warden" },
 ];
 
 export default function DashboardLayout({ children }: { children: React.ReactNode }) {

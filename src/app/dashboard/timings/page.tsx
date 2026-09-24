@@ -87,10 +87,10 @@ export default function TimingsPage() {
             </Badge>
           </div>
           <h1 className="text-3xl font-extrabold tracking-tight mt-1 text-foreground">
-            Hostel & Mess Timings
+            Digital Gate Pass
           </h1>
           <p className="text-sm text-muted-foreground mt-1">
-            Mess operating schedules, gate curfew, biometric in-time and digital outing pass.
+            Official digital outing pass application and warden authorization status.
           </p>
         </div>
 
@@ -320,8 +320,14 @@ export default function TimingsPage() {
             {/* Left: Pass Details */}
             <div className="md:col-span-2 space-y-4">
               <div className="flex items-center gap-2">
-                <Badge className="bg-emerald-600 text-white font-bold text-xs">
-                  VERIFIED DIGITAL PASS
+                <Badge className={`font-bold text-xs ${
+                  (generatedPass?.status || "PENDING") === "APPROVED" 
+                    ? "bg-emerald-600 text-white" 
+                    : (generatedPass?.status || "PENDING") === "REJECTED"
+                    ? "bg-rose-600 text-white"
+                    : "bg-amber-500 text-slate-950"
+                }`}>
+                  {generatedPass?.status || "PENDING"}
                 </Badge>
                 <span className="font-mono text-xs font-bold text-emerald-400">
                   {generatedPass?.passNumber || "GP-2026-0812"}

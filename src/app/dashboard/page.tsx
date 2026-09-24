@@ -75,46 +75,51 @@ export default async function DashboardPage() {
       {/* 1. Student Identity Header Bar (Roll Number, Hostel, Room, Biometric) */}
       <StudentHeader user={user} />
 
-      {/* 2. Focused 1/4 Prototype Highlights: Gate Pass & Biometric Real-Time Status */}
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-        {/* Curfew & Biometric Live Status */}
+      {/* 2. Clean Friday 1 Overview: Hostel Status & Active Gate Pass */}
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+        {/* Left: Hostel Status */}
         <Card className="bg-card/70 border-white/10 backdrop-blur-md">
-          <CardHeader className="flex flex-row items-center justify-between pb-2">
-            <CardTitle className="text-xs font-semibold text-muted-foreground uppercase tracking-wider">
-              Real-Time Biometric Status
+          <CardHeader className="pb-3 border-b border-white/5 flex flex-row items-center justify-between">
+            <CardTitle className="text-sm font-bold text-foreground">
+              Hostel Status
             </CardTitle>
-            <div className="p-2 rounded-lg bg-emerald-500/10 text-emerald-400">
-              <ShieldCheck className="size-4" />
-            </div>
+            <ShieldCheck className="size-4 text-emerald-400" />
           </CardHeader>
-          <CardContent>
-            <div className={`text-2xl font-extrabold ${user.biometricStatus === "OUTSIDE_CAMPUS" || user.biometricStatus === "OUT" ? "text-amber-400" : "text-emerald-400"}`}>
-              {user.biometricStatus === "OUTSIDE_CAMPUS" || user.biometricStatus === "OUT" ? "OUTSIDE CAMPUS" : "IN HOSTEL (CAMPUS 12)"}
+          <CardContent className="pt-5 space-y-4">
+            <div className="space-y-1">
+              <span className="text-2xl font-black text-emerald-400 tracking-tight">
+                IN HOSTEL
+              </span>
+              <p className="text-xs text-muted-foreground">
+                Campus 12 • King's Palace 7 • Room {user.studentProfile?.roomNo || "412"} (Bed {user.studentProfile?.bedNo || "B"})
+              </p>
             </div>
-            <p className="text-xs text-muted-foreground mt-1">
-              Hostel KP-7 • Room {user.studentProfile?.roomNo || "412"} • Curfew 08:30 PM
-            </p>
-            <div className="mt-4 flex items-center gap-2">
-              <Badge variant="outline" className={`text-xs ${user.biometricStatus === "OUTSIDE_CAMPUS" ? "bg-amber-500/10 text-amber-400 border-amber-500/30" : "bg-emerald-500/10 text-emerald-400 border-emerald-500/30"}`}>
-                {user.biometricStatus === "OUTSIDE_CAMPUS" ? "Punched OUT on Gate Pass" : "Verified In-Campus Resident"}
-              </Badge>
+
+            <div className="p-3.5 rounded-xl bg-black/40 border border-white/5 space-y-1">
+              <span className="text-[10px] text-muted-foreground uppercase font-bold tracking-wider block">
+                Nightly Gate Curfew
+              </span>
+              <span className="text-sm font-bold text-amber-400 font-mono">
+                08:30 PM
+              </span>
+              <p className="text-[11px] text-muted-foreground">
+                All residents must report to KP-7 gate before curfew or hold an approved digital gate pass.
+              </p>
             </div>
           </CardContent>
         </Card>
 
-        {/* Latest Gate Pass Status & Quick Link */}
+        {/* Right: Gate Pass Status */}
         <Card className="bg-card/70 border-white/10 backdrop-blur-md">
-          <CardHeader className="flex flex-row items-center justify-between pb-2">
-            <CardTitle className="text-xs font-semibold text-muted-foreground uppercase tracking-wider">
-              Active / Recent Gate Pass
+          <CardHeader className="pb-3 border-b border-white/5 flex flex-row items-center justify-between">
+            <CardTitle className="text-sm font-bold text-foreground">
+              Gate Pass
             </CardTitle>
-            <div className="p-2 rounded-lg bg-blue-500/10 text-blue-400">
-              <Clock className="size-4" />
-            </div>
+            <Clock className="size-4 text-blue-400" />
           </CardHeader>
-          <CardContent>
+          <CardContent className="pt-5 space-y-4">
             <div className="flex items-center justify-between">
-              <span className="text-lg font-bold font-mono text-foreground">
+              <span className="text-xl font-extrabold font-mono text-foreground">
                 {latestGatePass?.passCode || "GP-2026-0812"}
               </span>
               <Badge 
@@ -128,109 +133,37 @@ export default async function DashboardPage() {
                 {latestGatePass?.status || "PENDING"}
               </Badge>
             </div>
-            <p className="text-xs text-muted-foreground mt-1 truncate">
-              Destination: {latestGatePass?.destination || "KIIT Central Library (Campus 6)"}
-            </p>
-            <div className="mt-4 flex items-center justify-between">
+
+            <div className="space-y-1">
+              <span className="text-xs font-semibold text-foreground">
+                Destination: {latestGatePass?.destination || "KIIT Central Library (Campus 6)"}
+              </span>
+              <p className="text-xs text-muted-foreground line-clamp-2">
+                Purpose: {latestGatePass?.purpose || "3rd-year semester capstone project research and group coding"}
+              </p>
+            </div>
+
+            <div className="pt-2 flex items-center justify-between border-t border-white/5">
               <Link href="/dashboard/timings">
-                <Button size="sm" className="bg-emerald-600 hover:bg-emerald-500 text-white text-xs h-8">
-                  + Apply New Pass
+                <Button size="sm" variant="outline" className="border-white/10 text-xs h-8 hover:border-emerald-500/40">
+                  View Pass Details →
                 </Button>
               </Link>
-              <Link href="/dashboard/warden" className="text-xs text-amber-400 hover:underline flex items-center gap-1">
-                <span>Warden View</span>
-                <ArrowRight className="size-3" />
-              </Link>
+              {latestGatePass?.status === "APPROVED" && (
+                <span className="text-[11px] text-emerald-400 font-medium">✓ Approved by Warden</span>
+              )}
             </div>
           </CardContent>
         </Card>
       </div>
 
-      {isAdmin && <AdminCharts data={adminStats} />}
-
-      {/* 3. Direct Gate Pass Action & Workflow Roadmap */}
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-        {/* Quick Gate Pass Request Action Card */}
-        <Card className="lg:col-span-2 bg-card/70 border-white/10 backdrop-blur-md">
-          <CardHeader className="flex flex-row items-center justify-between pb-3 border-b border-white/5">
-            <div className="flex items-center gap-2.5">
-              <div className="p-2 rounded-lg bg-emerald-500/10 text-emerald-400">
-                <Clock className="size-4" />
-              </div>
-              <div>
-                <CardTitle className="text-base font-bold">Quick Gate Pass Workflow</CardTitle>
-                <p className="text-xs text-muted-foreground">Apply for library, academic or personal outing pass</p>
-              </div>
-            </div>
-            <Link href="/dashboard/timings">
-              <Button size="sm" className="bg-emerald-600 hover:bg-emerald-500 text-white text-xs h-8">
-                Open Full Pass Form
-              </Button>
-            </Link>
-          </CardHeader>
-          <CardContent className="pt-4 space-y-4">
-            <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
-              <div className="p-3.5 rounded-xl bg-black/30 border border-white/5 space-y-1">
-                <span className="text-[10px] font-bold text-muted-foreground uppercase tracking-wider block">Step 1: Student</span>
-                <p className="text-xs font-semibold text-foreground">Apply Gate Pass</p>
-                <p className="text-[11px] text-muted-foreground">Creates record in DB with state PENDING</p>
-              </div>
-              <div className="p-3.5 rounded-xl bg-black/30 border border-white/5 space-y-1">
-                <span className="text-[10px] font-bold text-amber-400 uppercase tracking-wider block">Step 2: Warden</span>
-                <p className="text-xs font-semibold text-foreground">Warden Approval</p>
-                <p className="text-[11px] text-muted-foreground">Prof. S.K. Mohapatra reviews & approves</p>
-              </div>
-              <div className="p-3.5 rounded-xl bg-black/30 border border-white/5 space-y-1">
-                <span className="text-[10px] font-bold text-blue-400 uppercase tracking-wider block">Step 3: Security</span>
-                <p className="text-xs font-semibold text-foreground">Punch Out / In</p>
-                <p className="text-[11px] text-muted-foreground">Main gate verifies & logs out-of-campus</p>
-              </div>
-            </div>
-
-            <div className="p-4 rounded-xl bg-gradient-to-r from-emerald-950/30 to-black/40 border border-emerald-500/20 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3">
-              <div>
-                <span className="text-xs font-bold text-emerald-300">Ready to test the Gate Pass cycle?</span>
-                <p className="text-xs text-muted-foreground">Navigate to the Timings & Gate Pass portal to create a live pass.</p>
-              </div>
-              <Link href="/dashboard/timings">
-                <Button size="sm" variant="outline" className="border-emerald-500/40 text-emerald-300 hover:bg-emerald-500/10 text-xs">
-                  Go to Gate Pass →
-                </Button>
-              </Link>
-            </div>
-          </CardContent>
-        </Card>
-
-        {/* Prototype 1 Info Card */}
-        <Card className="bg-card/70 border-white/10 backdrop-blur-md">
-          <CardHeader className="pb-3 border-b border-white/5">
-            <CardTitle className="text-base font-bold text-foreground">
-              SmartStay Prototype 1/4
-            </CardTitle>
-            <p className="text-xs text-muted-foreground">Core Architecture & Live Workflow</p>
-          </CardHeader>
-          <CardContent className="pt-4 space-y-3 text-xs text-muted-foreground">
-            <div className="p-3 rounded-xl bg-black/30 border border-white/5 space-y-1">
-              <span className="text-[11px] font-bold text-foreground block">Active Demo Persona:</span>
-              <p className="font-mono text-emerald-300">{user.name} ({user.role})</p>
-              <p className="text-[10px]">Roll No: {user.studentProfile?.rollNo || "22051934"}</p>
-            </div>
-            <div className="space-y-1.5 pt-2">
-              <div className="flex items-center justify-between text-[11px]">
-                <span>Prisma SQLite Engine</span>
-                <Badge className="bg-emerald-500/10 text-emerald-400 border-emerald-500/30 text-[10px]">Connected</Badge>
-              </div>
-              <div className="flex items-center justify-between text-[11px]">
-                <span>Gate Pass State Machine</span>
-                <Badge className="bg-blue-500/10 text-blue-400 border-blue-500/30 text-[10px]">PENDING → APPROVED</Badge>
-              </div>
-              <div className="flex items-center justify-between text-[11px]">
-                <span>Biometric Status Sync</span>
-                <Badge className="bg-amber-500/10 text-amber-400 border-amber-500/30 text-[10px]">Live</Badge>
-              </div>
-            </div>
-          </CardContent>
-        </Card>
+      {/* 3. Primary Action Button: Apply for Gate Pass */}
+      <div className="flex justify-center pt-2">
+        <Link href="/dashboard/timings">
+          <Button size="lg" className="bg-emerald-600 hover:bg-emerald-500 text-white font-bold px-8 shadow-xl shadow-emerald-600/20 text-sm">
+            + Apply for Gate Pass
+          </Button>
+        </Link>
       </div>
     </div>
   );
