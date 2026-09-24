@@ -9,17 +9,18 @@ datasource db {
 }
 
 model User {
-  id              String           @id @default(cuid())
+  id              String   @id @default(cuid())
   name            String
-  email           String           @unique
-  passwordHash    String           @default("$2a$10$demoHashedPasswordSmartStay2026")
-  role            String           @default("STUDENT") // STUDENT, WARDEN, SECURITY
-  biometricStatus String           @default("IN_HOSTEL") // IN_HOSTEL, OUTSIDE_CAMPUS
-  createdAt       DateTime         @default(now())
-  updatedAt       DateTime         @updatedAt
+  email           String   @unique
+  passwordHash    String   @default("$2a$10$demoHashedPasswordSmartStay2026")
+  role            String   @default("STUDENT") // STUDENT, WARDEN, SECURITY
+  biometricStatus String   @default("IN_HOSTEL") // IN_HOSTEL, OUTSIDE_CAMPUS
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
 
   studentProfile  StudentProfile?
-  gatePasses      GatePass[]
+  gatePasses      GatePass[]       @relation("GatePassStudent")
+  approvedPasses  GatePass[]       @relation("GatePassApproval")
   gateLogs        GateLog[]
   complaints      Complaint[]
   laundryBookings LaundryBooking[]
@@ -28,35 +29,35 @@ model User {
 }
 
 model StudentProfile {
-  id        String   @id @default(cuid())
-  userId    String   @unique
-  rollNo    String   @unique
-  branch    String   @default("Computer Science & Engineering")
-  semester  Int      @default(6)
-  year      Int      @default(3)
-  hostelId  String
-  roomNo    String   @default("412")
-  bedNo     String   @default("B")
-  phone     String?  @default("+91 98765 43210")
+  id       String  @id @default(cuid())
+  userId   String  @unique
+  rollNo   String  @unique
+  branch   String  @default("Computer Science & Engineering")
+  semester Int     @default(6)
+  year     Int     @default(3)
+  hostelId String
+  roomNo   String  @default("412")
+  bedNo    String  @default("B")
+  phone    String? @default("+91 98765 43210")
 
-  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
-  hostel    Hostel   @relation(fields: [hostelId], references: [id])
+  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+  hostel Hostel @relation(fields: [hostelId], references: [id])
 }
 
 model Hostel {
-  id        String           @id @default(cuid())
-  name      String
-  code      String           @unique
-  campus    String
-  students  StudentProfile[]
-  rooms     Room[]
+  id       String           @id @default(cuid())
+  name     String
+  code     String           @unique
+  campus   String
+  students StudentProfile[]
+  rooms    Room[]
 }
 
 model Room {
-  id       String   @id @default(cuid())
+  id       String @id @default(cuid())
   hostelId String
   roomNo   String
-  hostel   Hostel   @relation(fields: [hostelId], references: [id], onDelete: Cascade)
+  hostel   Hostel @relation(fields: [hostelId], references: [id], onDelete: Cascade)
   beds     Bed[]
 
   @@unique([hostelId, roomNo])
@@ -72,120 +73,121 @@ model Bed {
 }
 
 model GatePass {
-  id            String         @id @default(cuid())
-  passCode      String         @unique
-  userId        String
-  destination   String
-  purpose       String
-  departureTime DateTime       @default(now())
-  returnTime    DateTime
-  status        String         @default("PENDING") // PENDING, APPROVED, REJECTED, ACTIVE, COMPLETED, EXPIRED
-  approvedById  String?
-  approvedAt    DateTime?
-  curfewDeadline String        @default("08:30 PM")
-  qrData        String?
-  wardenRemark  String?
-  createdAt     DateTime       @default(now())
-  updatedAt     DateTime       @updatedAt
+  id             String    @id @default(cuid())
+  passCode       String    @unique
+  userId         String
+  destination    String
+  purpose        String
+  departureTime  DateTime  @default(now())
+  returnTime     DateTime
+  status         String    @default("PENDING") // PENDING, APPROVED, REJECTED, ACTIVE, COMPLETED, EXPIRED
+  approvedById   String?
+  approvedAt     DateTime?
+  curfewDeadline String    @default("08:30 PM")
+  qrData         String?
+  wardenRemark   String?
+  createdAt      DateTime  @default(now())
+  updatedAt      DateTime  @updatedAt
 
-  user          User           @relation(fields: [userId], references: [id], onDelete: Cascade)
-  gateLogs      GateLog[]
+  user       User      @relation("GatePassStudent", fields: [userId], references: [id], onDelete: Cascade)
+  approvedBy User?     @relation("GatePassApproval", fields: [approvedById], references: [id], onDelete: SetNull)
+  gateLogs   GateLog[]
 }
 
 model GateLog {
-  id        String     @id @default(cuid())
+  id        String   @id @default(cuid())
   userId    String
   passId    String?
-  action    String     // PUNCH_OUT, PUNCH_IN
-  timestamp DateTime   @default(now())
+  action    String // PUNCH_OUT, PUNCH_IN
+  timestamp DateTime @default(now())
 
-  user      User       @relation(fields: [userId], references: [id], onDelete: Cascade)
-  pass      GatePass?  @relation(fields: [passId], references: [id], onDelete: SetNull)
+  user User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  pass GatePass? @relation(fields: [passId], references: [id], onDelete: SetNull)
 }
 
 model Complaint {
-  id              String            @id @default(cuid())
-  ticketId        String            @unique
+  id              String   @id @default(cuid())
+  ticketId        String   @unique
   userId          String
-  category        String            @default("ELECTRICAL") // ELECTRICAL, PLUMBING, WIFI, FURNITURE, HOUSEKEEPING
+  category        String   @default("ELECTRICAL") // ELECTRICAL, PLUMBING, WIFI, FURNITURE, HOUSEKEEPING
   title           String
   description     String
-  location        String            @default("Room 412")
+  location        String   @default("Room 412")
   assignedTo      String?
   assignedContact String?
-  resolutionOtp   String?           @default("4829")
-  status          String            @default("REGISTERED") // REGISTERED, ASSIGNED, IN_PROGRESS, RESOLVED
-  createdAt       DateTime          @default(now())
-  updatedAt       DateTime          @updatedAt
+  resolutionOtp   String?  @default("4829")
+  status          String   @default("REGISTERED") // REGISTERED, ASSIGNED, IN_PROGRESS, RESOLVED
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
 
-  user            User              @relation(fields: [userId], references: [id], onDelete: Cascade)
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
 }
 
 model LaundryBooking {
-  id          String       @id @default(cuid())
+  id          String   @id @default(cuid())
   userId      String
-  token       String       @unique
-  itemCount   Int          @default(6)
-  shirts      Int          @default(3)
-  trousers    Int          @default(2)
-  bedsheets   Int          @default(1)
-  towels      Int          @default(0)
-  bookingDate DateTime     @default(now())
-  pickupOtp   String       @default("7392")
-  stage       String       @default("SLOT_BOOKED") // SLOT_BOOKED, HANDED_OVER, WASHING, IRONING, READY, COLLECTED
-  createdAt   DateTime     @default(now())
+  token       String   @unique
+  itemCount   Int      @default(6)
+  shirts      Int      @default(3)
+  trousers    Int      @default(2)
+  bedsheets   Int      @default(1)
+  towels      Int      @default(0)
+  bookingDate DateTime @default(now())
+  pickupOtp   String   @default("7392")
+  stage       String   @default("SLOT_BOOKED") // SLOT_BOOKED, HANDED_OVER, WASHING, IRONING, READY, COLLECTED
+  createdAt   DateTime @default(now())
 
-  user        User         @relation(fields: [userId], references: [id], onDelete: Cascade)
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
 }
 
 model FoodReview {
-  id             String    @id @default(cuid())
-  userId         String
-  mealType       String    @default("LUNCH") // BREAKFAST, LUNCH, SNACKS, DINNER
-  overallRating  Int       @default(4)
-  tasteRating    Int       @default(4)
-  hygieneRating  Int       @default(5)
-  portionRating  Int       @default(4)
-  serviceRating  Int       @default(4)
-  comment        String?
-  anonymous      Boolean   @default(false)
-  createdAt      DateTime  @default(now())
+  id            String   @id @default(cuid())
+  userId        String
+  mealType      String   @default("LUNCH") // BREAKFAST, LUNCH, SNACKS, DINNER
+  overallRating Int      @default(4)
+  tasteRating   Int      @default(4)
+  hygieneRating Int      @default(5)
+  portionRating Int      @default(4)
+  serviceRating Int      @default(4)
+  comment       String?
+  anonymous     Boolean  @default(false)
+  createdAt     DateTime @default(now())
 
-  user           User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
 }
 
 model MessMenu {
-  id          String    @id @default(cuid())
+  id          String   @id @default(cuid())
   day         String
-  mealType    String    // BREAKFAST, LUNCH, SNACKS, DINNER
+  mealType    String // BREAKFAST, LUNCH, SNACKS, DINNER
   menuItems   String
   specialItem String?
-  isVeg       Boolean   @default(false)
-  isSpecial   Boolean   @default(false)
-  startTime   String    @default("12:00 PM")
-  endTime     String    @default("02:30 PM")
-  createdAt   DateTime  @default(now())
+  isVeg       Boolean  @default(false)
+  isSpecial   Boolean  @default(false)
+  startTime   String   @default("12:00 PM")
+  endTime     String   @default("02:30 PM")
+  createdAt   DateTime @default(now())
 }
 
 model Announcement {
-  id          String               @id @default(cuid())
+  id          String   @id @default(cuid())
   title       String
   description String
-  category    String               @default("GENERAL") // MESS, SECURITY, CURFEW, MAINTENANCE, GENERAL
-  priority    String               @default("NORMAL")  // NORMAL, IMPORTANT, URGENT
-  issuedBy    String               @default("Hostel Superintendent, KP-7")
-  createdAt   DateTime             @default(now())
+  category    String   @default("GENERAL") // MESS, SECURITY, CURFEW, MAINTENANCE, GENERAL
+  priority    String   @default("NORMAL") // NORMAL, IMPORTANT, URGENT
+  issuedBy    String   @default("Hostel Superintendent, KP-7")
+  createdAt   DateTime @default(now())
 }
 
 model Fee {
-  id          String   @id @default(cuid())
-  userId      String
-  month       String
-  amount      Float
-  status      String   @default("PAID")
-  type        String   @default("HOSTEL")
-  dueDate     DateTime
-  createdAt   DateTime @default(now())
+  id        String   @id @default(cuid())
+  userId    String
+  month     String
+  amount    Float
+  status    String   @default("PAID")
+  type      String   @default("HOSTEL")
+  dueDate   DateTime
+  createdAt DateTime @default(now())
 
-  user        User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
 }

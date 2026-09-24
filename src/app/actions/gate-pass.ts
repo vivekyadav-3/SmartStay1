@@ -28,10 +28,9 @@ export async function requestGatePass(data: {
         purpose: data.purpose,
         departureTime,
         returnTime,
-        status: "APPROVED",
+        status: "PENDING",   // ← Warden must approve before Security can punch
         curfewDeadline: "08:30 PM",
-        qrData: `KIIT-PASS-${user.studentProfile?.rollNo || "22051934"}-${passCode}-VALID`,
-        wardenRemark: "Digital Auto-Pass: Approved by KP-7 Chief Warden Office",
+        qrData: `KIIT-PASS-${user.studentProfile?.rollNo || "22051934"}-${passCode}-PENDING`,
       },
       include: {
         user: { include: { studentProfile: true } },
@@ -40,6 +39,7 @@ export async function requestGatePass(data: {
 
     revalidatePath("/dashboard");
     revalidatePath("/dashboard/timings");
+    revalidatePath("/dashboard/warden");
     return { success: true, gatePass };
   } catch (error) {
     console.error("Request gate pass error:", error);
@@ -97,15 +97,20 @@ export async function getPendingGatePasses() {
 
 export async function approveGatePass(passId: string) {
   try {
+    // Get the warden user from DB
+    const warden = await prisma.user.findFirst({ where: { role: "WARDEN" } });
+
     const pass = await prisma.gatePass.update({
       where: { id: passId },
       data: {
         status: "APPROVED",
+        approvedById: warden?.id ?? null,   // ← record WHO approved
         wardenRemark: "Approved by Prof. S. K. Mohapatra (Chief Warden KP-7)",
         approvedAt: new Date(),
       },
       include: {
         user: { include: { studentProfile: true } },
+        approvedBy: { select: { name: true, role: true } },
       },
     });
     revalidatePath("/dashboard");

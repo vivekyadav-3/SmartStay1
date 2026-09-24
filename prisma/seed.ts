@@ -170,7 +170,7 @@ async function main() {
     { name: "Omkar Mohapatra", rollNo: "22051228", branch: "IT", room: "205", bed: "C" },
   ];
 
-  for (const s of extraStudentData) {
+  for (const [idx, s] of extraStudentData.entries()) {
     await prisma.user.create({
       data: {
         name: s.name,
@@ -186,15 +186,15 @@ async function main() {
             hostelId: kp7.id,
             roomNo: s.room,
             bedNo: s.bed,
-            phone: `+91 98${Math.floor(10000000 + Math.random() * 90000000)}`,
+            phone: `+91 900000${String(idx + 10).padStart(4, "0")}`, // deterministic — no Math.random()
           },
         },
       },
     });
   }
 
-  // 6. Seed Gate Passes & Gate Logs (Connects the Turnstile Workflow!)
-  // Active Pass for Vivek Yadav
+  // 6. Seed Gate Passes — DEMO STATE: Vivek has a PENDING pass to demo the full lifecycle
+  // STUDENT → WARDEN APPROVE → SECURITY PUNCH OUT → PUNCH IN
   const pass1 = await prisma.gatePass.create({
     data: {
       passCode: "GP-2026-0812",
@@ -203,16 +203,13 @@ async function main() {
       purpose: "3rd-year semester capstone project research and group coding",
       departureTime: new Date(),
       returnTime: new Date(Date.now() + 2 * 60 * 60 * 1000),
-      status: "APPROVED",
-      approvedById: warden.id,
-      approvedAt: new Date(Date.now() - 30 * 60 * 1000),
+      status: "PENDING",       // ← DEMO STARTS HERE: Warden must approve
       curfewDeadline: "08:30 PM",
-      qrData: `KIIT-PASS-22051934-GP-2026-0812-VALID`,
-      wardenRemark: "Approved by Prof. S. K. Mohapatra (Chief Warden KP-7)",
+      qrData: `KIIT-PASS-22051934-GP-2026-0812-PENDING`,
     },
   });
 
-  // Historical Gate Log for audit story
+  // Historical Gate Log for audit story (from yesterday)
   await prisma.gateLog.create({
     data: {
       userId: vivek.id,
@@ -222,7 +219,7 @@ async function main() {
     },
   });
 
-  // Pending Pass for Ayush Sharma (Warden Approval Demo)
+  // Pending Pass for Ayush Sharma (also waiting for approval)
   await prisma.gatePass.create({
     data: {
       passCode: "GP-2026-9041",
