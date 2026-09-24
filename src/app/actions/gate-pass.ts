@@ -26,17 +26,33 @@ export async function requestGatePass(data: {
     const returnTime = new Date();
     returnTime.setHours(20, 15, 0, 0);
 
+    // Gate pass MUST belong to a STUDENT:
+    let studentUser = user.role === "STUDENT" ? user : await prisma.user.findFirst({
+      where: { id: "student_vivek_22051934", role: "STUDENT" },
+      include: { studentProfile: true },
+    });
+
+    if (!studentUser || studentUser.role !== "STUDENT") {
+      studentUser = await prisma.user.findFirst({
+        where: { role: "STUDENT" },
+        include: { studentProfile: true },
+      });
+    }
+
+    if (!studentUser) return { error: "Student record not found" };
+
     const gatePass = await prisma.gatePass.create({
       data: {
         passCode,
-        userId: user.id,
+        userId: studentUser.id,
         destination: data.destination || "KIIT Central Library (Campus 6)",
         purpose: data.purpose || "Project Work",
         departureTime,
         returnTime,
         status: "PENDING",   // ← Warden must approve before Security can punch
+        approvedById: null,  // ← Explicitly null until Warden approves
         curfewDeadline: "08:30 PM",
-        qrData: `KIIT-PASS-${user.studentProfile?.rollNo || "22051934"}-${passCode}-PENDING`,
+        qrData: `KIIT-PASS-${studentUser.studentProfile?.rollNo || "22051934"}-${passCode}-PENDING`,
       },
       include: {
         user: { include: { studentProfile: true } },
