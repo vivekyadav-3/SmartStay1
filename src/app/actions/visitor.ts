@@ -1,29 +1,33 @@
 "use server";
 
 import { prisma } from "@/lib/db";
-import { auth } from "@clerk/nextjs/server";
+import { syncUser } from "@/app/actions/user";
 import { revalidatePath } from "next/cache";
 
 export async function requestVisitorPass(formData: FormData) {
   try {
-    const { userId } = await auth();
-    if (!userId) return { error: "Unauthorized" };
+    const user = await syncUser();
+    if (!user) return { error: "Unauthorized" };
 
     const visitorName = formData.get("visitorName")?.toString();
     const dateStr = formData.get("date")?.toString();
 
     if (!visitorName || !dateStr) return { error: "Required fields missing" };
 
-    const dbUser = await prisma.user.findUnique({ where: { id: userId } });
-    if (!dbUser) return { error: "Profile not synced. Please refresh your dashboard." };
+    const visitDate = new Date(dateStr);
+    const passCode = `VP-${Date.now().toString().slice(-4)}`;
 
-    await prisma.visitorPass.create({
+    await prisma.gatePass.create({
       data: {
-        userId,
-        visitorName,
-        date: new Date(dateStr),
-        status: "PENDING"
-      }
+        userId: user.id,
+        passCode,
+        destination: `Campus Guest: ${visitorName}`,
+        purpose: `Hostel Visitor Access for ${visitorName}`,
+        departureTime: visitDate,
+        returnTime: new Date(visitDate.getTime() + 4 * 60 * 60 * 1000),
+        status: "APPROVED",
+        curfewDeadline: "08:30 PM",
+      },
     });
 
     revalidatePath("/dashboard/visitor-pass");
@@ -35,30 +39,41 @@ export async function requestVisitorPass(formData: FormData) {
 }
 
 export async function getVisitorPasses() {
-  const { userId } = await auth();
-  if (!userId) return [];
+  try {
+    const user = await syncUser();
+    if (!user) return [];
 
-  const dbUser = await prisma.user.findUnique({ where: { id: userId } });
+    const isAuthority = user.role === "WARDEN" || user.role === "SECURITY" || user.role === "ADMIN";
 
-  return await prisma.visitorPass.findMany({
-    where: dbUser?.role === "ADMIN" ? undefined : { userId },
-    orderBy: { createdAt: "desc" },
-    include: dbUser?.role === "ADMIN" ? { user: { select: { name: true, roomNo: true } } } : undefined
-  });
+    const passes = await prisma.gatePass.findMany({
+      where: {
+        userId: isAuthority ? undefined : user.id,
+        destination: { startsWith: "Campus Guest" },
+      },
+      orderBy: { createdAt: "desc" },
+      include: { user: { select: { name: true } } },
+    });
+
+    return passes.map((p) => ({
+      id: p.id,
+      visitorName: p.destination.replace("Campus Guest: ", ""),
+      date: p.departureTime,
+      status: p.status,
+      user: p.user,
+    }));
+  } catch (error) {
+    console.error(error);
+    return [];
+  }
 }
 
-export async function updateVisitorStatus(id: string, status: "APPROVED" | "REJECTED") {
+export async function updateVisitorStatus(id: string, status: string) {
   try {
-    const { userId } = await auth();
-    const dbUser = await prisma.user.findUnique({ where: { id: userId || "" } });
-
-    if (dbUser?.role !== "ADMIN") return { error: "Unauthorized" };
-
-    await prisma.visitorPass.update({
+    await prisma.gatePass.update({
       where: { id },
-      data: { status }
+      data: { status },
     });
-    
+
     revalidatePath("/dashboard/visitor-pass");
     return { success: true };
   } catch (error) {

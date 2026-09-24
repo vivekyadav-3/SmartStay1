@@ -15,7 +15,10 @@ export default function NoticeBoard({ notices, role }: { notices: any[], role: s
 
   async function handleCreate(formData: FormData) {
     setLoading(true);
-    await createNotice(formData);
+    const title = formData.get("title")?.toString() || "";
+    const content = formData.get("content")?.toString() || "";
+    const priority = formData.get("priority")?.toString() || "NORMAL";
+    await createNotice({ title, content, priority });
     setLoading(false);
     setOpen(false);
   }

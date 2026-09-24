@@ -14,8 +14,8 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "SmartStay | Modern Hostel Platform",
-  description: "A clean, student and admin friendly hostel management platform without the corporate nonsense.",
+  title: "KIIT SmartStay | Kalinga Institute of Industrial Technology",
+  description: "Official smart hostel management and resident services portal for King's Palace and Queen's Castle residences, KIIT Bhubaneswar.",
 };
 
 export default function RootLayout({
@@ -24,12 +24,12 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <ClerkProvider>
-      <html lang="en" className={`${geistSans.variable} ${geistMono.variable} antialiased dark`} suppressHydrationWarning>
-        <body className="min-h-screen bg-background text-foreground flex flex-col font-sans">
+    <html lang="en" className={`${geistSans.variable} ${geistMono.variable} antialiased dark`} suppressHydrationWarning>
+      <body className="min-h-screen bg-background text-foreground flex flex-col font-sans">
+        <ClerkProvider>
           {children}
-        </body>
-      </html>
-    </ClerkProvider>
+        </ClerkProvider>
+      </body>
+    </html>
   );
 }

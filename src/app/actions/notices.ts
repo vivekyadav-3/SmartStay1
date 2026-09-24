@@ -1,47 +1,75 @@
 "use server";
 
 import { prisma } from "@/lib/db";
-import { auth } from "@clerk/nextjs/server";
+import { syncUser } from "@/app/actions/user";
 import { revalidatePath } from "next/cache";
 
-export async function createNotice(formData: FormData) {
+export async function createNotice(formData: {
+  title: string;
+  content: string;
+  category?: string;
+  priority?: string;
+  issuedBy?: string;
+}) {
   try {
-    const { userId } = await auth();
-    const dbUser = await prisma.user.findUnique({ where: { id: userId || "" } });
+    const user = await syncUser();
+    if (!user) return { error: "User session not found" };
 
-    if (dbUser?.role !== "ADMIN") return { error: "Unauthorized" };
+    if (!formData.title || !formData.content) {
+      return { error: "Title and announcement content are required" };
+    }
 
-    const title = formData.get("title")?.toString();
-    const content = formData.get("content")?.toString();
-    const priority = formData.get("priority")?.toString() || "NORMAL";
-
-    if (!title || !content) return { error: "Required fields missing" };
-
-    await prisma.notice.create({
-      data: { title, content, priority }
+    const notice = await prisma.announcement.create({
+      data: {
+        title: formData.title,
+        description: formData.content,
+        category: formData.category || "GENERAL",
+        priority: formData.priority || "NORMAL",
+        issuedBy: formData.issuedBy || "Hostel Superintendent, KP-7",
+      },
     });
 
     revalidatePath("/dashboard");
-    return { success: true };
+    revalidatePath("/dashboard/announcements");
+    return {
+      success: true,
+      notice: {
+        ...notice,
+        content: notice.description,
+      },
+    };
   } catch (error) {
-    console.error(error);
-    return { error: "Failed to post notice" };
+    console.error("Create notice error:", error);
+    return { error: "Failed to post announcement" };
   }
 }
 
-export async function getNotices() {
-  return await prisma.notice.findMany({
-    orderBy: { createdAt: "desc" },
-    take: 10
-  });
+export async function getNotices(category?: string) {
+  try {
+    const announcements = await prisma.announcement.findMany({
+      where: category && category !== "ALL" ? { category } : undefined,
+      orderBy: { createdAt: "desc" },
+      take: 20,
+    });
+
+    return announcements.map((a) => ({
+      ...a,
+      content: a.description,
+    }));
+  } catch (error) {
+    console.error("Get notices error:", error);
+    return [];
+  }
 }
 
 export async function deleteNotice(id: string) {
-  const { userId } = await auth();
-  const dbUser = await prisma.user.findUnique({ where: { id: userId || "" } });
-  if (dbUser?.role !== "ADMIN") return { error: "Unauthorized" };
-
-  await prisma.notice.delete({ where: { id } });
-  revalidatePath("/dashboard");
-  return { success: true };
+  try {
+    await prisma.announcement.delete({ where: { id } });
+    revalidatePath("/dashboard");
+    revalidatePath("/dashboard/announcements");
+    return { success: true };
+  } catch (error) {
+    console.error("Delete notice error:", error);
+    return { error: "Failed to delete announcement" };
+  }
 }

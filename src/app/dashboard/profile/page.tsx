@@ -1,111 +1,237 @@
-import { auth } from "@clerk/nextjs/server";
 import { prisma } from "@/lib/db";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import { MessageSquareWarning, CalendarClock, UserSquare2, Home, Users, ArrowRight, ShieldCheck, Mail, MapPin, Hash } from "lucide-react";
+import { Button } from "@/components/ui/button";
+import { 
+  ShieldCheck, 
+  Mail, 
+  MapPin, 
+  Hash, 
+  Building2, 
+  GraduationCap, 
+  Phone, 
+  Fingerprint, 
+  DoorClosed,
+  QrCode,
+  Calendar,
+  Sparkles
+} from "lucide-react";
 import { redirect } from "next/navigation";
 import { syncUser } from "@/app/actions/user";
 
-export default async function ProfilePage() {
-  const { userId } = await auth();
-  if (!userId) redirect("/login");
+export const dynamic = "force-dynamic";
 
+export default async function ProfilePage() {
   const user = await syncUser();
-  if (!user) redirect("/dashboard");
+  if (!user) redirect("/login");
+
+  const profile = (user as any).studentProfile;
+  const rollNo = profile?.rollNo || (user as any).rollNo || "22051934";
+  const hostelName = profile?.hostel?.name || (user as any).hostelName || "King's Palace 7 (KP-7)";
+  const roomNo = profile?.roomNo || (user as any).roomNo || "412";
+  const bedNo = profile?.bedNo || (user as any).bedNo || "B";
+  const branch = profile?.branch || (user as any).branch || "B.Tech Computer Science & Engineering";
+  const semester = profile?.semester ? `${profile.semester}th Semester (${profile.year || 3}rd Year)` : ((user as any).semester || "6th Semester (3rd Year)");
+  const phone = profile?.phone || (user as any).phone || "+91 98765 43210";
 
   return (
-    <div className="max-w-4xl mx-auto space-y-8">
-      <div>
-        <h1 className="text-3xl font-bold tracking-tight">Your Profile</h1>
-        <p className="text-muted-foreground mt-1">Manage your student credentials and digital ID.</p>
+    <div className="max-w-5xl mx-auto space-y-8">
+      {/* Header */}
+      <div className="border-b border-white/10 pb-5">
+        <div className="flex items-center gap-2">
+          <Badge variant="outline" className="bg-emerald-500/10 text-emerald-400 border-emerald-500/30 text-xs">
+            KIIT Student Directorate
+          </Badge>
+          <Badge variant="outline" className="text-xs">
+            Identity Card #KIIT-{rollNo}
+          </Badge>
+        </div>
+        <h1 className="text-3xl font-extrabold tracking-tight mt-1 text-foreground">
+          Student Profile & Digital ID
+        </h1>
+        <p className="text-sm text-muted-foreground mt-1">
+          Official KIIT Bhubaneswar Hostel Resident credentials, RFID ID and room allotment.
+        </p>
       </div>
 
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-        {/* Left: Info Card */}
-        <div className="md:col-span-2 space-y-6">
-          <Card className="bg-black/20 border-white/10 backdrop-blur-xl">
-             <CardHeader>
-                <CardTitle>Personal Information</CardTitle>
-             </CardHeader>
-             <CardContent className="space-y-6">
-                <div className="flex items-center gap-4">
-                   <div className="size-16 rounded-full bg-primary/20 border border-primary/30 flex items-center justify-center text-2xl font-bold text-primary">
-                      {user.name?.charAt(0) || "S"}
-                   </div>
-                   <div>
-                      <h3 className="text-xl font-bold">{user.name}</h3>
-                      <p className="text-sm text-muted-foreground">{user.role}</p>
-                   </div>
+      <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
+        {/* Left: Detailed Information (7 Cols) */}
+        <div className="lg:col-span-7 space-y-6">
+          <Card className="bg-card/80 border-white/10 backdrop-blur-xl">
+            <CardHeader className="pb-3 border-b border-white/5">
+              <CardTitle className="text-base font-bold text-foreground">
+                Institutional Academic Record
+              </CardTitle>
+              <CardDescription>
+                Synchronized with KIIT SAP Portal and Chief Warden Registry
+              </CardDescription>
+            </CardHeader>
+            <CardContent className="pt-5 space-y-6">
+              {/* User Avatar + Name */}
+              <div className="flex items-center gap-4">
+                <div className="size-16 rounded-2xl bg-gradient-to-br from-emerald-500 to-emerald-700 p-[2px] shadow-lg shadow-emerald-500/25">
+                  <div className="size-full bg-slate-950 rounded-2xl flex items-center justify-center text-2xl font-bold text-emerald-400 font-mono">
+                    {user.name?.charAt(0) || "V"}
+                  </div>
+                </div>
+                <div className="space-y-1">
+                  <h3 className="text-xl font-bold text-foreground">{user.name}</h3>
+                  <p className="text-xs text-muted-foreground flex items-center gap-1.5">
+                    <GraduationCap className="size-3.5 text-emerald-400" />
+                    <span>{branch}</span>
+                  </p>
+                  <p className="text-[11px] text-emerald-400/90 font-medium">
+                    {semester} • School of Computer Engineering
+                  </p>
+                </div>
+              </div>
+
+              {/* Information Grid */}
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 pt-4 border-t border-white/5">
+                <div className="space-y-1 p-3 rounded-xl bg-black/30 border border-white/5">
+                  <p className="text-[11px] text-muted-foreground flex items-center gap-1">
+                    <Hash className="size-3 text-emerald-400" /> Roll Number
+                  </p>
+                  <p className="text-sm font-mono font-bold text-emerald-300">{rollNo}</p>
                 </div>
 
-                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 pt-4 border-t border-white/5">
-                   <div className="space-y-1">
-                      <p className="text-xs text-muted-foreground flex items-center gap-1"><Mail className="size-3" /> Email Address</p>
-                      <p className="text-sm font-medium">{user.email}</p>
-                   </div>
-                   <div className="space-y-1">
-                      <p className="text-xs text-muted-foreground flex items-center gap-1"><MapPin className="size-3" /> Room Number</p>
-                      <p className="text-sm font-medium">{user.roomNo || "Not Assigned"}</p>
-                   </div>
-                   <div className="space-y-1">
-                      <p className="text-xs text-muted-foreground flex items-center gap-1"><ShieldCheck className="size-3" /> Account Status</p>
-                      <Badge variant="outline" className="bg-green-500/10 text-green-400 border-green-500/20">Verified Student</Badge>
-                   </div>
-                   <div className="space-y-1">
-                      <p className="text-xs text-muted-foreground flex items-center gap-1"><Hash className="size-3" /> Student ID (Clerk)</p>
-                      <p className="text-[10px] text-muted-foreground font-mono truncate max-w-[150px]">{user.id}</p>
-                   </div>
+                <div className="space-y-1 p-3 rounded-xl bg-black/30 border border-white/5">
+                  <p className="text-[11px] text-muted-foreground flex items-center gap-1">
+                    <Building2 className="size-3 text-emerald-400" /> Allotted Hostel
+                  </p>
+                  <p className="text-sm font-medium text-foreground">{hostelName}</p>
                 </div>
-             </CardContent>
+
+                <div className="space-y-1 p-3 rounded-xl bg-black/30 border border-white/5">
+                  <p className="text-[11px] text-muted-foreground flex items-center gap-1">
+                    <DoorClosed className="size-3 text-blue-400" /> Room & Bed Number
+                  </p>
+                  <p className="text-sm font-medium text-foreground">Room {roomNo} (Bed {bedNo})</p>
+                </div>
+
+                <div className="space-y-1 p-3 rounded-xl bg-black/30 border border-white/5">
+                  <p className="text-[11px] text-muted-foreground flex items-center gap-1">
+                    <Fingerprint className="size-3 text-emerald-400" /> Biometric Status
+                  </p>
+                  <Badge variant="outline" className="bg-emerald-500/10 text-emerald-400 border-emerald-500/30 text-xs">
+                    {user.biometricStatus === "IN" ? "Hostel Resident (Punched IN)" : "Punched OUT on Pass"}
+                  </Badge>
+                </div>
+
+                <div className="space-y-1 p-3 rounded-xl bg-black/30 border border-white/5">
+                  <p className="text-[11px] text-muted-foreground flex items-center gap-1">
+                    <Mail className="size-3 text-muted-foreground" /> Email Address
+                  </p>
+                  <p className="text-xs font-mono text-muted-foreground truncate">{user.email}</p>
+                </div>
+
+                <div className="space-y-1 p-3 rounded-xl bg-black/30 border border-white/5">
+                  <p className="text-[11px] text-muted-foreground flex items-center gap-1">
+                    <Phone className="size-3 text-muted-foreground" /> Emergency Contact
+                  </p>
+                  <p className="text-xs font-mono text-muted-foreground">{phone}</p>
+                </div>
+              </div>
+            </CardContent>
           </Card>
 
-          <Card className="bg-black/20 border-white/10 border-dashed">
-             <CardContent className="py-8 text-center">
-                <p className="text-sm text-muted-foreground italic">"Hostel life is the best life. Make it smarter."</p>
-             </CardContent>
+          {/* KIIT Campus Details */}
+          <Card className="bg-black/30 border-white/10">
+            <CardContent className="py-5 text-xs text-muted-foreground space-y-2">
+              <div className="flex items-center gap-2 text-foreground font-semibold">
+                <MapPin className="size-4 text-emerald-400" />
+                <span>Hostel Campus Location</span>
+              </div>
+              <p>
+                King's Palace 7 (Senior Men's Residence), Campus 12, KIIT Deemed to be University, Patia, Bhubaneswar, Odisha - 751024.
+              </p>
+              <p className="text-[11px] text-emerald-400/80">
+                Warden Control Room Intercom: <strong>Ext #402</strong> • Campus Security Dispatch: <strong>+91 674 272 5113</strong>
+              </p>
+            </CardContent>
           </Card>
         </div>
 
-        {/* Right: Digital ID Card */}
-        <div className="space-y-4">
-           <p className="text-sm font-semibold uppercase tracking-wider text-muted-foreground">Digital ID Card</p>
-           <div className="aspect-[2/3] w-full rounded-2xl bg-gradient-to-br from-primary via-primary/80 to-blue-600 p-[1.5px] shadow-2xl shadow-primary/20">
-              <div className="h-full w-full rounded-2xl bg-black/90 backdrop-blur-3xl p-6 flex flex-col items-center text-center relative overflow-hidden">
-                 {/* ID Card Decoration */}
-                 <div className="absolute top-[-10%] right-[-10%] size-32 rounded-full bg-primary/20 blur-2xl" />
-                 
-                 <div className="size-12 rounded-lg bg-primary/20 border border-primary/30 flex items-center justify-center mb-4">
-                    <ShieldCheck className="size-7 text-primary" />
-                 </div>
-                 
-                 <h2 className="text-lg font-black tracking-tighter uppercase mb-6">SmartStay ID</h2>
-                 
-                 <div className="size-24 rounded-xl bg-white/10 border border-white/10 flex items-center justify-center mb-4 overflow-hidden grayscale">
-                    <img 
-                        src={`https://api.dicebear.com/7.x/initials/svg?seed=${user.name}`} 
-                        alt="Profile"
-                        className="size-full object-cover"
-                    />
-                 </div>
+        {/* Right: KIIT Digital RFID Student ID Card (5 Cols) */}
+        <div className="lg:col-span-5 space-y-4">
+          <div className="flex items-center justify-between">
+            <span className="text-xs font-bold uppercase tracking-wider text-muted-foreground">
+              Official Digital Smart ID
+            </span>
+            <Badge variant="outline" className="text-[10px] text-emerald-400 border-emerald-500/30">
+              Valid 2023 - 2027
+            </Badge>
+          </div>
 
-                 <div className="space-y-1 mb-8">
-                    <p className="text-lg font-bold truncate max-w-full">{user.name}</p>
-                    <p className="text-[10px] text-muted-foreground font-mono">RM: {user.roomNo || 'N/A'}</p>
-                 </div>
+          {/* Physical ID Card Mockup */}
+          <div className="w-full rounded-3xl bg-gradient-to-br from-emerald-500 via-emerald-700 to-teal-900 p-[2px] shadow-2xl shadow-emerald-500/20">
+            <div className="w-full rounded-3xl bg-slate-950/95 backdrop-blur-3xl p-6 flex flex-col items-center text-center relative overflow-hidden">
+              {/* Green Glow Halo */}
+              <div className="absolute -top-16 -right-16 size-40 rounded-full bg-emerald-500/20 blur-3xl pointer-events-none" />
 
-                 {/* Seeded "QR" Code (Consistent per user) */}
-                 <div className="mt-auto p-2 bg-white rounded-lg opacity-80 hover:opacity-100 transition-opacity cursor-help">
-                    <div className="grid grid-cols-4 gap-1 p-1">
-                       {[...Array(16)].map((_, i) => {
-                           // Use charCode of user.id to create a deterministic pattern
-                           const isActive = (user.id.charCodeAt(i % user.id.length) + i) % 2 === 0;
-                           return <div key={i} className={`size-3 rounded-[2px] ${isActive ? 'bg-black' : 'bg-transparent'}`} />
-                       })}
-                    </div>
-                 </div>
-                 <p className="text-[8px] text-muted-foreground mt-2 font-mono uppercase tracking-widest">Scan for verification</p>
+              {/* KIIT Seal Header */}
+              <div className="flex items-center justify-center gap-2 mb-3">
+                <div className="size-8 rounded-lg bg-emerald-500/20 border border-emerald-500/40 flex items-center justify-center">
+                  <Building2 className="size-5 text-emerald-400" />
+                </div>
+                <div className="text-left">
+                  <h4 className="text-xs font-black tracking-tight uppercase text-white leading-none">
+                    KIIT University
+                  </h4>
+                  <span className="text-[9px] text-emerald-400 font-medium">Bhubaneswar, Odisha</span>
+                </div>
               </div>
-           </div>
+
+              <span className="text-[9px] font-bold uppercase tracking-widest text-emerald-300 bg-emerald-500/10 px-3 py-0.5 rounded-full border border-emerald-500/30 mb-4">
+                Hostel Resident Smart ID
+              </span>
+
+              {/* Student Photo */}
+              <div className="size-24 rounded-2xl bg-gradient-to-br from-emerald-500 to-emerald-800 p-[2px] mb-3 shadow-lg">
+                <div className="size-full rounded-2xl bg-slate-900 flex items-center justify-center text-3xl font-bold font-mono text-emerald-400">
+                  {user.name?.charAt(0) || "V"}
+                </div>
+              </div>
+
+              {/* Student Roll and Name */}
+              <div className="space-y-0.5 mb-4">
+                <h3 className="text-lg font-bold text-white">{user.name}</h3>
+                <p className="text-xs font-mono font-bold text-emerald-400">ROLL: {rollNo}</p>
+                <p className="text-[11px] text-muted-foreground">{branch}</p>
+              </div>
+
+              {/* Hostel Badges */}
+              <div className="w-full grid grid-cols-2 gap-2 text-left bg-black/50 p-3 rounded-xl border border-white/5 mb-4">
+                <div>
+                  <span className="text-[9px] text-muted-foreground uppercase tracking-wider block">Hostel</span>
+                  <span className="text-xs font-bold text-white truncate block">{hostelName}</span>
+                </div>
+                <div>
+                  <span className="text-[9px] text-muted-foreground uppercase tracking-wider block">Room Allotment</span>
+                  <span className="text-xs font-bold text-white block">Room {roomNo} ({bedNo})</span>
+                </div>
+              </div>
+
+              {/* QR Code Bar */}
+              <div className="p-2 bg-white rounded-xl shadow-md mb-2">
+                <div className="grid grid-cols-5 gap-1 size-16">
+                  {[...Array(25)].map((_, i) => (
+                    <div 
+                      key={i} 
+                      className={`rounded-[1px] ${
+                        i === 0 || i === 4 || i === 20 || i === 24 || (i * 13) % 2 === 0 
+                          ? "bg-slate-950" 
+                          : "bg-transparent"
+                      }`} 
+                    />
+                  ))}
+                </div>
+              </div>
+              <p className="text-[9px] font-mono text-muted-foreground uppercase tracking-widest">
+                Scan for Mess & Gate Access
+              </p>
+            </div>
+          </div>
         </div>
       </div>
     </div>

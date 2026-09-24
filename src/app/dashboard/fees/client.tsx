@@ -83,12 +83,12 @@ export default function FeesClient({ fees, role }: { fees: any[], role: string }
                           {isAdmin && (
                              <div className="flex gap-1">
                                 {f.status !== "PAID" && (
-                                    <Button size="icon-xs" variant="outline" className="border-green-500/30 text-green-400 hover:bg-green-500/20" onClick={() => handleUpdate(f.id, "PAID")} disabled={isPending}>
+                                    <Button size="sm" variant="outline" className="border-green-500/30 text-green-400 hover:bg-green-500/20" onClick={() => handleUpdate(f.id, "PAID")} disabled={isPending}>
                                         <CheckCircle className="size-3" />
                                     </Button>
                                 )}
                                 {f.status === "PENDING" && (
-                                    <Button size="icon-xs" variant="outline" className="border-red-500/30 text-red-400 hover:bg-red-500/20" onClick={() => handleUpdate(f.id, "OVERDUE")} disabled={isPending}>
+                                    <Button size="sm" variant="outline" className="border-red-500/30 text-red-400 hover:bg-red-500/20" onClick={() => handleUpdate(f.id, "OVERDUE")} disabled={isPending}>
                                         <AlertCircle className="size-3" />
                                     </Button>
                                 )}
