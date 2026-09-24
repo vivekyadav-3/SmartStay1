@@ -7,8 +7,10 @@ import { revalidatePath } from "next/cache";
 export async function requestGatePass(data: {
   destination: string;
   purpose: string;
-  expectedInTimeHours: number;
+  expectedInTimeHours?: number;
   passType?: string;
+  departureTimeStr?: string;
+  returnTimeStr?: string;
 }) {
   try {
     const user = await syncUser();
@@ -17,15 +19,19 @@ export async function requestGatePass(data: {
     const randomNum = Math.floor(1000 + Math.random() * 9000);
     const passCode = `GP-2026-${randomNum}`;
 
+    // Standardized demo outing window: 06:15 PM to 08:15 PM (Curfew is strictly 08:30 PM)
     const departureTime = new Date();
-    const returnTime = new Date(Date.now() + (data.expectedInTimeHours || 2) * 60 * 60 * 1000);
+    departureTime.setHours(18, 15, 0, 0);
+
+    const returnTime = new Date();
+    returnTime.setHours(20, 15, 0, 0);
 
     const gatePass = await prisma.gatePass.create({
       data: {
         passCode,
         userId: user.id,
-        destination: data.destination,
-        purpose: data.purpose,
+        destination: data.destination || "KIIT Central Library (Campus 6)",
+        purpose: data.purpose || "Project Work",
         departureTime,
         returnTime,
         status: "PENDING",   // ← Warden must approve before Security can punch

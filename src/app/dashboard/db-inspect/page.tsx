@@ -127,7 +127,7 @@ export default async function DbInspectorPage() {
                     )}
                   </td>
                   <td className="py-2.5 px-3 text-muted-foreground">
-                    {p.returnTime ? new Date(p.returnTime).toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" }) : "08:30 PM"}
+                    {p.returnTime ? new Date(p.returnTime).toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" }) : "08:15 PM"}
                   </td>
                 </tr>
               ))}

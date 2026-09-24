@@ -119,7 +119,30 @@ async function main() {
     },
   });
 
-  // Member 4: Prof. S. K. Mohapatra (Chief Warden)
+  // Member 4: Priyanshu Dash (Student)
+  const priyanshu = await prisma.user.create({
+    data: {
+      id: "student_priyanshu_22053120",
+      name: "Priyanshu Dash",
+      email: "priyanshu.dash@kiit.ac.in",
+      role: "STUDENT",
+      biometricStatus: "IN_HOSTEL",
+      studentProfile: {
+        create: {
+          rollNo: "22053120",
+          branch: "Computer Science & Engineering",
+          semester: 6,
+          year: 3,
+          hostelId: kp7.id,
+          roomNo: "101",
+          bedNo: "B",
+          phone: "+91 91234 56789",
+        },
+      },
+    },
+  });
+
+  // Member 5: Prof. S. K. Mohapatra (Chief Warden)
   const warden = await prisma.user.create({
     data: {
       id: "warden_kp7",
@@ -130,7 +153,7 @@ async function main() {
     },
   });
 
-  // Member 5: Havildar R. K. Swain (Security Officer)
+  // Security Account: Havildar R. K. Swain (Security Officer)
   const security = await prisma.user.create({
     data: {
       id: "guard_kp7",
@@ -141,10 +164,9 @@ async function main() {
     },
   });
 
-  // 5. Seed 25 Additional Demo Students with realistic KIIT data
+  // 5. Seed 24 Additional Demo Students with realistic KIIT data
   const extraStudentData = [
     { name: "Subham Biswal", rollNo: "22050811", branch: "CSE", room: "101", bed: "A" },
-    { name: "Priyanshu Dash", rollNo: "22053120", branch: "CSE", room: "101", bed: "B" },
     { name: "Ankit Singh", rollNo: "22052441", branch: "IT", room: "102", bed: "A" },
     { name: "Rohan Panda", rollNo: "22051109", branch: "CSCE", room: "102", bed: "B" },
     { name: "Siddharth Verma", rollNo: "22050432", branch: "CSE", room: "201", bed: "A" },
@@ -194,15 +216,20 @@ async function main() {
   }
 
   // 6. Seed Gate Passes — DEMO STATE: Vivek has a PENDING pass to demo the full lifecycle
-  // STUDENT → WARDEN APPROVE → SECURITY PUNCH OUT → PUNCH IN
+  // STUDENT → WARDEN APPROVE → SECURITY CHECKPOINT
+  const vivekDep = new Date();
+  vivekDep.setHours(18, 15, 0, 0); // 06:15 PM
+  const vivekRet = new Date();
+  vivekRet.setHours(20, 15, 0, 0); // 08:15 PM (strictly before 08:30 PM curfew!)
+
   const pass1 = await prisma.gatePass.create({
     data: {
       passCode: "GP-2026-0812",
       userId: vivek.id,
       destination: "KIIT Central Library (Campus 6)",
       purpose: "3rd-year semester capstone project research and group coding",
-      departureTime: new Date(),
-      returnTime: new Date(Date.now() + 2 * 60 * 60 * 1000),
+      departureTime: vivekDep,
+      returnTime: vivekRet,
       status: "PENDING",       // ← DEMO STARTS HERE: Warden must approve
       curfewDeadline: "08:30 PM",
       qrData: `KIIT-PASS-22051934-GP-2026-0812-PENDING`,
@@ -220,14 +247,19 @@ async function main() {
   });
 
   // Pending Pass for Ayush Sharma (also waiting for approval)
+  const ayushDep = new Date();
+  ayushDep.setHours(17, 0, 0, 0); // 05:00 PM
+  const ayushRet = new Date();
+  ayushRet.setHours(19, 30, 0, 0); // 07:30 PM
+
   await prisma.gatePass.create({
     data: {
       passCode: "GP-2026-9041",
       userId: ayush.id,
       destination: "KIMS Hospital (Campus 5)",
       purpose: "Routine orthopedic follow-up & physiotherapy session",
-      departureTime: new Date(),
-      returnTime: new Date(Date.now() + 3 * 60 * 60 * 1000),
+      departureTime: ayushDep,
+      returnTime: ayushRet,
       status: "PENDING",
       curfewDeadline: "08:30 PM",
       qrData: `KIIT-PASS-22051410-GP-2026-9041-PENDING`,
@@ -235,14 +267,19 @@ async function main() {
   });
 
   // Pending Pass for Rahul Kumar
+  const rahulDep = new Date();
+  rahulDep.setHours(18, 30, 0, 0); // 06:30 PM
+  const rahulRet = new Date();
+  rahulRet.setHours(20, 15, 0, 0); // 08:15 PM
+
   await prisma.gatePass.create({
     data: {
       passCode: "GP-2026-4421",
       userId: rahul.id,
       destination: "Campus 12 Food Court & Gym",
       purpose: "Evening fitness training & project discussion",
-      departureTime: new Date(),
-      returnTime: new Date(Date.now() + 2 * 60 * 60 * 1000),
+      departureTime: rahulDep,
+      returnTime: rahulRet,
       status: "PENDING",
       curfewDeadline: "08:30 PM",
       qrData: `KIIT-PASS-22051882-GP-2026-4421-PENDING`,

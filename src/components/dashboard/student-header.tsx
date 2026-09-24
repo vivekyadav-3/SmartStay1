@@ -11,6 +11,7 @@ import {
   Check, 
   SlidersHorizontal,
   ShieldCheck,
+  ShieldAlert,
   MapPin
 } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
@@ -152,41 +153,86 @@ export default function StudentHeader({ user }: StudentHeaderProps) {
                 )}
               </div>
 
-              <p className="text-xs md:text-sm text-muted-foreground flex items-center gap-1.5 flex-wrap">
-                <GraduationCap className="size-3.5 text-emerald-400" />
-                <span>{branchDisplay}</span>
-                <span className="opacity-40">•</span>
-                <span>{semDisplay}</span>
-              </p>
+              {/* Subtitle / Department */}
+              {user.role === "SECURITY" ? (
+                <p className="text-xs md:text-sm text-blue-400 font-medium flex items-center gap-1.5 flex-wrap">
+                  <ShieldCheck className="size-3.5 text-blue-400" />
+                  <span>KIIT Security & Vigilance Directorate • KP-7 Gate Post</span>
+                </p>
+              ) : user.role === "WARDEN" ? (
+                <p className="text-xs md:text-sm text-amber-400 font-medium flex items-center gap-1.5 flex-wrap">
+                  <ShieldAlert className="size-3.5 text-amber-400" />
+                  <span>KIIT Hostel Administration & Student Affairs</span>
+                </p>
+              ) : (
+                <p className="text-xs md:text-sm text-muted-foreground flex items-center gap-1.5 flex-wrap">
+                  <GraduationCap className="size-3.5 text-emerald-400" />
+                  <span>{branchDisplay}</span>
+                  <span className="opacity-40">•</span>
+                  <span>{semDisplay}</span>
+                </p>
+              )}
 
-              {/* Crucial Student Identifiers: Roll No, Hostel, Room */}
-              <div className="flex flex-wrap items-center gap-2 pt-1">
-                {/* Roll Number */}
-                <div className="inline-flex items-center gap-1.5 bg-black/40 border border-emerald-500/30 px-2.5 py-1 rounded-lg text-xs font-mono font-semibold text-emerald-300">
-                  <span className="text-muted-foreground font-sans font-normal text-[11px]">Roll:</span>
-                  <span>{rollNo}</span>
-                  <button
-                    type="button"
-                    onClick={copyRoll}
-                    className="hover:text-white transition-colors ml-1"
-                    title="Copy Roll Number"
-                  >
-                    {copied ? <Check className="size-3 text-emerald-400" /> : <Copy className="size-3 opacity-60 hover:opacity-100" />}
-                  </button>
+              {/* Crucial Identifiers */}
+              {user.role === "SECURITY" ? (
+                <div className="flex flex-wrap items-center gap-2 pt-1">
+                  <div className="inline-flex items-center gap-1.5 bg-black/40 border border-blue-500/30 px-2.5 py-1 rounded-lg text-xs font-mono font-semibold text-blue-300">
+                    <span className="text-muted-foreground font-sans font-normal text-[11px]">Employee ID:</span>
+                    <span>SEC-KP7-01</span>
+                  </div>
+                  <div className="inline-flex items-center gap-1.5 bg-black/40 border border-white/10 px-2.5 py-1 rounded-lg text-xs font-medium text-foreground">
+                    <MapPin className="size-3.5 text-blue-400" />
+                    <span>KP-7 Main Gate</span>
+                  </div>
+                  <div className="inline-flex items-center gap-1.5 bg-black/40 border border-white/10 px-2.5 py-1 rounded-lg text-xs font-medium text-foreground">
+                    <ShieldCheck className="size-3.5 text-blue-400" />
+                    <span>Station: Campus 12</span>
+                  </div>
                 </div>
+              ) : user.role === "WARDEN" ? (
+                <div className="flex flex-wrap items-center gap-2 pt-1">
+                  <div className="inline-flex items-center gap-1.5 bg-black/40 border border-amber-500/30 px-2.5 py-1 rounded-lg text-xs font-mono font-semibold text-amber-300">
+                    <span className="text-muted-foreground font-sans font-normal text-[11px]">Staff ID:</span>
+                    <span>WRD-KP7-01</span>
+                  </div>
+                  <div className="inline-flex items-center gap-1.5 bg-black/40 border border-white/10 px-2.5 py-1 rounded-lg text-xs font-medium text-foreground">
+                    <Building2 className="size-3.5 text-amber-400" />
+                    <span>KP-7 Warden Office</span>
+                  </div>
+                  <div className="inline-flex items-center gap-1.5 bg-black/40 border border-white/10 px-2.5 py-1 rounded-lg text-xs font-medium text-foreground">
+                    <ShieldAlert className="size-3.5 text-amber-400" />
+                    <span>Intercom: Ext #402</span>
+                  </div>
+                </div>
+              ) : (
+                <div className="flex flex-wrap items-center gap-2 pt-1">
+                  {/* Roll Number */}
+                  <div className="inline-flex items-center gap-1.5 bg-black/40 border border-emerald-500/30 px-2.5 py-1 rounded-lg text-xs font-mono font-semibold text-emerald-300">
+                    <span className="text-muted-foreground font-sans font-normal text-[11px]">Roll:</span>
+                    <span>{rollNo}</span>
+                    <button
+                      type="button"
+                      onClick={copyRoll}
+                      className="hover:text-white transition-colors ml-1"
+                      title="Copy Roll Number"
+                    >
+                      {copied ? <Check className="size-3 text-emerald-400" /> : <Copy className="size-3 opacity-60 hover:opacity-100" />}
+                    </button>
+                  </div>
 
-                {/* Hostel Name */}
-                <div className="inline-flex items-center gap-1.5 bg-black/40 border border-white/10 px-2.5 py-1 rounded-lg text-xs font-medium text-foreground">
-                  <Building2 className="size-3.5 text-emerald-400" />
-                  <span>{hostelName}</span>
-                </div>
+                  {/* Hostel Name */}
+                  <div className="inline-flex items-center gap-1.5 bg-black/40 border border-white/10 px-2.5 py-1 rounded-lg text-xs font-medium text-foreground">
+                    <Building2 className="size-3.5 text-emerald-400" />
+                    <span>{hostelName}</span>
+                  </div>
 
-                {/* Room & Bed */}
-                <div className="inline-flex items-center gap-1.5 bg-black/40 border border-white/10 px-2.5 py-1 rounded-lg text-xs font-medium text-foreground">
-                  <DoorClosed className="size-3.5 text-blue-400" />
-                  <span>Room {roomNo} (Bed {bedNo})</span>
+                  {/* Room & Bed */}
+                  <div className="inline-flex items-center gap-1.5 bg-black/40 border border-white/10 px-2.5 py-1 rounded-lg text-xs font-medium text-foreground">
+                    <DoorClosed className="size-3.5 text-blue-400" />
+                    <span>Room {roomNo} (Bed {bedNo})</span>
+                  </div>
                 </div>
-              </div>
+              )}
             </div>
           </div>
 
@@ -209,17 +255,19 @@ export default function StudentHeader({ user }: StudentHeaderProps) {
               <span>Biometric: <strong>{isHostelIn ? "HOSTEL IN-CAMPUS" : "OUTSIDE CAMPUS"}</strong></span>
             </Button>
 
-            {/* Quick Profile Editor / Switcher for Viva Demo */}
-            <Button
-              type="button"
-              variant="outline"
-              size="sm"
-              onClick={() => setIsEditing(!isEditing)}
-              className="h-9 px-3 gap-1.5 border-white/10 hover:border-emerald-500/40 text-xs"
-            >
-              <SlidersHorizontal className="size-3.5 text-emerald-400" />
-              <span>{isEditing ? "Close Details" : "Edit Room/Bed"}</span>
-            </Button>
+            {/* Quick Profile Editor / Switcher for Viva Demo (only for student) */}
+            {user.role === "STUDENT" && (
+              <Button
+                type="button"
+                variant="outline"
+                size="sm"
+                onClick={() => setIsEditing(!isEditing)}
+                className="h-9 px-3 gap-1.5 border-white/10 hover:border-emerald-500/40 text-xs"
+              >
+                <SlidersHorizontal className="size-3.5 text-emerald-400" />
+                <span>{isEditing ? "Close Details" : "Edit Room/Bed"}</span>
+              </Button>
+            )}
           </div>
         </div>
       </div>

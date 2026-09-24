@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { 
   Clock, 
   UtensilsCrossed, 
@@ -19,19 +19,26 @@ import {
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { requestGatePass } from "@/app/actions/gate-pass";
-import { toggleBiometricPunch } from "@/app/actions/user";
+import { requestGatePass, getGatePasses } from "@/app/actions/gate-pass";
+
+function formatPassTime(time: string | Date | undefined, fallback = "08:15 PM") {
+  if (!time) return fallback;
+  if (typeof time === "string" && (time.includes("AM") || time.includes("PM"))) return time;
+  try {
+    return new Date(time).toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" });
+  } catch {
+    return fallback;
+  }
+}
 
 export default function TimingsPage() {
-  const [biometricStatus, setBiometricStatus] = useState<string>("IN_HOSTEL");
-  const [isPunching, setIsPunching] = useState(false);
   const [showPassModal, setShowPassModal] = useState(false);
 
   // Form states for gate pass
-  const [destination, setDestination] = useState("KIIT Central Library (Campus 6)");
-  const [purpose, setPurpose] = useState("Semester capstone project research & group coding lab");
-  const [passType, setPassType] = useState("LIBRARY");
-  const [hours, setHours] = useState(2);
+  const [destination, setDestination] = useState("KIIT Central Library");
+  const [purpose, setPurpose] = useState("Project Work");
+  const [departureTime, setDepartureTime] = useState("06:15 PM");
+  const [expectedReturnTime, setExpectedReturnTime] = useState("08:15 PM");
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [generatedPass, setGeneratedPass] = useState<{
     passNumber: string;
@@ -42,21 +49,37 @@ export default function TimingsPage() {
     status: string;
   } | null>(null);
 
-  const handlePunch = async () => {
-    setIsPunching(true);
-    // toggle
-    setBiometricStatus(prev => (prev === "IN_HOSTEL" || prev === "IN" ? "OUTSIDE_CAMPUS" : "IN_HOSTEL"));
-    setTimeout(() => setIsPunching(false), 500);
-  };
+  // Fetch student's real pass from the database on mount
+  useEffect(() => {
+    async function loadStudentPass() {
+      try {
+        const passes = await getGatePasses();
+        if (passes && passes.length > 0) {
+          const latest = passes[0];
+          setGeneratedPass({
+            passNumber: latest.passCode || (latest as any).passNumber,
+            destination: latest.destination,
+            purpose: latest.purpose,
+            outTime: formatPassTime(latest.departureTime, "06:15 PM"),
+            expectedInTime: formatPassTime(latest.returnTime, "08:15 PM"),
+            status: latest.status,
+          });
+        }
+      } catch (err) {
+        console.error("Failed to load student gate pass:", err);
+      }
+    }
+    loadStudentPass();
+  }, []);
 
   const handleCreatePass = async (e: React.FormEvent) => {
     e.preventDefault();
     setIsSubmitting(true);
     const res = await requestGatePass({
-      passType,
       destination,
       purpose,
-      expectedInTimeHours: Number(hours),
+      departureTimeStr: departureTime,
+      returnTimeStr: expectedReturnTime,
     });
 
     if (res.success && res.gatePass) {
@@ -64,8 +87,8 @@ export default function TimingsPage() {
         passNumber: (res.gatePass as any).passCode || (res.gatePass as any).passNumber,
         destination: res.gatePass.destination,
         purpose: res.gatePass.purpose,
-        outTime: new Date((res.gatePass as any).departureTime || (res.gatePass as any).outTime).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
-        expectedInTime: new Date((res.gatePass as any).returnTime || (res.gatePass as any).expectedInTime).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
+        outTime: departureTime || "06:15 PM",
+        expectedInTime: expectedReturnTime || "08:15 PM",
         status: res.gatePass.status,
       });
       setShowPassModal(false);
@@ -83,7 +106,7 @@ export default function TimingsPage() {
               KIIT Hostel Administration
             </Badge>
             <Badge variant="outline" className="text-xs">
-              KP-7 & QC Wing Timings
+              KP-7 Digital Gate Pass
             </Badge>
           </div>
           <h1 className="text-3xl font-extrabold tracking-tight mt-1 text-foreground">
@@ -99,7 +122,7 @@ export default function TimingsPage() {
           className="bg-emerald-600 hover:bg-emerald-500 text-white gap-2 shadow-lg shadow-emerald-600/20 text-xs"
         >
           <PlusCircle className="size-4" />
-          <span>Apply Digital Gate Pass</span>
+          <span>Apply for Gate Pass</span>
         </Button>
       </div>
 
@@ -128,7 +151,7 @@ export default function TimingsPage() {
               {generatedPass?.passNumber || "GP-2026-0812"}
             </span>
             <span className="text-xs text-muted-foreground">
-              Expected Return: <strong className="text-foreground font-mono">{generatedPass?.expectedInTime || "08:30 PM"}</strong>
+              Expected Return: <strong className="text-foreground font-mono">{generatedPass?.expectedInTime || "08:15 PM"}</strong>
             </span>
           </div>
 
@@ -142,7 +165,7 @@ export default function TimingsPage() {
             <div>
               <span className="text-[11px] text-muted-foreground block font-medium">Purpose</span>
               <p className="text-xs text-muted-foreground">
-                {generatedPass?.purpose || "3rd-year semester capstone project research and group coding"}
+                {generatedPass?.purpose || "Project Work"}
               </p>
             </div>
           </div>
@@ -169,7 +192,7 @@ export default function TimingsPage() {
             <div className="flex items-center justify-between border-b border-white/10 pb-3">
               <div className="flex items-center gap-2">
                 <FileCheck2 className="size-5 text-emerald-400" />
-                <h3 className="text-lg font-bold text-foreground">Request Digital Outing Pass</h3>
+                <h3 className="text-lg font-bold text-foreground">Apply for Gate Pass</h3>
               </div>
               <button 
                 type="button" 
@@ -182,54 +205,57 @@ export default function TimingsPage() {
 
             <form onSubmit={handleCreatePass} className="space-y-4">
               <div className="space-y-1">
-                <label className="text-xs font-semibold text-muted-foreground">Pass Category</label>
-                <select
-                  value={passType}
-                  onChange={(e) => setPassType(e.target.value)}
-                  className="w-full bg-black/60 border border-white/15 rounded-xl px-3 py-2 text-xs text-foreground focus:outline-none focus:border-emerald-500"
-                >
-                  <option value="LIBRARY">Central Library / Academic Study</option>
-                  <option value="LOCAL_MARKET">Patia Local Market / Personal Groceries</option>
-                  <option value="MEDICAL">Medical Clinic / KIMS Hospital</option>
-                  <option value="FEST_EVENT">Campus Fest / Kritansh Event</option>
-                </select>
-              </div>
-
-              <div className="space-y-1">
                 <label className="text-xs font-semibold text-muted-foreground">Destination</label>
                 <input
                   type="text"
                   value={destination}
                   onChange={(e) => setDestination(e.target.value)}
-                  placeholder="e.g. KIIT Central Library Campus 6"
+                  placeholder="e.g. KIIT Central Library"
                   required
-                  className="w-full bg-black/60 border border-white/15 rounded-xl px-3 py-2 text-xs text-foreground focus:outline-none focus:border-emerald-500"
+                  className="w-full bg-black/60 border border-white/15 rounded-xl px-3 py-2 text-xs text-foreground focus:outline-none focus:border-emerald-500 font-medium"
                 />
               </div>
 
               <div className="space-y-1">
-                <label className="text-xs font-semibold text-muted-foreground">Reason / Purpose</label>
+                <label className="text-xs font-semibold text-muted-foreground">Purpose</label>
                 <textarea
                   value={purpose}
                   onChange={(e) => setPurpose(e.target.value)}
                   rows={2}
-                  placeholder="Provide brief reason for leaving hostel campus..."
+                  placeholder="e.g. Project Work"
                   required
-                  className="w-full bg-black/60 border border-white/15 rounded-xl px-3 py-2 text-xs text-foreground focus:outline-none focus:border-emerald-500 resize-none"
+                  className="w-full bg-black/60 border border-white/15 rounded-xl px-3 py-2 text-xs text-foreground focus:outline-none focus:border-emerald-500 resize-none font-medium"
                 />
               </div>
 
-              <div className="space-y-1">
-                <label className="text-xs font-semibold text-muted-foreground">Expected Duration</label>
-                <select
-                  value={hours}
-                  onChange={(e) => setHours(Number(e.target.value))}
-                  className="w-full bg-black/60 border border-white/15 rounded-xl px-3 py-2 text-xs text-foreground focus:outline-none focus:border-emerald-500"
-                >
-                  <option value={1}>1 Hour (Return before 07:30 PM)</option>
-                  <option value={2}>2 Hours (Return before 08:30 PM Curfew)</option>
-                  <option value={3}>3 Hours (Extended Library Access)</option>
-                </select>
+              <div className="grid grid-cols-2 gap-3">
+                <div className="space-y-1">
+                  <label className="text-xs font-semibold text-muted-foreground">Departure</label>
+                  <input
+                    type="text"
+                    value={departureTime}
+                    onChange={(e) => setDepartureTime(e.target.value)}
+                    placeholder="06:15 PM"
+                    className="w-full bg-black/60 border border-white/15 rounded-xl px-3 py-2 text-xs text-foreground font-mono focus:outline-none focus:border-emerald-500"
+                  />
+                </div>
+
+                <div className="space-y-1">
+                  <label className="text-xs font-semibold text-muted-foreground">
+                    Expected Return <span className="text-amber-400 text-[10px]">(Curfew: 08:30 PM)</span>
+                  </label>
+                  <input
+                    type="text"
+                    value={expectedReturnTime}
+                    onChange={(e) => setExpectedReturnTime(e.target.value)}
+                    placeholder="08:15 PM"
+                    className="w-full bg-black/60 border border-white/15 rounded-xl px-3 py-2 text-xs text-foreground font-mono focus:outline-none focus:border-emerald-500"
+                  />
+                </div>
+              </div>
+
+              <div className="p-2.5 rounded-lg bg-emerald-500/10 border border-emerald-500/20 text-[11px] text-emerald-300">
+                Outing passes must adhere to the <strong>08:30 PM</strong> KIIT campus curfew rule.
               </div>
 
               <div className="pt-2 flex justify-end gap-2">
@@ -244,9 +270,9 @@ export default function TimingsPage() {
                 <Button
                   type="submit"
                   disabled={isSubmitting}
-                  className="bg-emerald-600 hover:bg-emerald-500 text-white text-xs h-9 px-5"
+                  className="bg-emerald-600 hover:bg-emerald-500 text-white text-xs h-9 px-5 font-bold"
                 >
-                  {isSubmitting ? "Generating..." : "Generate Pass"}
+                  {isSubmitting ? "Submitting..." : "Submit Pass"}
                 </Button>
               </div>
             </form>

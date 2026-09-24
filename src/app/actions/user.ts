@@ -86,13 +86,28 @@ export async function syncUser() {
       return guard;
     }
 
-    // 3. Default: Vivek Yadav (Student)
-    let demoStudent = await prisma.user.findFirst({
-      where: { id: "student_vivek_22051934" },
-      include: {
-        studentProfile: { include: { hostel: true } },
-      },
-    });
+    // 3. Student selection from DB
+    const cookieStore = await cookies();
+    const activeStudentId = cookieStore.get("kiit_active_student_id")?.value;
+    let demoStudent = null;
+
+    if (activeStudentId) {
+      demoStudent = await prisma.user.findFirst({
+        where: { id: activeStudentId, role: "STUDENT" },
+        include: {
+          studentProfile: { include: { hostel: true } },
+        },
+      });
+    }
+
+    if (!demoStudent) {
+      demoStudent = await prisma.user.findFirst({
+        where: { id: "student_vivek_22051934" },
+        include: {
+          studentProfile: { include: { hostel: true } },
+        },
+      });
+    }
 
     if (!demoStudent) {
       demoStudent = await prisma.user.findFirst({
@@ -111,6 +126,21 @@ export async function syncUser() {
         studentProfile: { include: { hostel: true } },
       },
     });
+  }
+}
+
+export async function switchActiveStudent(studentId: string) {
+  try {
+    const cookieStore = await cookies();
+    cookieStore.set("kiit_active_student_id", studentId, { path: "/", maxAge: 60 * 60 * 24 });
+    cookieStore.set("kiit_demo_role", "STUDENT", { path: "/", maxAge: 60 * 60 * 24 });
+    revalidatePath("/dashboard");
+    revalidatePath("/dashboard/timings");
+    revalidatePath("/dashboard/profile");
+    return { success: true, studentId };
+  } catch (error) {
+    console.error("Switch active student error:", error);
+    return { error: "Failed to switch active student" };
   }
 }
 
