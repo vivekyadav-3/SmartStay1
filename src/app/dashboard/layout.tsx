@@ -31,6 +31,7 @@ const residentLinks = [
 
 const managementLinks = [
   { name: "Warden Approval", href: "/dashboard/warden", icon: ShieldAlert, badge: "Warden" },
+  { name: "Database Inspector", href: "/dashboard/db-inspect", icon: QrCode, badge: "SQLite" },
 ];
 
 export default function DashboardLayout({ children }: { children: React.ReactNode }) {
