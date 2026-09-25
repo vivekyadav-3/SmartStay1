@@ -4,12 +4,12 @@ import { prisma } from "@/lib/db";
 import { revalidatePath } from "next/cache";
 import { cookies } from "next/headers";
 
-export async function getDemoRole(): Promise<"STUDENT" | "WARDEN" | "SECURITY"> {
+export async function getDemoRole(): Promise<"STUDENT" | "WARDEN" | "HEAD_WARDEN" | "SECURITY"> {
   try {
     const cookieStore = await cookies();
     const role = cookieStore.get("kiit_demo_role")?.value;
-    if (role === "WARDEN" || role === "SECURITY" || role === "STUDENT") {
-      return role;
+    if (role === "WARDEN" || role === "HEAD_WARDEN" || role === "SECURITY" || role === "STUDENT") {
+      return role as "STUDENT" | "WARDEN" | "HEAD_WARDEN" | "SECURITY";
     }
     return "STUDENT";
   } catch {
@@ -17,12 +17,13 @@ export async function getDemoRole(): Promise<"STUDENT" | "WARDEN" | "SECURITY"> 
   }
 }
 
-export async function setDemoRole(role: "STUDENT" | "WARDEN" | "SECURITY") {
+export async function setDemoRole(role: "STUDENT" | "WARDEN" | "HEAD_WARDEN" | "SECURITY") {
   try {
     const cookieStore = await cookies();
     cookieStore.set("kiit_demo_role", role, { path: "/", maxAge: 60 * 60 * 24 });
     revalidatePath("/dashboard");
     revalidatePath("/dashboard/warden");
+    revalidatePath("/dashboard/head-warden");
     revalidatePath("/dashboard/security-gate");
     revalidatePath("/dashboard/timings");
     return { success: true, role };
@@ -36,7 +37,32 @@ export async function syncUser() {
   try {
     const activeRole = await getDemoRole();
 
-    // 1. If Warden role selected in demo switcher
+    // 1. If Head Warden selected
+    if (activeRole === "HEAD_WARDEN") {
+      let headWarden = await prisma.user.findFirst({
+        where: { role: "HEAD_WARDEN" },
+        include: {
+          studentProfile: { include: { hostel: true } },
+        },
+      });
+      if (!headWarden) {
+        headWarden = await prisma.user.create({
+          data: {
+            id: "head_warden_kiit",
+            name: "Dr. J. R. Mohanty",
+            email: "headwarden@kiit.ac.in",
+            role: "HEAD_WARDEN",
+            biometricStatus: "IN_HOSTEL",
+          },
+          include: {
+            studentProfile: { include: { hostel: true } },
+          },
+        });
+      }
+      return headWarden;
+    }
+
+    // 2. If Warden role selected in demo switcher
     if (activeRole === "WARDEN") {
       let warden = await prisma.user.findFirst({
         where: { role: "WARDEN" },

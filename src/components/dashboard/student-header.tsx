@@ -141,6 +141,11 @@ export default function StudentHeader({ user }: StudentHeaderProps) {
                 <Badge variant="outline" className="bg-emerald-500/10 text-emerald-400 border-emerald-500/30 text-xs">
                   KIIT Deemed to be University
                 </Badge>
+                {user.role === "HEAD_WARDEN" && (
+                  <Badge variant="outline" className="bg-purple-500/10 text-purple-400 border-purple-500/30 text-xs">
+                    Dean / Head Warden (Hostels)
+                  </Badge>
+                )}
                 {user.role === "WARDEN" && (
                   <Badge variant="outline" className="bg-amber-500/10 text-amber-400 border-amber-500/30 text-xs">
                     Chief Warden (KP-7)
@@ -154,7 +159,12 @@ export default function StudentHeader({ user }: StudentHeaderProps) {
               </div>
 
               {/* Subtitle / Department */}
-              {user.role === "SECURITY" ? (
+              {user.role === "HEAD_WARDEN" ? (
+                <p className="text-xs md:text-sm text-purple-400 font-medium flex items-center gap-1.5 flex-wrap">
+                  <ShieldAlert className="size-3.5 text-purple-400" />
+                  <span>Office of the Dean • KIIT Directorate of Student Affairs & Hostels</span>
+                </p>
+              ) : user.role === "SECURITY" ? (
                 <p className="text-xs md:text-sm text-blue-400 font-medium flex items-center gap-1.5 flex-wrap">
                   <ShieldCheck className="size-3.5 text-blue-400" />
                   <span>KIIT Security & Vigilance Directorate • KP-7 Gate Post</span>

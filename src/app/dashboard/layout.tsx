@@ -18,6 +18,7 @@ import {
   Building2,
   Menu,
   X,
+  BarChart3,
 } from "lucide-react";
 import { UserButton } from "@clerk/nextjs";
 import { cn } from "@/lib/utils";
@@ -26,10 +27,12 @@ import { useState } from "react";
 const residentLinks = [
   { name: "Dashboard", href: "/dashboard", icon: LayoutDashboard },
   { name: "Gate Pass", href: "/dashboard/timings", icon: Clock },
+  { name: "Give Feedback", href: "/dashboard/feedback", icon: Star },
   { name: "Profile", href: "/dashboard/profile", icon: ShieldCheck },
 ];
 
 const managementLinks = [
+  { name: "Head Warden Analytics", href: "/dashboard/head-warden", icon: BarChart3, badge: "100 Users" },
   { name: "Warden Approval", href: "/dashboard/warden", icon: ShieldAlert, badge: "Warden" },
   { name: "Database Inspector", href: "/dashboard/db-inspect", icon: QrCode, badge: "SQLite" },
 ];

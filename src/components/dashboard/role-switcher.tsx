@@ -2,7 +2,7 @@
 
 import { useState, useTransition } from "react";
 import { useRouter } from "next/navigation";
-import { GraduationCap, ShieldAlert, ShieldCheck, Check, Loader2 } from "lucide-react";
+import { GraduationCap, ShieldAlert, ShieldCheck, Crown, Check, Loader2 } from "lucide-react";
 import { setDemoRole } from "@/app/actions/user";
 
 export function RoleSwitcher({ currentRole = "STUDENT" }: { currentRole?: string }) {
@@ -30,6 +30,15 @@ export function RoleSwitcher({ currentRole = "STUDENT" }: { currentRole?: string
       activeBg: "bg-amber-600 text-white shadow-lg shadow-amber-600/30",
     },
     {
+      id: "HEAD_WARDEN",
+      label: "Head Warden",
+      persona: "Dr. J. R. Mohanty (Dean)",
+      icon: Crown,
+      path: "/dashboard/head-warden",
+      color: "text-purple-400 border-purple-500/30 bg-purple-500/10",
+      activeBg: "bg-purple-600 text-white shadow-lg shadow-purple-600/30",
+    },
+    {
       id: "SECURITY",
       label: "Security Gate",
       persona: "Havildar R. K. Swain",
@@ -40,7 +49,7 @@ export function RoleSwitcher({ currentRole = "STUDENT" }: { currentRole?: string
     },
   ];
 
-  const handleRoleChange = (roleId: "STUDENT" | "WARDEN" | "SECURITY", path: string) => {
+  const handleRoleChange = (roleId: "STUDENT" | "WARDEN" | "HEAD_WARDEN" | "SECURITY", path: string) => {
     setActiveRole(roleId);
     startTransition(async () => {
       await setDemoRole(roleId);

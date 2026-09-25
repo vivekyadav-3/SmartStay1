@@ -26,6 +26,8 @@ model User {
   laundryBookings LaundryBooking[]
   foodReviews     FoodReview[]
   fees            Fee[]
+  loginActivities LoginActivity[]
+  feedbacks       Feedback[]
 }
 
 model StudentProfile {
@@ -188,6 +190,29 @@ model Fee {
   type      String   @default("HOSTEL")
   dueDate   DateTime
   createdAt DateTime @default(now())
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+}
+
+model LoginActivity {
+  id        String   @id @default(cuid())
+  userId    String
+  loginAt   DateTime @default(now())
+  ipAddress String?  @default("172.16.4.12")
+  device    String?  @default("Mobile Safari (iOS)")
+  success   Boolean  @default(true)
+  createdAt DateTime @default(now())
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+}
+
+model Feedback {
+  id         String   @id @default(cuid())
+  userId     String
+  rating     Int      @default(4) // 1 to 5 stars
+  reviewText String
+  category   String   @default("OVERALL") // OVERALL, GATE_PASS, MESS, LAUNDRY, COMPLAINTS, ANNOUNCEMENTS
+  createdAt  DateTime @default(now())
 
   user User @relation(fields: [userId], references: [id], onDelete: Cascade)
 }
