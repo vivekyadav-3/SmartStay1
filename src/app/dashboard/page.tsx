@@ -20,6 +20,7 @@ import {
   Star
 } from "lucide-react";
 import Link from "next/link";
+import { redirect } from "next/navigation";
 import { syncUser } from "@/app/actions/user";
 import { getNotices } from "@/app/actions/notices";
 import { getWashingMachines } from "@/app/actions/washing-machine";
@@ -28,26 +29,11 @@ import StudentHeader from "@/components/dashboard/student-header";
 export const dynamic = "force-dynamic";
 
 export default async function DashboardPage() {
-  const activeUser = await syncUser();
+  const user = await syncUser();
 
-  // Find student resident (Vivek Yadav)
-  let studentUser = activeUser?.role === "STUDENT" ? activeUser : await prisma.user.findFirst({
-    where: { id: "student_vivek_22051934", role: "STUDENT" },
-    include: {
-      studentProfile: { include: { hostel: true } },
-    },
-  });
-
-  if (!studentUser || studentUser.role !== "STUDENT") {
-    studentUser = await prisma.user.findFirst({
-      where: { role: "STUDENT" },
-      include: {
-        studentProfile: { include: { hostel: true } },
-      },
-    });
+  if (!user) {
+    redirect("/login");
   }
-
-  const user = studentUser || activeUser;
 
   if (!user) {
     return (

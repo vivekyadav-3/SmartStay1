@@ -17,13 +17,13 @@ import {
   Sparkles,
   Star
 } from "lucide-react";
-import { UserButton } from "@clerk/nextjs";
 import { cn } from "@/lib/utils";
 import { useState } from "react";
 import { RoleSwitcher } from "@/components/dashboard/role-switcher";
 import { EmergencyModal } from "@/components/dashboard/emergency-modal";
 import { SidebarFeedbackBox } from "@/components/dashboard/sidebar-feedback-box";
 import { ViewModeToggle } from "@/components/dashboard/view-mode-toggle";
+import { SidebarUserFooter } from "@/components/dashboard/sidebar-user-footer";
 
 const residentLinks = [
   { name: "Overview", href: "/dashboard", icon: LayoutDashboard },
@@ -177,23 +177,7 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
         </nav>
 
         {/* Footer User Profile & Role Switch */}
-        <div className="p-3.5 border-t border-slate-200 bg-slate-50 flex flex-col gap-2.5">
-          <div className="flex items-center justify-between">
-            <div className="flex items-center gap-2.5 min-w-0">
-              <UserButton appearance={{ elements: { userButtonAvatarBox: "size-8" } }} />
-              <div className="truncate">
-                <p className="text-xs font-bold truncate text-slate-800">Vivek Yadav</p>
-                <p className="text-[10px] text-blue-700 font-medium">KP-7 · Room 412</p>
-              </div>
-            </div>
-            <Link
-              href="/dashboard/profile"
-              className="px-2 py-1 rounded bg-blue-100 text-blue-800 hover:bg-blue-200 text-[10px] font-bold"
-            >
-              ID Card
-            </Link>
-          </div>
-        </div>
+        <SidebarUserFooter />
       </aside>
 
       {/* Main Content Area */}
@@ -310,6 +294,9 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
                 );
               })}
             </nav>
+            <div className="pt-2 border-t border-slate-100">
+              <SidebarUserFooter onAction={() => setMobileMenuOpen(false)} />
+            </div>
           </div>
         )}
 

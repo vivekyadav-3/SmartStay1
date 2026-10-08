@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { 
   Building2, 
   DoorClosed, 
@@ -58,12 +58,27 @@ export default function StudentHeader({ user }: StudentHeaderProps) {
   const [isPunching, setIsPunching] = useState(false);
 
   // Form states initialized directly from database record
-  const [rollNo, setRollNo] = useState(profile?.rollNo || user.rollNo || "22051934");
-  const [hostelName, setHostelName] = useState(profile?.hostel?.name || user.hostelName || "King's Palace 7 (KP-7)");
-  const [roomNo, setRoomNo] = useState(profile?.roomNo || user.roomNo || "412");
-  const [bedNo, setBedNo] = useState(profile?.bedNo || user.bedNo || "B");
-  const [name, setName] = useState(user.name || "Vivek Yadav");
+  const currentName = user.name || "Student Resident";
+  const currentRoll = profile?.rollNo || user.rollNo || "22051000";
+  const currentHostel = profile?.hostel?.name || user.hostelName || "King's Palace 7 (KP-7)";
+  const currentRoom = profile?.roomNo || user.roomNo || "412";
+  const currentBed = profile?.bedNo || user.bedNo || "B";
+
+  const [rollNo, setRollNo] = useState(currentRoll);
+  const [hostelName, setHostelName] = useState(currentHostel);
+  const [roomNo, setRoomNo] = useState(currentRoom);
+  const [bedNo, setBedNo] = useState(currentBed);
+  const [name, setName] = useState(currentName);
   const [isSaving, setIsSaving] = useState(false);
+
+  useEffect(() => {
+    setName(user.name || "Student Resident");
+    setRollNo(profile?.rollNo || user.rollNo || "22051000");
+    setHostelName(profile?.hostel?.name || user.hostelName || "King's Palace 7 (KP-7)");
+    setRoomNo(profile?.roomNo || user.roomNo || "412");
+    setBedNo(profile?.bedNo || user.bedNo || "B");
+    setBiometricStatus(user.biometricStatus || "IN_HOSTEL");
+  }, [user.id, user.name, profile?.rollNo, profile?.roomNo]);
 
   const branchDisplay = profile?.branch || user.branch || "B.Tech Computer Science & Engineering";
   const semDisplay = profile?.semester ? `${profile.semester}th Semester (${profile.year || 3}rd Year)` : (user.semester || "6th Semester (3rd Year)");

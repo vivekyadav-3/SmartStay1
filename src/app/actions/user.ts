@@ -112,52 +112,30 @@ export async function syncUser() {
       return guard;
     }
 
-    // 3. Student selection from DB
+    // 3. Student selection from DB based on authenticated session cookie
     const cookieStore = await cookies();
     const activeStudentId = cookieStore.get("kiit_active_student_id")?.value;
-    let demoStudent = null;
 
     if (activeStudentId) {
-      demoStudent = await prisma.user.findFirst({
+      const student = await prisma.user.findFirst({
         where: { id: activeStudentId, role: "STUDENT" },
         include: {
           studentProfile: { include: { hostel: true } },
         },
       });
+      if (student) return student;
     }
 
-    if (!demoStudent) {
-      demoStudent = await prisma.user.findFirst({
-        where: { id: "student_vivek_22051934" },
-        include: {
-          studentProfile: { include: { hostel: true } },
-        },
-      });
-    }
-
-    if (!demoStudent) {
-      demoStudent = await prisma.user.findFirst({
-        where: { role: "STUDENT" },
-        include: {
-          studentProfile: { include: { hostel: true } },
-        },
-      });
-    }
-
-    return demoStudent;
+    // No authenticated student session
+    return null;
   } catch (error) {
     console.error("User Sync Error:", error);
-    try {
-      return await prisma.user.findFirst({
-        include: {
-          studentProfile: { include: { hostel: true } },
-        },
-      });
-    } catch (innerErr) {
-      console.error("User Sync Fallback Error:", innerErr);
-      return null;
-    }
+    return null;
   }
+}
+
+export async function getCurrentUser() {
+  return await syncUser();
 }
 
 export async function switchActiveStudent(studentId: string) {

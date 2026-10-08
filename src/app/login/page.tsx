@@ -57,7 +57,7 @@ export default function LoginPage() {
     } else {
       setSuccessMsg(`Welcome, ${res.user?.name || "Student"}! Redirecting to SmartStay...`);
       setTimeout(() => {
-        router.push("/dashboard/feedback");
+        router.push("/dashboard");
         router.refresh();
       }, 700);
     }
