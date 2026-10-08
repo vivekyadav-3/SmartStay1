@@ -147,11 +147,16 @@ export async function syncUser() {
     return demoStudent;
   } catch (error) {
     console.error("User Sync Error:", error);
-    return await prisma.user.findFirst({
-      include: {
-        studentProfile: { include: { hostel: true } },
-      },
-    });
+    try {
+      return await prisma.user.findFirst({
+        include: {
+          studentProfile: { include: { hostel: true } },
+        },
+      });
+    } catch (innerErr) {
+      console.error("User Sync Fallback Error:", innerErr);
+      return null;
+    }
   }
 }
 
