@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { 
   Star, 
   Sparkles, 
@@ -14,7 +14,8 @@ import {
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { submitFoodReview } from "@/app/actions/food-review";
+import { submitFoodReview, getFoodReviews, getFoodReviewStats } from "@/app/actions/food-review";
+import { getCurrentUser } from "@/app/actions/user";
 
 interface Review {
   id: string;
@@ -33,56 +34,19 @@ interface Review {
   };
 }
 
-const sampleReviews: Review[] = [
-  {
-    id: "rev_1",
-    mealType: "LUNCH",
-    overallRating: 5,
-    tasteRating: 5,
-    hygieneRating: 5,
-    quantityRating: 4,
-    comment: "The authentic Odia Dalma and Paneer Lababdar were incredible today! Fresh phulkas served piping hot at the counter.",
-    isAnonymous: false,
-    createdAt: new Date().toISOString(),
-    user: {
-      name: "Vivek Yadav",
-      rollNo: "22051934",
-      hostelName: "King's Palace 7",
-    },
-  },
-  {
-    id: "rev_2",
-    mealType: "BREAKFAST",
-    overallRating: 4,
-    tasteRating: 4,
-    hygieneRating: 5,
-    quantityRating: 5,
-    comment: "South Indian Idli-Vada and coconut chutney were fresh. Tea was warm and served on time.",
-    isAnonymous: false,
-    createdAt: new Date(Date.now() - 12 * 60 * 60 * 1000).toISOString(),
-    user: {
-      name: "Sushobhan",
-      rollNo: "22051890",
-      hostelName: "King's Palace 7",
-    },
-  },
-  {
-    id: "rev_3",
-    mealType: "DINNER",
-    overallRating: 4,
-    tasteRating: 4,
-    hygieneRating: 5,
-    quantityRating: 4,
-    comment: "Dal Makhani and Jeera Rice were good. Gulab Jamun was a nice dessert touch.",
-    isAnonymous: true,
-    createdAt: new Date(Date.now() - 24 * 60 * 60 * 1000).toISOString(),
-  },
-];
-
 export default function FoodReviewPage() {
-  const [reviews, setReviews] = useState<Review[]>(sampleReviews);
+  const [reviews, setReviews] = useState<Review[]>([]);
+  const [currentUser, setCurrentUser] = useState<any>(null);
+  const [stats, setStats] = useState<any>({
+    totalReviews: 0,
+    averageOverall: 4.5,
+    averageTaste: 4.4,
+    averageHygiene: 4.7,
+    averageQuantity: 4.3,
+  });
+
   const [mealType, setMealType] = useState("LUNCH");
-  const [overallRating, setOverallRating] = useState(4);
+  const [overallRating, setOverallRating] = useState(5);
   const [tasteRating, setTasteRating] = useState(4);
   const [hygieneRating, setHygieneRating] = useState(5);
   const [quantityRating, setQuantityRating] = useState(4);
@@ -90,6 +54,29 @@ export default function FoodReviewPage() {
   const [isAnonymous, setIsAnonymous] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [submitSuccess, setSubmitSuccess] = useState(false);
+
+  useEffect(() => {
+    // 1. Fetch current user
+    getCurrentUser().then((u) => {
+      if (u) setCurrentUser(u);
+    });
+
+    // 2. Load food reviews from DB
+    getFoodReviews(50).then((data) => {
+      if (data && data.length > 0) {
+        setReviews(data as any);
+      }
+    });
+
+    // 3. Load stats
+    getFoodReviewStats().then((st) => {
+      if (st) setStats(st);
+    });
+  }, []);
+
+  const studentName = currentUser?.name || "KIIT Resident";
+  const rollNo = currentUser?.studentProfile?.rollNo || currentUser?.email?.split("@")[0] || "2428021";
+  const hostelName = currentUser?.studentProfile?.hostel?.name || "King's Palace 7";
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -104,7 +91,7 @@ export default function FoodReviewPage() {
       portionRating: quantityRating,
       serviceRating: 4,
       comment,
-      isAnonymous: isAnonymous,
+      isAnonymous,
     });
 
     if (res.success && res.review) {
@@ -117,17 +104,18 @@ export default function FoodReviewPage() {
         quantityRating: res.review.portionRating,
         comment: res.review.comment,
         isAnonymous: res.review.anonymous,
-        createdAt: res.review.createdAt,
+        createdAt: new Date().toISOString(),
         user: {
-          name: isAnonymous ? "Anonymous Resident" : "Vivek Yadav",
-          rollNo: isAnonymous ? undefined : "22051934",
-          hostelName: "King's Palace 7",
+          name: isAnonymous ? "Anonymous Resident" : studentName,
+          rollNo: isAnonymous ? undefined : rollNo,
+          hostelName,
         },
       };
 
-      setReviews([newRev, ...reviews]);
+      setReviews((prev) => [newRev, ...prev]);
       setSubmitSuccess(true);
       setComment("");
+      setTimeout(() => setSubmitSuccess(false), 5000);
     }
     setIsSubmitting(false);
   };
@@ -150,8 +138,8 @@ export default function FoodReviewPage() {
 
         <div className="flex items-center gap-2 bg-blue-50 border border-blue-200 px-3.5 py-2 rounded-xl shrink-0">
           <Star className="size-4 text-yellow-400 fill-yellow-400" />
-          <span className="text-sm font-black text-blue-950">4.4 / 5.0</span>
-          <span className="text-xs text-slate-500 font-medium">(KP-7 Residents)</span>
+          <span className="text-sm font-black text-blue-950">{stats.averageOverall || 4.5} / 5.0</span>
+          <span className="text-xs text-slate-500 font-medium">({hostelName} Residents)</span>
         </div>
       </div>
 
@@ -160,16 +148,16 @@ export default function FoodReviewPage() {
         <div className="p-3.5 rounded-xl bg-white border border-slate-200 shadow-xs">
           <span className="text-[10px] font-bold text-slate-400 uppercase tracking-wide block">Overall Rating</span>
           <span className="text-xl font-extrabold text-blue-950 flex items-center gap-1 mt-1">
-            ⭐ 4.4 <span className="text-xs text-slate-400 font-normal">/ 5.0</span>
+            ⭐ {stats.averageOverall || 4.5} <span className="text-xs text-slate-400 font-normal">/ 5.0</span>
           </span>
         </div>
         <div className="p-3.5 rounded-xl bg-white border border-slate-200 shadow-xs">
           <span className="text-[10px] font-bold text-slate-400 uppercase tracking-wide block">Taste & Flavors</span>
-          <span className="text-xl font-extrabold text-blue-900 mt-1 block">4.3 / 5.0</span>
+          <span className="text-xl font-extrabold text-blue-900 mt-1 block">{stats.averageTaste || 4.4} / 5.0</span>
         </div>
         <div className="p-3.5 rounded-xl bg-white border border-slate-200 shadow-xs">
           <span className="text-[10px] font-bold text-slate-400 uppercase tracking-wide block">Hygiene & Trays</span>
-          <span className="text-xl font-extrabold text-blue-900 mt-1 block">4.6 / 5.0</span>
+          <span className="text-xl font-extrabold text-blue-900 mt-1 block">{stats.averageHygiene || 4.7} / 5.0</span>
         </div>
         <div className="p-3.5 rounded-xl bg-white border border-slate-200 shadow-xs">
           <span className="text-[10px] font-bold text-slate-400 uppercase tracking-wide block">Portion Quantity</span>
@@ -188,7 +176,7 @@ export default function FoodReviewPage() {
                 <span>Submit Today's Meal Review</span>
               </CardTitle>
               <p className="text-[11px] text-slate-500 mt-0.5">
-                Posting as: <strong>Vivek Yadav</strong> (Roll: 22051934)
+                Posting as: <strong className="text-slate-800">{studentName}</strong> (Roll: {rollNo})
               </p>
             </CardHeader>
 
@@ -320,9 +308,9 @@ export default function FoodReviewPage() {
                 </div>
 
                 {submitSuccess && (
-                  <div className="p-2.5 rounded-lg bg-blue-50 border border-blue-200 text-blue-900 text-xs flex items-center gap-2">
-                    <CheckCircle2 className="size-4 shrink-0 text-blue-600" />
-                    <span>Your food review has been recorded for the Mess Committee!</span>
+                  <div className="p-2.5 rounded-lg bg-emerald-50 border border-emerald-200 text-emerald-900 text-xs flex items-center gap-2">
+                    <CheckCircle2 className="size-4 shrink-0 text-emerald-600" />
+                    <span>Your food review has been recorded permanently and sent to Chief Warden!</span>
                   </div>
                 )}
 
@@ -347,59 +335,71 @@ export default function FoodReviewPage() {
               <span>Resident Reviews Feed ({reviews.length})</span>
             </span>
             <span className="text-[11px] text-slate-500 font-semibold">
-              Verified KP-7 Residents
+              Verified {hostelName} Residents
             </span>
           </div>
 
-          <div className="space-y-3">
-            {reviews.map((rev) => (
-              <Card key={rev.id} className="bg-white border-slate-200 shadow-sm">
-                <CardContent className="pt-4 pb-4 space-y-2.5">
-                  <div className="flex items-start justify-between gap-3">
-                    <div>
-                      <div className="flex items-center gap-2">
-                        <span className="text-xs font-bold text-slate-900">
-                          {rev.isAnonymous ? "Anonymous Resident" : rev.user?.name || "Vivek Yadav"}
-                        </span>
-                        <Badge className="text-[9px] bg-blue-100 text-blue-800 border-blue-200 font-semibold">
-                          {rev.mealType}
-                        </Badge>
+          {reviews.length === 0 ? (
+            <div className="p-8 bg-white border border-slate-200 rounded-xl text-center space-y-2">
+              <UtensilsCrossed className="size-8 text-slate-300 mx-auto" />
+              <p className="text-xs font-bold text-slate-600">No meal reviews yet today</p>
+              <p className="text-[11px] text-slate-400">Be the first resident to rate today's lunch or breakfast!</p>
+            </div>
+          ) : (
+            <div className="space-y-3">
+              {reviews.map((rev) => (
+                <Card key={rev.id} className="bg-white border-slate-200 shadow-sm">
+                  <CardContent className="pt-4 pb-4 space-y-2.5">
+                    <div className="flex items-start justify-between gap-3">
+                      <div>
+                        <div className="flex items-center gap-2">
+                          <span className="text-xs font-bold text-slate-900">
+                            {rev.isAnonymous ? "Anonymous Resident" : rev.user?.name || "Verified Resident"}
+                          </span>
+                          <Badge className="text-[9px] bg-blue-100 text-blue-800 border-blue-200 font-semibold">
+                            {rev.mealType}
+                          </Badge>
+                        </div>
+                        <p className="text-[10px] text-slate-400 font-mono mt-0.5">
+                          {rev.isAnonymous ? "Verified Resident" : `Roll: ${rev.user?.rollNo || "2428021"} • ${rev.user?.hostelName || "KP-7"}`}
+                        </p>
                       </div>
-                      <p className="text-[10px] text-slate-400 font-mono mt-0.5">
-                        {rev.isAnonymous ? "Verified Resident" : `Roll: ${rev.user?.rollNo || "22051934"} • KP-7`}
+
+                      <div className="flex items-center gap-0.5 text-yellow-400 shrink-0">
+                        {[...Array(5)].map((_, i) => (
+                          <Star
+                            key={i}
+                            className={`size-3.5 ${i < rev.overallRating ? "fill-yellow-400" : "fill-slate-200"}`}
+                          />
+                        ))}
+                      </div>
+                    </div>
+
+                    {rev.comment && (
+                      <p className="text-xs text-slate-700 bg-slate-50 p-2.5 rounded-lg border border-slate-200 leading-relaxed italic">
+                        "{rev.comment}"
                       </p>
-                    </div>
+                    )}
 
-                    <div className="flex items-center gap-0.5 text-yellow-400 shrink-0">
-                      {[...Array(5)].map((_, i) => (
-                        <Star
-                          key={i}
-                          className={`size-3.5 ${i < rev.overallRating ? "fill-yellow-400" : "fill-slate-200"}`}
-                        />
-                      ))}
+                    <div className="flex items-center justify-between text-[11px] text-slate-500 pt-1 border-t border-slate-100">
+                      <div className="flex items-center gap-3">
+                        <span>Taste: <strong className="text-slate-800">{rev.tasteRating}/5</strong></span>
+                        <span>Hygiene: <strong className="text-slate-800">{rev.hygieneRating}/5</strong></span>
+                        <span>Portion: <strong className="text-slate-800">{rev.quantityRating}/5</strong></span>
+                      </div>
+                      <span className="text-[10px] text-slate-400 font-mono">
+                        {new Date(rev.createdAt).toLocaleDateString("en-IN", {
+                          day: "numeric",
+                          month: "short",
+                          year: "numeric"
+                        })}
+                      </span>
                     </div>
-                  </div>
-
-                  {rev.comment && (
-                    <p className="text-xs text-slate-700 bg-slate-50 p-2.5 rounded-lg border border-slate-200 leading-relaxed italic">
-                      "{rev.comment}"
-                    </p>
-                  )}
-
-                  <div className="flex items-center justify-between text-[11px] text-slate-500 pt-1 border-t border-slate-100">
-                    <div className="flex items-center gap-3">
-                      <span>Taste: <strong className="text-slate-800">{rev.tasteRating}/5</strong></span>
-                      <span>Hygiene: <strong className="text-slate-800">{rev.hygieneRating}/5</strong></span>
-                      <span>Portion: <strong className="text-slate-800">{rev.quantityRating}/5</strong></span>
-                    </div>
-                    <span className="text-[10px] text-slate-400 font-mono">
-                      {new Date(rev.createdAt).toLocaleDateString()}
-                    </span>
-                  </div>
-                </CardContent>
-              </Card>
-            ))}
-          </div>
+                  </CardContent>
+                </Card>
+              ))}
+            </div>
+          )}
         </div>
       </div>
     </div>

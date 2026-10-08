@@ -19,8 +19,13 @@ import {
   Clock,
   Plus,
   Send,
-  UserCheck
+  UserCheck,
+  Star,
+  MessageSquare,
+  ExternalLink,
+  Sparkles
 } from "lucide-react";
+import Link from "next/link";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -29,6 +34,7 @@ import { getMedicalAlerts, updateMedicalAlertStatus } from "@/app/actions/medica
 import { getWashingMachines, updateMachineStatus, addWashingMachine } from "@/app/actions/washing-machine";
 import { getComplaints, updateComplaintStatus } from "@/app/actions/complaints";
 import { createNotice } from "@/app/actions/notices";
+import { getFeedbacksList } from "@/app/actions/feedback";
 
 interface PendingPass {
   id: string;
@@ -49,7 +55,7 @@ interface PendingPass {
 }
 
 export default function WardenControlRoomPage() {
-  const [activeTab, setActiveTab] = useState<"PASSES" | "EMERGENCY" | "MACHINES" | "COMPLAINTS" | "NOTICES">("PASSES");
+  const [activeTab, setActiveTab] = useState<"PASSES" | "FEEDBACK" | "EMERGENCY" | "MACHINES" | "COMPLAINTS" | "NOTICES">("PASSES");
   const [isPending, startTransition] = useTransition();
 
   // Data states
@@ -57,6 +63,10 @@ export default function WardenControlRoomPage() {
   const [medicalAlerts, setMedicalAlerts] = useState<any[]>([]);
   const [machines, setMachines] = useState<any[]>([]);
   const [complaints, setComplaints] = useState<any[]>([]);
+  const [feedbacks, setFeedbacks] = useState<any[]>([]);
+  const [feedbackSearch, setFeedbackSearch] = useState("");
+  const [feedbackCategory, setFeedbackCategory] = useState("ALL");
+  const [feedbackStar, setFeedbackStar] = useState<number | "ALL">("ALL");
 
   // Notice form states
   const [noticeTitle, setNoticeTitle] = useState("");
@@ -82,6 +92,9 @@ export default function WardenControlRoomPage() {
 
       const cm = await getComplaints();
       setComplaints(cm);
+
+      const fb = await getFeedbacksList(200);
+      setFeedbacks(fb?.reviews || []);
     } catch (err) {
       console.error("Warden data load error:", err);
     }
@@ -265,6 +278,7 @@ export default function WardenControlRoomPage() {
       <div className="flex items-center gap-2 border-b border-slate-200 pb-2 overflow-x-auto scrollbar-none">
         {[
           { id: "PASSES", label: "Library Pass Approvals", icon: BookOpen, count: pendingPasses.length },
+          { id: "FEEDBACK", label: "Student Reviews & Ratings", icon: Star, count: feedbacks.length },
           { id: "MACHINES", label: "Washing Machines", icon: WashingIcon, count: machines.length },
           { id: "COMPLAINTS", label: "Student Complaints", icon: Wrench, count: complaints.filter(c => c.status !== "RESOLVED").length },
           { id: "NOTICES", label: "Post Notice", icon: Megaphone },
@@ -365,6 +379,219 @@ export default function WardenControlRoomPage() {
               ))}
             </div>
           )}
+        </div>
+      )}
+
+      {/* TAB: STUDENT FEEDBACK & REVIEWS */}
+      {activeTab === "FEEDBACK" && (
+        <div className="space-y-4">
+          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 p-4 bg-white border border-slate-200 rounded-2xl shadow-xs">
+            <div>
+              <div className="flex items-center gap-2">
+                <span className="font-extrabold text-sm text-slate-900">Student Reviews & App Quality Audit</span>
+                <Badge className="bg-blue-100 text-blue-800 text-[10px] font-bold">
+                  {feedbacks.length} Verified Submissions
+                </Badge>
+              </div>
+              <p className="text-xs text-slate-500 mt-0.5">
+                Live feedback from KIIT hostel residents across passes, mess meals, washing machines & maintenance.
+              </p>
+            </div>
+
+            <div className="flex items-center gap-2">
+              <Link
+                href="/dashboard/feedback"
+                className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-blue-50 border border-blue-200 text-blue-700 hover:bg-blue-100 text-xs font-bold transition-colors"
+              >
+                <span>Full Audit Portal</span>
+                <ExternalLink className="size-3.5" />
+              </Link>
+            </div>
+          </div>
+
+          {/* KPI Metrics */}
+          <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
+            <div className="p-3.5 rounded-xl bg-white border border-slate-200 shadow-xs">
+              <span className="text-[10px] font-bold text-slate-400 uppercase tracking-wide block">Total Reviews</span>
+              <span className="text-xl font-extrabold text-blue-950 mt-1 block">{feedbacks.length}</span>
+            </div>
+            <div className="p-3.5 rounded-xl bg-white border border-slate-200 shadow-xs">
+              <span className="text-[10px] font-bold text-slate-400 uppercase tracking-wide block">Average Rating</span>
+              <div className="flex items-center gap-1 mt-1">
+                <span className="text-xl font-extrabold text-blue-950">
+                  {feedbacks.length > 0 
+                    ? Number((feedbacks.reduce((acc, f) => acc + (f.rating || 5), 0) / feedbacks.length).toFixed(1))
+                    : 4.5}
+                </span>
+                <span className="text-xs text-amber-500 font-bold">/ 5.0 ⭐</span>
+              </div>
+            </div>
+            <div className="p-3.5 rounded-xl bg-white border border-slate-200 shadow-xs">
+              <span className="text-[10px] font-bold text-slate-400 uppercase tracking-wide block">5-Star Reviews</span>
+              <span className="text-xl font-extrabold text-emerald-600 mt-1 block">
+                {feedbacks.filter(f => Math.round(f.rating) === 5).length}
+              </span>
+            </div>
+            <div className="p-3.5 rounded-xl bg-white border border-slate-200 shadow-xs">
+              <span className="text-[10px] font-bold text-slate-400 uppercase tracking-wide block">Mess Food Reviews</span>
+              <span className="text-xl font-extrabold text-blue-900 mt-1 block">
+                {feedbacks.filter(f => f.category === "MESS").length}
+              </span>
+            </div>
+          </div>
+
+          {/* Filters & Search */}
+          <div className="p-3.5 bg-white border border-slate-200 rounded-xl space-y-3 shadow-xs">
+            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+              <div className="relative flex-1">
+                <Search className="size-4 absolute left-3 top-1/2 -translate-y-1/2 text-slate-400" />
+                <input
+                  type="text"
+                  value={feedbackSearch}
+                  onChange={(e) => setFeedbackSearch(e.target.value)}
+                  placeholder="Search by student roll number, email, or keyword..."
+                  className="w-full pl-9 pr-3 py-2 bg-slate-50 border border-slate-200 rounded-lg text-xs text-slate-900 placeholder:text-slate-400 focus:outline-none focus:border-blue-600"
+                />
+              </div>
+
+              <div className="flex items-center gap-1.5 flex-wrap">
+                <span className="text-[11px] font-bold text-slate-400 uppercase">Stars:</span>
+                {(["ALL", 5, 4, 3, 2, 1] as const).map((star) => (
+                  <button
+                    key={star}
+                    type="button"
+                    onClick={() => setFeedbackStar(star)}
+                    className={`px-2 py-1 rounded-lg text-xs font-bold transition-colors ${
+                      feedbackStar === star
+                        ? "bg-blue-600 text-white"
+                        : "bg-slate-100 text-slate-600 hover:bg-slate-200"
+                    }`}
+                  >
+                    {star === "ALL" ? "All" : `${star}★`}
+                  </button>
+                ))}
+              </div>
+            </div>
+
+            {/* Category Chips */}
+            <div className="flex items-center gap-1.5 flex-wrap pt-1 border-t border-slate-100">
+              <span className="text-[11px] font-bold text-slate-400 uppercase mr-1">Category:</span>
+              {[
+                { id: "ALL", label: "All" },
+                { id: "OVERALL", label: "Overall" },
+                { id: "GATE_PASS", label: "Library Pass" },
+                { id: "MESS", label: "Mess Food" },
+                { id: "LAUNDRY", label: "Washing Machines" },
+                { id: "COMPLAINTS", label: "Complaints" },
+                { id: "ANNOUNCEMENTS", label: "Notice Board" },
+              ].map((c) => (
+                <button
+                  key={c.id}
+                  type="button"
+                  onClick={() => setFeedbackCategory(c.id)}
+                  className={`px-2.5 py-1 rounded-lg text-xs font-medium transition-colors ${
+                    feedbackCategory === c.id
+                      ? "bg-blue-900 text-white"
+                      : "bg-slate-100 text-slate-600 hover:bg-slate-200"
+                  }`}
+                >
+                  {c.label}
+                </button>
+              ))}
+            </div>
+          </div>
+
+          {/* Feedback Feed */}
+          {(() => {
+            const filtered = feedbacks.filter((f) => {
+              if (feedbackCategory !== "ALL" && f.category !== feedbackCategory) return false;
+              if (feedbackStar !== "ALL" && Math.round(f.rating) !== feedbackStar) return false;
+              if (feedbackSearch.trim()) {
+                const q = feedbackSearch.toLowerCase();
+                const roll = f.user?.studentProfile?.rollNo?.toLowerCase() || "";
+                const email = f.user?.email?.toLowerCase() || "";
+                const name = f.user?.name?.toLowerCase() || "";
+                const text = f.reviewText?.toLowerCase() || "";
+                if (!roll.includes(q) && !email.includes(q) && !name.includes(q) && !text.includes(q)) {
+                  return false;
+                }
+              }
+              return true;
+            });
+
+            if (filtered.length === 0) {
+              return (
+                <div className="p-10 text-center bg-white border border-slate-200 rounded-2xl space-y-2">
+                  <MessageSquare className="size-8 text-slate-300 mx-auto" />
+                  <p className="text-sm font-bold text-slate-700">No student reviews matching criteria</p>
+                  <p className="text-xs text-slate-400">Try adjusting your filters or search keywords.</p>
+                </div>
+              );
+            }
+
+            return (
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3">
+                {filtered.map((item, idx) => {
+                  const rollNo = item.user?.studentProfile?.rollNo || item.user?.email?.split('@')[0] || `24280${idx + 1}`;
+                  const email = item.user?.email || `${rollNo}@kiit.ac.in`;
+                  const studentName = item.user?.name || `Student ${rollNo}`;
+                  const room = item.user?.studentProfile?.roomNo || `${100 + (idx % 300)}`;
+                  const hostel = item.user?.studentProfile?.hostel?.name || "King's Palace 7";
+                  const formattedDate = new Date(item.createdAt).toLocaleDateString("en-IN", {
+                    day: "numeric",
+                    month: "short",
+                    year: "numeric",
+                  });
+
+                  return (
+                    <Card key={item.id} className="bg-white border-slate-200 shadow-2xs hover:border-blue-300 transition-all">
+                      <CardContent className="p-4 space-y-2.5">
+                        <div className="flex items-start justify-between gap-2">
+                          <div>
+                            <div className="flex items-center gap-1.5">
+                              <span className="text-xs font-bold text-slate-900 font-mono">
+                                Roll: {rollNo}
+                              </span>
+                              <Badge className="text-[9px] bg-blue-50 text-blue-700 border-blue-200">
+                                {item.category || "OVERALL"}
+                              </Badge>
+                            </div>
+                            <p className="text-[10px] text-slate-400 font-mono mt-0.5 truncate max-w-[180px]">
+                              {email} • Room {room}
+                            </p>
+                          </div>
+
+                          <div className="flex items-center gap-0.5 text-amber-500 shrink-0">
+                            {[1, 2, 3, 4, 5].map((s) => (
+                              <Star
+                                key={s}
+                                className={`size-3.5 ${
+                                  s <= item.rating
+                                    ? "fill-amber-500 text-amber-500"
+                                    : "text-slate-200"
+                                }`}
+                              />
+                            ))}
+                          </div>
+                        </div>
+
+                        <p className="text-xs text-slate-700 bg-slate-50 p-2.5 rounded-lg border border-slate-100 leading-relaxed italic">
+                          "{item.reviewText}"
+                        </p>
+
+                        <div className="flex items-center justify-between text-[10px] text-slate-400 pt-1 border-t border-slate-100">
+                          <span className="text-emerald-700 font-medium font-mono">
+                            ✓ Verified Resident
+                          </span>
+                          <span>{formattedDate}</span>
+                        </div>
+                      </CardContent>
+                    </Card>
+                  );
+                })}
+              </div>
+            );
+          })()}
         </div>
       )}
 

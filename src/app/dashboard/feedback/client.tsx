@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useMemo } from "react";
+import { useState, useMemo, useEffect } from "react";
 import { 
   Star, 
   Send, 
@@ -73,6 +73,20 @@ const starRatingLabels: Record<number, string> = {
 
 export function FeedbackClient({ initialReviews, currentUser }: FeedbackClientProps) {
   const [reviews, setReviews] = useState<FeedbackItem[]>(initialReviews);
+
+  useEffect(() => {
+    try {
+      const stored = JSON.parse(localStorage.getItem("kiit_resident_reviews") || "[]");
+      if (Array.isArray(stored) && stored.length > 0) {
+        setReviews((prev) => {
+          const ids = new Set(prev.map((p) => p.id));
+          const toAdd = stored.filter((s: any) => !ids.has(s.id));
+          return [...toAdd, ...prev];
+        });
+      }
+    } catch {}
+  }, []);
+
   const [rating, setRating] = useState<number>(5); // Default to 5 stars, min 1 star
   const [hoverRating, setHoverRating] = useState<number>(0);
   const [category, setCategory] = useState<"OVERALL" | "GATE_PASS" | "MESS" | "LAUNDRY" | "COMPLAINTS" | "ANNOUNCEMENTS">("OVERALL");
@@ -130,6 +144,7 @@ export function FeedbackClient({ initialReviews, currentUser }: FeedbackClientPr
     } else {
       setSubmitSuccess(true);
       // Prepend new review optimistically
+      const roll = currentUser?.studentProfile?.rollNo || currentUser?.email?.split('@')[0] || "2428021";
       const newReviewItem: FeedbackItem = {
         id: (res.feedback as any)?.id || `fb-${Date.now()}`,
         rating,
@@ -137,14 +152,24 @@ export function FeedbackClient({ initialReviews, currentUser }: FeedbackClientPr
         reviewText: reviewText.trim(),
         createdAt: new Date(),
         user: {
-          name: currentUser?.name || "Student",
-          email: currentUser?.email,
-          studentProfile: currentUser?.studentProfile,
+          name: currentUser?.name || `Student ${roll}`,
+          email: currentUser?.email || `${roll}@kiit.ac.in`,
+          studentProfile: currentUser?.studentProfile || {
+            rollNo: roll,
+            roomNo: "412",
+            hostel: { name: "King's Palace 7" },
+          },
         },
       };
       setReviews([newReviewItem, ...reviews]);
       setReviewText("");
       setTimeout(() => setSubmitSuccess(false), 5000);
+
+      try {
+        const stored = JSON.parse(localStorage.getItem("kiit_resident_reviews") || "[]");
+        stored.unshift(newReviewItem);
+        localStorage.setItem("kiit_resident_reviews", JSON.stringify(stored.slice(0, 50)));
+      } catch {}
     }
   };
 

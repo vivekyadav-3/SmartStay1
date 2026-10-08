@@ -15,10 +15,10 @@ function getDatabaseUrl(): string {
 
     try {
       if (fs.existsSync(srcDb)) {
-        const needCopy = !fs.existsSync(tmpDb) || fs.statSync(tmpDb).size < fs.statSync(srcDb).size;
+        const needCopy = !fs.existsSync(tmpDb);
         if (needCopy) {
           fs.copyFileSync(srcDb, tmpDb);
-          console.log(`[SmartStay DB] Successfully synced database to ${tmpDb}`);
+          console.log(`[SmartStay DB] Successfully initialized database at ${tmpDb}`);
         }
       }
     } catch (err) {

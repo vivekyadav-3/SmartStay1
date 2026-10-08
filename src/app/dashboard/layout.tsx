@@ -47,7 +47,7 @@ const wardenLinks = [
     name: "App Feedback & Ratings", 
     href: "/dashboard/feedback", 
     icon: Star, 
-    badge: "79 Reviews",
+    badge: "Live Feedback",
     desc: "Student Reviews Audit & Star Satisfaction" 
   },
 ];

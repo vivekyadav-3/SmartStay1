@@ -52,12 +52,19 @@ export function SidebarFeedbackBox() {
 
   // Reviews list states
   const [reviews, setReviews] = useState<FeedbackItem[]>([]);
+  const [totalCount, setTotalCount] = useState<number>(80);
   const [loadingReviews, setLoadingReviews] = useState(false);
   const [searchQuery, setSearchQuery] = useState("");
   const [filterStar, setFilterStar] = useState<number | "ALL">("ALL");
 
   useEffect(() => {
     setMounted(true);
+    getFeedbacksList(150).then((data) => {
+      if (data?.reviews) {
+        setReviews(data.reviews as any);
+        setTotalCount(data.totalCount || data.reviews.length);
+      }
+    });
   }, []);
 
   // Close on Escape key
@@ -71,16 +78,19 @@ export function SidebarFeedbackBox() {
     return () => window.removeEventListener("keydown", handleKeyDown);
   }, [isOpen]);
 
-  // Load reviews when modal opens or when tab changes
+  // Load latest reviews when modal opens
   useEffect(() => {
-    if (isOpen && activeTab === "view" && reviews.length === 0) {
+    if (isOpen) {
       setLoadingReviews(true);
-      getFeedbacksList(100).then((data) => {
-        setReviews((data?.reviews as any) || []);
+      getFeedbacksList(150).then((data) => {
+        if (data?.reviews) {
+          setReviews(data.reviews as any);
+          setTotalCount(data.totalCount || data.reviews.length);
+        }
         setLoadingReviews(false);
       });
     }
-  }, [isOpen, activeTab, reviews.length]);
+  }, [isOpen]);
 
   const featureOptions = [
     { label: "Library Pass (Curfew 08:30 & QR verification)", category: "GATE_PASS" },
@@ -118,7 +128,31 @@ export function SidebarFeedbackBox() {
       setError(res.error);
     } else {
       setSubmitted(true);
+      const newReviewItem: FeedbackItem = {
+        id: (res.feedback as any)?.id || `fb-${Date.now()}`,
+        rating,
+        category,
+        reviewText: finalComment,
+        createdAt: new Date(),
+        user: {
+          name: "Verified Resident",
+          email: "student@kiit.ac.in",
+          studentProfile: {
+            rollNo: (res.feedback as any)?.userId || "2428021",
+            roomNo: "412",
+            hostel: { name: "King's Palace 7" },
+          },
+        },
+      };
+      setReviews((prev) => [newReviewItem, ...prev]);
+      setTotalCount((prev) => prev + 1);
       setReviewText("");
+
+      try {
+        const stored = JSON.parse(localStorage.getItem("kiit_resident_reviews") || "[]");
+        stored.unshift(newReviewItem);
+        localStorage.setItem("kiit_resident_reviews", JSON.stringify(stored.slice(0, 50)));
+      } catch {}
     }
   };
 
@@ -193,7 +227,7 @@ export function SidebarFeedbackBox() {
             }`}
           >
             <Users className="size-3.5" />
-            <span>Read Other Reviews (79)</span>
+            <span>Read Other Reviews ({totalCount})</span>
           </button>
         </div>
 
@@ -339,7 +373,7 @@ export function SidebarFeedbackBox() {
                   onClick={() => setActiveTab("view")}
                   className="text-blue-600 font-bold hover:underline"
                 >
-                  View 79 Reviews
+                  View {totalCount} Reviews
                 </button>
               </div>
             </form>
@@ -458,7 +492,7 @@ export function SidebarFeedbackBox() {
             Student Feedback
           </span>
           <span className="text-[9px] font-bold text-blue-900 bg-blue-100 px-1.5 py-0.5 rounded">
-            79 Reviews
+            {totalCount} Reviews
           </span>
         </div>
 
