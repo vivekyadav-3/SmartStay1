@@ -175,10 +175,10 @@ export default function LoginPage() {
               <div className="p-3 rounded-xl bg-blue-50/70 border border-blue-200/80 text-[11px] text-blue-900 space-y-1">
                 <div className="flex items-center gap-1.5 font-bold text-blue-950">
                   <KeyRound className="size-3.5 text-blue-600" />
-                  <span>4th Semester Student Directory (4,386 Students):</span>
+                  <span>5th Semester Student Directory (4,386 Students):</span>
                 </div>
                 <p className="text-slate-600 leading-tight">
-                  Any student in the 4th Sem directory can log in using their <strong>Roll Number</strong> (e.g. <span className="font-mono text-blue-700">2428021</span>) or official KIIT Email with initial password <strong className="font-mono text-blue-700">Kiit@123</strong>. Your official name and room will load automatically.
+                  Any student in the 5th Sem (3rd Year) directory can log in using their <strong>Roll Number</strong> (e.g. <span className="font-mono text-blue-700">2428021</span>) or official KIIT Email with initial password <strong className="font-mono text-blue-700">Kiit@123</strong>. Your official name and room will load automatically.
                 </p>
               </div>
 

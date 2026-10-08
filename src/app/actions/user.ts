@@ -369,8 +369,8 @@ export async function loginWithKiitCredentials(email: string, password: string) 
             create: {
               rollNo: cleanRoll,
               branch,
-              semester: studentInfo?.semester || 4,
-              year: studentInfo?.year || 2,
+              semester: studentInfo?.semester || 5,
+              year: studentInfo?.year || 3,
               hostelId: hostel.id,
               roomNo,
               bedNo,

@@ -81,7 +81,7 @@ export default function StudentHeader({ user }: StudentHeaderProps) {
   }, [user.id, user.name, profile?.rollNo, profile?.roomNo]);
 
   const branchDisplay = profile?.branch || user.branch || "B.Tech Computer Science & Engineering";
-  const semDisplay = profile?.semester ? `${profile.semester}th Semester (${profile.year || 3}rd Year)` : (user.semester || "6th Semester (3rd Year)");
+  const semDisplay = profile?.semester ? `${profile.semester}th Semester (${profile.year || 3}rd Year)` : (user.semester || "5th Semester (3rd Year)");
 
   const copyRoll = () => {
     navigator.clipboard.writeText(rollNo);
