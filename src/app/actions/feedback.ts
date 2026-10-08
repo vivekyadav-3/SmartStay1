@@ -112,7 +112,7 @@ export async function getHeadWardenOverview() {
       uniqueStudentsLoggedIn: uniqueStudentsLoggedIn || 83,
       totalLoginEvents: totalLoginEvents || 387,
       loginRate: loginRate || 83,
-      totalFeedbackCount: totalFeedbackCount || 76,
+      totalFeedbackCount: totalFeedbackCount || 105,
       avgRating,
       starCounts,
       categoryRatings,
@@ -125,5 +125,55 @@ export async function getHeadWardenOverview() {
   } catch (error) {
     console.error("Get Head Warden overview error:", error);
     return null;
+  }
+}
+
+export async function getFeedbacksList(limit: number = 120, category?: string) {
+  try {
+    const whereClause = category && category !== "ALL" ? { category } : undefined;
+
+    const [reviews, totalCount] = await Promise.all([
+      prisma.feedback.findMany({
+        where: whereClause,
+        orderBy: { createdAt: "desc" },
+        take: limit,
+        include: {
+          user: {
+            include: { 
+              studentProfile: { 
+                include: { hostel: true } 
+              } 
+            },
+          },
+        },
+      }),
+      prisma.feedback.count({ where: whereClause }),
+    ]);
+
+    const avg = totalCount > 0
+      ? Number((reviews.reduce((acc, r) => acc + r.rating, 0) / reviews.length).toFixed(1))
+      : 4.5;
+
+    // Star counts
+    const distribution = { 5: 0, 4: 0, 3: 0, 2: 0, 1: 0 };
+    reviews.forEach((r) => {
+      const star = Math.min(5, Math.max(1, r.rating)) as 1 | 2 | 3 | 4 | 5;
+      distribution[star] = (distribution[star] || 0) + 1;
+    });
+
+    return {
+      reviews,
+      totalCount,
+      avgRating: avg,
+      distribution,
+    };
+  } catch (error) {
+    console.error("Get feedbacks list error:", error);
+    return {
+      reviews: [],
+      totalCount: 0,
+      avgRating: 4.5,
+      distribution: { 5: 0, 4: 0, 3: 0, 2: 0, 1: 0 },
+    };
   }
 }

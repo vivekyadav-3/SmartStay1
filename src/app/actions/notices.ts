@@ -46,6 +46,35 @@ export async function createNotice(formData: {
 
 export async function getNotices(category?: string) {
   try {
+    let count = await prisma.announcement.count();
+    if (count === 0) {
+      await prisma.announcement.createMany({
+        data: [
+          {
+            title: "Special Sunday Biryani Feast & Dessert Counter",
+            description: "On account of Annual Fest celebrations, special Hyderabadi Dum Biryani (Chicken/Paneer) with Gulab Jamun & Raita will be served for lunch between 12:30 PM to 03:00 PM.",
+            category: "SPECIAL_MESS_MENU",
+            priority: "IMPORTANT",
+            issuedBy: "Chief Mess Warden, KP-7",
+          },
+          {
+            title: "Inter-Hostel Night Cricket Tournament 2026",
+            description: "Registration is now open for the KP-7 Premier Cricket League. Matches will be conducted at Campus 12 sports ground starting this Friday at 7:00 PM. Contact Room 412 for team rosters.",
+            category: "HOSTEL_EVENT",
+            priority: "NORMAL",
+            issuedBy: "Hostel Sports Committee",
+          },
+          {
+            title: "Central Library Evening Pass Guidelines (Curfew 08:30 PM)",
+            description: "All students utilizing the Library Pass must punch out with the security biometric sensor and return strictly before the 08:30 PM curfew. Late returns will require warden counseling.",
+            category: "GENERAL",
+            priority: "URGENT",
+            issuedBy: "Prof. S. K. Mohapatra (Hostel Superintendent)",
+          },
+        ],
+      });
+    }
+
     const announcements = await prisma.announcement.findMany({
       where: category && category !== "ALL" ? { category } : undefined,
       orderBy: { createdAt: "desc" },

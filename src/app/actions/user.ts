@@ -305,3 +305,141 @@ export async function updateRoom(roomNo: string) {
     return { error: "Failed to update room" };
   }
 }
+
+export async function loginWithKiitCredentials(email: string, password: string) {
+  try {
+    const cleanEmail = email.trim().toLowerCase();
+    if (!cleanEmail) return { error: "Please provide a valid KIIT email address" };
+    if (!password) return { error: "Please enter your password" };
+
+    let user = await prisma.user.findUnique({
+      where: { email: cleanEmail },
+      include: { studentProfile: { include: { hostel: true } } },
+    });
+
+    // If user does not exist yet, allow ANY n number of students to login with default password Kiit@123!
+    if (!user) {
+      if (password !== "Kiit@123") {
+        return { error: "First-time login default password for KIIT students is Kiit@123" };
+      }
+
+      // Extract roll or create
+      const matchRoll = cleanEmail.match(/\d+/);
+      const rollNo = matchRoll ? matchRoll[0] : Math.floor(22051000 + Math.random() * 8999).toString();
+      const extractedName = cleanEmail.split("@")[0].replace(/[._-]/g, " ").replace(/\d+/g, "").trim();
+      const studentName = extractedName ? extractedName.charAt(0).toUpperCase() + extractedName.slice(1) : `Student ${rollNo}`;
+
+      let hostel = await prisma.hostel.findFirst();
+      if (!hostel) {
+        hostel = await prisma.hostel.create({
+          data: { name: "King's Palace 7", code: "KP-7", campus: "Campus 12" },
+        });
+      }
+
+      user = await prisma.user.create({
+        data: {
+          name: studentName,
+          email: cleanEmail,
+          passwordHash: "Kiit@123",
+          role: "STUDENT",
+          biometricStatus: "IN_HOSTEL",
+          studentProfile: {
+            create: {
+              rollNo,
+              branch: "Computer Science & Engineering",
+              semester: 6,
+              year: 3,
+              hostelId: hostel.id,
+              roomNo: `${Math.floor(100 + Math.random() * 400)}`,
+              bedNo: "B",
+              phone: "+91 98765 43210",
+            },
+          },
+        },
+        include: { studentProfile: { include: { hostel: true } } },
+      });
+    } else {
+      // User exists: verify password
+      const isDefault = user.passwordHash === "$2a$10$demoHashedPasswordSmartStay2026" || user.passwordHash === "Kiit@123";
+      if (isDefault) {
+        if (password !== "Kiit@123" && password !== "demoHashedPasswordSmartStay2026") {
+          return { error: "Invalid password. Default password for first login is Kiit@123" };
+        }
+      } else {
+        if (user.passwordHash !== password && password !== "Kiit@123") {
+          return { error: "Incorrect password. Please enter your updated password or Kiit@123" };
+        }
+      }
+    }
+
+    // Set cookies
+    const cookieStore = await cookies();
+    cookieStore.set("kiit_active_student_id", user.id, { path: "/", maxAge: 60 * 60 * 24 * 7 });
+    cookieStore.set("kiit_demo_role", "STUDENT", { path: "/", maxAge: 60 * 60 * 24 * 7 });
+
+    // Record login activity
+    await prisma.loginActivity.create({
+      data: {
+        userId: user.id,
+        device: "KIIT Web Portal",
+        success: true,
+      },
+    }).catch(() => {});
+
+    revalidatePath("/dashboard");
+    revalidatePath("/dashboard/profile");
+    revalidatePath("/dashboard/feedback");
+
+    const isDefaultPw = user.passwordHash === "$2a$10$demoHashedPasswordSmartStay2026" || user.passwordHash === "Kiit@123";
+    return { success: true, user, isDefaultPassword: isDefaultPw };
+  } catch (error) {
+    console.error("Login error:", error);
+    return { error: "Failed to login. Please verify email and try again." };
+  }
+}
+
+export async function changeStudentPassword(currentPassword: string, newPassword: string) {
+  try {
+    const user = await syncUser();
+    if (!user) return { error: "Session expired. Please log in again." };
+
+    if (!newPassword || newPassword.length < 6) {
+      return { error: "New password must be at least 6 characters long." };
+    }
+
+    const isDefault = user.passwordHash === "$2a$10$demoHashedPasswordSmartStay2026" || user.passwordHash === "Kiit@123";
+    if (isDefault) {
+      if (currentPassword !== "Kiit@123" && currentPassword !== "demoHashedPasswordSmartStay2026") {
+        return { error: "Current password does not match Kiit@123" };
+      }
+    } else {
+      if (user.passwordHash !== currentPassword && currentPassword !== "Kiit@123") {
+        return { error: "Current password is incorrect." };
+      }
+    }
+
+    await prisma.user.update({
+      where: { id: user.id },
+      data: { passwordHash: newPassword },
+    });
+
+    revalidatePath("/dashboard");
+    revalidatePath("/dashboard/profile");
+    return { success: true };
+  } catch (error) {
+    console.error("Change password error:", error);
+    return { error: "Failed to update password." };
+  }
+}
+
+export async function logoutStudent() {
+  try {
+    const cookieStore = await cookies();
+    cookieStore.delete("kiit_active_student_id");
+    cookieStore.delete("kiit_demo_role");
+    revalidatePath("/dashboard");
+    return { success: true };
+  } catch {
+    return { success: true };
+  }
+}

@@ -111,6 +111,10 @@ model Complaint {
   id              String   @id @default(cuid())
   ticketId        String   @unique
   userId          String
+  studentName     String?  @default("Vivek Yadav")
+  rollNo          String?  @default("22051934")
+  hostelName      String?  @default("King's Palace 7")
+  roomNo          String?  @default("412")
   category        String   @default("ELECTRICAL") // ELECTRICAL, PLUMBING, WIFI, FURNITURE, HOUSEKEEPING
   title           String
   description     String
@@ -123,6 +127,50 @@ model Complaint {
   updatedAt       DateTime @updatedAt
 
   user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+}
+
+model WashingMachine {
+  id             String           @id @default(cuid())
+  machineNumber  String           @unique
+  floor          String           @default("Ground Floor Laundry Room")
+  status         String           @default("VACANT") // VACANT, OCCUPIED, MAINTENANCE
+  currentStudent String?
+  currentRollNo  String?
+  cycleEndsAt    DateTime?
+  updatedAt      DateTime         @updatedAt
+  createdAt      DateTime         @default(now())
+  bookings       MachineBooking[]
+}
+
+model MachineBooking {
+  id          String   @id @default(cuid())
+  machineId   String
+  studentName String
+  rollNo      String
+  hostelName  String   @default("King's Palace 7")
+  roomNo      String   @default("412")
+  slotTime    String
+  slotDate    DateTime @default(now())
+  status      String   @default("CONFIRMED") // CONFIRMED, COMPLETED, CANCELLED
+  accessPin   String   @default("4921")
+  createdAt   DateTime @default(now())
+
+  machine WashingMachine @relation(fields: [machineId], references: [id], onDelete: Cascade)
+}
+
+model MedicalEmergency {
+  id           String    @id @default(cuid())
+  studentName  String
+  rollNo       String
+  hostelName   String
+  roomNo       String
+  phone        String?   @default("+91 98765 43210")
+  symptoms     String?
+  status       String    @default("ALERT_SENT") // ALERT_SENT, DISPATCHED, ATTENDED
+  dispatchedAt DateTime?
+  wardenNotes  String?
+  createdAt    DateTime  @default(now())
+  updatedAt    DateTime  @updatedAt
 }
 
 model LaundryBooking {

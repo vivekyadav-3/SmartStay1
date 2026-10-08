@@ -2,7 +2,7 @@
 
 import { useState, useTransition } from "react";
 import { useRouter } from "next/navigation";
-import { GraduationCap, ShieldAlert, ShieldCheck, Crown, Check, Loader2 } from "lucide-react";
+import { GraduationCap, ShieldAlert, Check, Loader2 } from "lucide-react";
 import { setDemoRole } from "@/app/actions/user";
 
 export function RoleSwitcher({ currentRole = "STUDENT" }: { currentRole?: string }) {
@@ -13,83 +13,59 @@ export function RoleSwitcher({ currentRole = "STUDENT" }: { currentRole?: string
   const roles = [
     {
       id: "STUDENT",
-      label: "Student",
+      label: "Student View",
       persona: "Vivek Yadav (KP-7)",
       icon: GraduationCap,
       path: "/dashboard",
-      color: "text-emerald-400 border-emerald-500/30 bg-emerald-500/10",
-      activeBg: "bg-emerald-600 text-white shadow-lg shadow-emerald-600/30",
+      activeBg: "bg-blue-600 text-white shadow-sm",
     },
     {
       id: "WARDEN",
-      label: "Warden",
+      label: "Warden View",
       persona: "Prof. S. K. Mohapatra",
       icon: ShieldAlert,
       path: "/dashboard/warden",
-      color: "text-amber-400 border-amber-500/30 bg-amber-500/10",
-      activeBg: "bg-amber-600 text-white shadow-lg shadow-amber-600/30",
-    },
-    {
-      id: "HEAD_WARDEN",
-      label: "Head Warden",
-      persona: "Dr. J. R. Mohanty (Dean)",
-      icon: Crown,
-      path: "/dashboard/head-warden",
-      color: "text-purple-400 border-purple-500/30 bg-purple-500/10",
-      activeBg: "bg-purple-600 text-white shadow-lg shadow-purple-600/30",
-    },
-    {
-      id: "SECURITY",
-      label: "Security Gate",
-      persona: "Havildar R. K. Swain",
-      icon: ShieldCheck,
-      path: "/dashboard/security-gate",
-      color: "text-blue-400 border-blue-500/30 bg-blue-500/10",
-      activeBg: "bg-blue-600 text-white shadow-lg shadow-blue-600/30",
+      activeBg: "bg-blue-950 text-white shadow-sm",
     },
   ];
 
-  const handleRoleChange = (roleId: "STUDENT" | "WARDEN" | "HEAD_WARDEN" | "SECURITY", path: string) => {
+  const handleRoleChange = (roleId: "STUDENT" | "WARDEN", path: string) => {
     setActiveRole(roleId);
     startTransition(async () => {
-      await setDemoRole(roleId);
+      await setDemoRole(roleId as any);
       router.push(path);
       router.refresh();
     });
   };
 
   return (
-    <div className="flex flex-col sm:flex-row items-start sm:items-center gap-2 p-1.5 rounded-2xl bg-black/60 border border-white/10 backdrop-blur-xl">
-      <div className="flex items-center gap-1.5 px-2 py-0.5 text-[10px] font-medium tracking-wider text-muted-foreground uppercase">
-        <span className="size-1.5 rounded-full bg-emerald-400" />
-        <span>Demo Role:</span>
-      </div>
-
-      <div className="flex items-center gap-1.5 w-full sm:w-auto">
-        {roles.map((r) => {
-          const Icon = r.icon;
-          const isActive = activeRole === r.id;
-          return (
-            <button
-              key={r.id}
-              onClick={() => handleRoleChange(r.id as any, r.path)}
-              disabled={isPending}
-              title={`Switch persona to ${r.persona}`}
-              className={`flex items-center gap-2 px-3 py-1.5 rounded-xl text-xs font-semibold transition-all ${
-                isActive
-                  ? r.activeBg
-                  : "bg-white/5 text-muted-foreground hover:bg-white/10 hover:text-foreground"
-              }`}
-            >
-              <Icon className="size-3.5" />
-              <span>{r.label}</span>
-              {isActive && (
-                isPending ? <Loader2 className="size-3 animate-spin" /> : <Check className="size-3" />
-              )}
-            </button>
-          );
-        })}
-      </div>
+    <div className="flex items-center gap-1.5 p-1 rounded-xl bg-slate-100 border border-slate-200">
+      <span className="text-[10px] font-bold text-slate-500 uppercase tracking-wider px-2 hidden lg:inline">
+        Role:
+      </span>
+      {roles.map((r) => {
+        const Icon = r.icon;
+        const isActive = activeRole === r.id;
+        return (
+          <button
+            key={r.id}
+            onClick={() => handleRoleChange(r.id as any, r.path)}
+            disabled={isPending}
+            title={`Switch persona to ${r.persona}`}
+            className={`flex items-center gap-1.5 px-2.5 py-1 rounded-lg text-xs font-bold transition-all ${
+              isActive
+                ? r.activeBg
+                : "text-slate-600 hover:text-blue-900 hover:bg-slate-200/60"
+            }`}
+          >
+            <Icon className="size-3.5" />
+            <span>{r.label}</span>
+            {isActive && (
+              isPending ? <Loader2 className="size-3 animate-spin" /> : <Check className="size-3 text-blue-200" />
+            )}
+          </button>
+        );
+      })}
     </div>
   );
 }

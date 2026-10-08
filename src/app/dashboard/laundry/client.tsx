@@ -1,332 +1,465 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useTransition } from "react";
 import { 
-  CalendarClock, 
-  Plus, 
-  Sparkles, 
-  CheckCircle2, 
+  WashingMachine as WashingIcon, 
   Clock, 
-  Shirt, 
+  CheckCircle2, 
+  AlertTriangle, 
+  Plus, 
   KeyRound, 
-  Building2, 
-  AlertCircle 
+  User, 
+  Sparkles,
+  ShieldCheck,
+  Calendar,
+  Lock,
+  Zap
 } from "lucide-react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import { bookLaundry } from "@/app/actions/laundry";
+import { Button } from "@/components/ui/button";
+import { bookMachineSlot, updateMachineStatus, addWashingMachine } from "@/app/actions/washing-machine";
 
-interface Booking {
+interface WashingMachineData {
   id: string;
-  tokenNumber: string;
-  date: string | Date;
-  slot: string;
-  itemCount: number;
-  clothesDetails?: string | null;
-  status: string;
-  pickupOtp: string;
-  createdAt: string | Date;
+  machineNumber: string;
+  floor: string;
+  status: string; // VACANT, OCCUPIED, MAINTENANCE
+  currentStudent?: string | null;
+  currentRollNo?: string | null;
+  bookings?: any[];
 }
 
-export default function LaundryClient({ bookings: initialBookings }: { bookings: any[] }) {
-  const [bookings, setBookings] = useState<Booking[]>(initialBookings);
-  const [showModal, setShowModal] = useState(false);
+export default function WashingMachineClient({
+  initialMachines,
+  userRole = "STUDENT",
+}: {
+  initialMachines: WashingMachineData[];
+  userRole?: string;
+}) {
+  const [machines, setMachines] = useState<WashingMachineData[]>(initialMachines);
+  const [isPending, startTransition] = useTransition();
+  const [showBookingModal, setShowBookingModal] = useState(false);
+  const [selectedMachineId, setSelectedMachineId] = useState(
+    initialMachines.find((m) => m.status === "VACANT")?.id || initialMachines[0]?.id || ""
+  );
 
-  // Form states
-  const [dateStr, setDateStr] = useState(new Date().toISOString().split("T")[0]);
-  const [slot, setSlot] = useState("09:00 AM - 11:00 AM (Slot 1)");
-  const [itemCount, setItemCount] = useState(6);
-  const [clothesDetails, setClothesDetails] = useState("3 Shirts, 2 Trousers, 1 Bedsheet");
-  const [isSubmitting, setIsSubmitting] = useState(false);
+  // Student details
+  const [studentName, setStudentName] = useState("Vivek Yadav");
+  const [rollNo, setRollNo] = useState("22051934");
+  const [slotTime, setSlotTime] = useState("Today, 04:00 PM – 05:00 PM (1 Hr Advance)");
+  const [activeBooking, setActiveBooking] = useState<{
+    machineName: string;
+    slotTime: string;
+    pin: string;
+    studentName: string;
+    rollNo: string;
+  } | null>(null);
 
-  // Calculate monthly quota used
-  const totalPiecesUsed = bookings.reduce((acc, b) => acc + (b.itemCount || 5), 0);
-  const monthlyAllowance = 30;
-  const remainingAllowance = Math.max(0, monthlyAllowance - totalPiecesUsed);
-  const quotaPercent = Math.min(100, Math.round((totalPiecesUsed / monthlyAllowance) * 100));
+  // Warden controls: Add machine
+  const [newMachineNo, setNewMachineNo] = useState("");
+  const [newFloor, setNewFloor] = useState("Ground Floor Laundry Wing");
+  const [showAddModal, setShowAddModal] = useState(false);
 
-  const handleBook = async (e: React.FormEvent) => {
-    e.preventDefault();
-    setIsSubmitting(true);
-    const res = await bookLaundry({
-      dateStr,
-      slot,
-      itemCount: Number(itemCount),
-      clothesDetails,
+  const availableSlots = [
+    "Today, 04:00 PM – 05:00 PM (1 Hr Advance)",
+    "Today, 05:00 PM – 06:00 PM (2 Hr Advance)",
+    "Today, 06:00 PM – 07:00 PM (3 Hr Advance)",
+    "Today, 07:00 PM – 08:00 PM (Curfew Window)",
+    "Tomorrow, 08:00 AM – 09:00 AM (Morning Slot)",
+  ];
+
+  const handleBook = () => {
+    startTransition(async () => {
+      const res = await bookMachineSlot({
+        machineId: selectedMachineId,
+        studentName,
+        rollNo,
+        slotTime,
+      });
+
+      if (res?.success && res.booking) {
+        const targetMachine = machines.find((m) => m.id === selectedMachineId);
+        setActiveBooking({
+          machineName: targetMachine?.machineNumber || "WM-01",
+          slotTime,
+          pin: res.booking.accessPin,
+          studentName,
+          rollNo,
+        });
+        setShowBookingModal(false);
+      }
     });
-
-    if (res.success && res.booking) {
-      setBookings([res.booking as any, ...bookings]);
-      setShowModal(false);
-    }
-    setIsSubmitting(false);
   };
 
-  const activeBooking = bookings.find(b => b.status !== "DELIVERED") || bookings[0];
+  const handleToggleStatus = (id: string, currentStatus: string) => {
+    startTransition(async () => {
+      const nextStatus = currentStatus === "VACANT" ? "OCCUPIED" : "VACANT";
+      const res = await updateMachineStatus(
+        id,
+        nextStatus as any,
+        nextStatus === "OCCUPIED" ? "Student in Progress" : undefined,
+        nextStatus === "OCCUPIED" ? "2205xxxx" : undefined
+      );
+
+      if (res?.success) {
+        setMachines((prev) =>
+          prev.map((m) => (m.id === id ? { ...m, status: nextStatus } : m))
+        );
+      }
+    });
+  };
+
+  const handleAddMachine = (e: React.FormEvent) => {
+    e.preventDefault();
+    startTransition(async () => {
+      const res = await addWashingMachine(newMachineNo, newFloor);
+      if (res?.success && res.machine) {
+        setMachines([...machines, res.machine as any]);
+        setShowAddModal(false);
+        setNewMachineNo("");
+      }
+    });
+  };
+
+  const vacantCount = machines.filter((m) => m.status === "VACANT").length;
+  const occupiedCount = machines.filter((m) => m.status === "OCCUPIED").length;
 
   return (
-    <div className="space-y-6 max-w-6xl mx-auto">
-      {/* Header */}
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-white/10 pb-5">
+    <div className="space-y-6 max-w-5xl mx-auto pb-10">
+      {/* Banner */}
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 p-5 rounded-2xl bg-white border border-slate-200 shadow-sm">
         <div>
           <div className="flex items-center gap-2">
-            <Badge variant="outline" className="bg-emerald-500/10 text-emerald-400 border-emerald-500/30 text-xs">
-              KP-7 Basement Laundry Facility
-            </Badge>
-            <Badge variant="outline" className="text-xs">
-              30 Clothes Free/Month
-            </Badge>
+            <div className="size-9 rounded-xl bg-blue-100 text-blue-700 flex items-center justify-center">
+              <WashingIcon className="size-5" />
+            </div>
+            <h2 className="text-xl font-extrabold text-blue-950">Washing Machine Live Availability</h2>
           </div>
-          <h1 className="text-3xl font-extrabold tracking-tight mt-1 text-foreground">
-            Hostel Laundry Service
-          </h1>
-          <p className="text-sm text-muted-foreground mt-1">
-            Book automated washing slots, track real-time machine stage, and get pickup OTP.
+          <p className="text-xs text-slate-500 mt-1">
+            Check real-time laundry machine occupancy from your room. Pre-book your slot 1-hour early for exclusive access.
           </p>
         </div>
 
-        <Button 
-          onClick={() => setShowModal(true)}
-          className="bg-emerald-600 hover:bg-emerald-500 text-white gap-2 shadow-lg shadow-emerald-600/20 text-xs"
-        >
-          <Plus className="size-4" />
-          <span>Book Laundry Slot</span>
-        </Button>
+        <div className="flex items-center gap-2 shrink-0">
+          <Button
+            onClick={() => setShowBookingModal(true)}
+            className="bg-blue-600 hover:bg-blue-700 text-white font-bold text-xs h-10 px-5 rounded-xl shadow-md shadow-blue-600/20"
+          >
+            Pre-Book 1-Hour Slot
+          </Button>
+
+          <Button
+            onClick={() => setShowAddModal(true)}
+            variant="outline"
+            className="border-slate-300 text-slate-700 hover:bg-slate-50 text-xs h-10 rounded-xl"
+          >
+            <Plus className="size-3.5 mr-1" />
+            Add Machine
+          </Button>
+        </div>
       </div>
 
-      {/* Quota Meter & Active Token Banner */}
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-5">
-        {/* Monthly Quota Meter */}
-        <Card className="bg-card/70 border-white/10 backdrop-blur-md">
-          <CardHeader className="pb-2">
-            <CardTitle className="text-xs font-semibold text-muted-foreground uppercase tracking-wider">
-              Monthly Washing Quota
-            </CardTitle>
-          </CardHeader>
-          <CardContent className="space-y-3">
-            <div className="flex items-baseline justify-between">
-              <span className="text-2xl font-bold text-foreground font-mono">
-                {totalPiecesUsed} / {monthlyAllowance}
-              </span>
-              <span className="text-xs text-emerald-400 font-semibold">
-                {remainingAllowance} pieces remaining
-              </span>
-            </div>
+      {/* Live Availability Metric Cards */}
+      <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
+        <div className="p-4 rounded-xl bg-white border border-slate-200 shadow-xs">
+          <span className="text-[10px] font-bold text-slate-400 uppercase tracking-wide block">Total Machines</span>
+          <span className="text-2xl font-black text-slate-800">{machines.length} Units</span>
+        </div>
+        <div className="p-4 rounded-xl bg-blue-50/70 border border-blue-200 shadow-xs">
+          <span className="text-[10px] font-bold text-blue-600 uppercase tracking-wide block">Vacant (Available)</span>
+          <span className="text-2xl font-black text-blue-900">{vacantCount} Ready</span>
+        </div>
+        <div className="p-4 rounded-xl bg-amber-50/70 border border-amber-200 shadow-xs">
+          <span className="text-[10px] font-bold text-amber-700 uppercase tracking-wide block">In Use (Occupied)</span>
+          <span className="text-2xl font-black text-amber-900">{occupiedCount} Running</span>
+        </div>
+        <div className="p-4 rounded-xl bg-slate-100 border border-slate-200 shadow-xs">
+          <span className="text-[10px] font-bold text-slate-500 uppercase tracking-wide block">Rule</span>
+          <span className="text-xs font-bold text-slate-700 mt-1 block">Pre-book ≥ 1h early</span>
+        </div>
+      </div>
 
-            {/* Progress Bar */}
-            <div className="w-full h-2.5 rounded-full bg-black/40 overflow-hidden p-0.5 border border-white/5">
-              <div 
-                className="h-full rounded-full bg-gradient-to-r from-emerald-500 to-emerald-400 transition-all duration-500" 
-                style={{ width: `${quotaPercent}%` }}
-              />
-            </div>
-
-            <p className="text-[11px] text-muted-foreground">
-              Allowance resets on the 1st of every month. Additional clothes charged at ₹10/piece.
-            </p>
-          </CardContent>
-        </Card>
-
-        {/* Active Token & Pickup OTP */}
-        <Card className="md:col-span-2 bg-gradient-to-r from-emerald-950/40 via-card/70 to-card/90 border border-emerald-500/30 backdrop-blur-xl">
-          <CardHeader className="pb-2 flex flex-row items-center justify-between">
+      {/* Active Booking Ticket Banner (if student booked) */}
+      {activeBooking && (
+        <div className="p-5 rounded-2xl bg-gradient-to-r from-blue-900 to-indigo-950 text-white shadow-lg space-y-3">
+          <div className="flex items-center justify-between">
             <div className="flex items-center gap-2">
-              <span className="size-2.5 rounded-full bg-emerald-400 animate-ping" />
-              <CardTitle className="text-xs font-semibold text-emerald-400 uppercase tracking-wider">
-                Current Active Token
-              </CardTitle>
+              <CheckCircle2 className="size-5 text-blue-300" />
+              <h3 className="font-extrabold text-base">Your Machine Slot is Reserved & Confirmed!</h3>
             </div>
-            <Badge className="bg-emerald-600 text-white font-bold text-[10px]">
-              {activeBooking ? activeBooking.status : "NO ACTIVE TOKEN"}
+            <Badge className="bg-blue-500 text-white text-xs font-bold font-mono">
+              PIN: {activeBooking.pin}
             </Badge>
-          </CardHeader>
-          <CardContent>
-            {activeBooking ? (
-              <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
-                <div className="space-y-1">
-                  <div className="flex items-center gap-2">
-                    <span className="text-xl font-bold font-mono text-foreground">
-                      {activeBooking.tokenNumber}
-                    </span>
-                    <span className="text-xs text-muted-foreground">({activeBooking.itemCount} items)</span>
-                  </div>
-                  <p className="text-xs text-muted-foreground">
-                    Items: <strong className="text-foreground">{activeBooking.clothesDetails || "Regular daily wear"}</strong>
-                  </p>
-                  <p className="text-[11px] text-emerald-400/90 font-medium flex items-center gap-1 mt-1">
-                    <Building2 className="size-3" />
-                    <span>Location: KP-7 Basement Laundry Counter (Near Block B Lift)</span>
-                  </p>
-                </div>
-
-                <div className="p-3 bg-black/60 rounded-xl border border-amber-500/30 text-center shrink-0">
-                  <span className="text-[10px] text-muted-foreground block flex items-center justify-center gap-1">
-                    <KeyRound className="size-3 text-amber-400" />
-                    Pickup OTP:
-                  </span>
-                  <span className="text-lg font-mono font-bold text-amber-300 block tracking-widest">
-                    {activeBooking.pickupOtp}
-                  </span>
-                  <span className="text-[9px] text-muted-foreground">Show to laundry staff</span>
-                </div>
-              </div>
-            ) : (
-              <p className="text-xs text-muted-foreground py-2">
-                No clothes currently in washing. Book a slot below to drop off clothes.
-              </p>
-            )}
-          </CardContent>
-        </Card>
-      </div>
-
-      {/* Laundry Stages Pipeline Tracker */}
-      <Card className="bg-card/70 border-white/10 backdrop-blur-md">
-        <CardHeader className="pb-3 border-b border-white/5">
-          <CardTitle className="text-sm font-bold text-foreground">
-            Washing & Ironing Pipeline Stages
-          </CardTitle>
-        </CardHeader>
-        <CardContent className="pt-4">
-          <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 text-center text-xs">
-            <div className="p-3 rounded-xl bg-emerald-500/10 border border-emerald-500/40 text-emerald-300">
-              <Clock className="size-5 mx-auto text-emerald-400 mb-1.5" />
-              <span className="font-bold block text-xs">1. Slot Booked</span>
-              <span className="text-[10px] text-muted-foreground">Drop at counter</span>
+          </div>
+          <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 text-xs bg-white/10 p-3 rounded-xl backdrop-blur-md">
+            <div>
+              <span className="text-[10px] text-blue-200 uppercase block font-semibold">Allocated Machine</span>
+              <span className="font-bold text-white text-sm">{activeBooking.machineName}</span>
             </div>
-            <div className="p-3 rounded-xl bg-emerald-500/10 border border-emerald-500/40 text-emerald-300">
-              <Shirt className="size-5 mx-auto text-emerald-400 mb-1.5" />
-              <span className="font-bold block text-xs">2. Industrial Wash</span>
-              <span className="text-[10px] text-muted-foreground">Eco detergent cycle</span>
+            <div>
+              <span className="text-[10px] text-blue-200 uppercase block font-semibold">Reserved Slot</span>
+              <span className="font-bold text-white">{activeBooking.slotTime.split("(")[0]}</span>
             </div>
-            <div className="p-3 rounded-xl bg-emerald-500/10 border border-emerald-500/40 text-emerald-300">
-              <Sparkles className="size-5 mx-auto text-emerald-400 mb-1.5" />
-              <span className="font-bold block text-xs">3. Steam Ironing</span>
-              <span className="text-[10px] text-muted-foreground">Folded & packed</span>
+            <div>
+              <span className="text-[10px] text-blue-200 uppercase block font-semibold">Student Name</span>
+              <span className="font-bold text-white">{activeBooking.studentName}</span>
             </div>
-            <div className="p-3 rounded-xl bg-emerald-600 text-white border border-emerald-500 shadow-md shadow-emerald-600/20">
-              <CheckCircle2 className="size-5 mx-auto mb-1.5" />
-              <span className="font-bold block text-xs">4. Ready for Pickup</span>
-              <span className="text-[10px] text-emerald-100">Collect with OTP</span>
+            <div>
+              <span className="text-[10px] text-blue-200 uppercase block font-semibold">Roll Number</span>
+              <span className="font-mono font-bold text-white">{activeBooking.rollNo}</span>
             </div>
           </div>
-        </CardContent>
-      </Card>
+          <p className="text-[11px] text-blue-200">
+            🔒 Exclusive Access Guarantee: Only roll number <strong>{activeBooking.rollNo}</strong> is authorized to use {activeBooking.machineName} during this slot. Enter PIN <strong>{activeBooking.pin}</strong> on the laundry room terminal.
+          </p>
+        </div>
+      )}
 
-      {/* Recent Laundry Bookings History */}
-      <Card className="bg-card/70 border-white/10 backdrop-blur-md">
-        <CardHeader className="pb-3 border-b border-white/5">
-          <CardTitle className="text-sm font-bold text-foreground">
-            Laundry History & Tokens ({bookings.length})
-          </CardTitle>
-        </CardHeader>
-        <CardContent className="pt-4 space-y-3">
-          {bookings.map((b) => (
-            <div 
-              key={b.id} 
-              className="p-3.5 rounded-xl bg-black/20 border border-white/5 hover:border-white/15 transition-all flex flex-col sm:flex-row sm:items-center justify-between gap-3"
-            >
-              <div className="flex items-center gap-3">
-                <div className="size-10 rounded-xl bg-emerald-500/10 text-emerald-400 flex items-center justify-center shrink-0">
-                  <Shirt className="size-5" />
-                </div>
-                <div>
-                  <div className="flex items-center gap-2">
-                    <span className="font-mono text-xs font-bold text-emerald-400">{b.tokenNumber}</span>
-                    <span className="text-xs font-semibold text-foreground">• {new Date(b.date).toLocaleDateString()}</span>
+      {/* Live Washing Machine Grid */}
+      <div className="space-y-3">
+        <div className="flex items-center justify-between px-1">
+          <h3 className="font-bold text-sm text-slate-800">
+            KP-7 Laundry Room Machines
+          </h3>
+          <span className="text-xs text-slate-500">
+            Real-time status managed by Warden Desk
+          </span>
+        </div>
+
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+          {machines.map((machine) => {
+            const isVacant = machine.status === "VACANT";
+            const isOccupied = machine.status === "OCCUPIED";
+
+            return (
+              <Card
+                key={machine.id}
+                className={`bg-white border transition-all ${
+                  isVacant
+                    ? "border-blue-200 hover:border-blue-400 shadow-xs"
+                    : isOccupied
+                    ? "border-amber-200 shadow-xs"
+                    : "border-slate-200 opacity-80"
+                }`}
+              >
+                <CardHeader className="pb-3 border-b border-slate-100 flex flex-row items-center justify-between">
+                  <div>
+                    <CardTitle className="text-sm font-extrabold text-slate-900">
+                      {machine.machineNumber}
+                    </CardTitle>
+                    <p className="text-[11px] text-slate-500">{machine.floor}</p>
                   </div>
-                  <p className="text-xs text-muted-foreground mt-0.5">
-                    {b.slot} • <strong className="text-foreground">{b.itemCount} pieces</strong> ({b.clothesDetails || "Regular daily wear"})
-                  </p>
-                </div>
-              </div>
+                  <Badge
+                    className={`text-xs font-bold ${
+                      isVacant
+                        ? "bg-blue-100 text-blue-800 border-blue-300"
+                        : isOccupied
+                        ? "bg-amber-100 text-amber-800 border-amber-300"
+                        : "bg-slate-200 text-slate-700"
+                    }`}
+                  >
+                    {machine.status}
+                  </Badge>
+                </CardHeader>
 
-              <div className="flex items-center gap-3 self-end sm:self-center">
-                <span className="text-xs font-mono text-muted-foreground">
-                  OTP: <strong className="text-amber-300 font-bold">{b.pickupOtp}</strong>
-                </span>
-                <Badge 
-                  variant="outline"
-                  className={`text-xs ${
-                    b.status === "READY" ? "bg-emerald-500/10 text-emerald-400 border-emerald-500/30" :
-                    b.status === "DELIVERED" ? "bg-white/5 text-muted-foreground border-white/10" :
-                    "bg-blue-500/10 text-blue-400 border-blue-500/30"
-                  }`}
-                >
-                  {b.status}
-                </Badge>
-              </div>
-            </div>
-          ))}
-        </CardContent>
-      </Card>
+                <CardContent className="pt-4 space-y-3 text-xs">
+                  {isVacant ? (
+                    <div className="p-3 rounded-xl bg-blue-50/60 border border-blue-100 text-blue-950 space-y-1">
+                      <div className="flex items-center gap-1.5 font-bold text-blue-800">
+                        <CheckCircle2 className="size-4 text-blue-600" />
+                        <span>Available for Wash</span>
+                      </div>
+                      <p className="text-[11px] text-slate-600">
+                        Ready for immediate cycle or pre-booked reservation.
+                      </p>
+                    </div>
+                  ) : isOccupied ? (
+                    <div className="p-3 rounded-xl bg-amber-50/60 border border-amber-100 text-amber-950 space-y-1">
+                      <div className="flex items-center gap-1.5 font-bold text-amber-800">
+                        <Clock className="size-4 text-amber-600" />
+                        <span>Currently in Use</span>
+                      </div>
+                      <p className="text-[11px] text-slate-600">
+                        Student: {machine.currentStudent || "Resident Active"}
+                      </p>
+                    </div>
+                  ) : (
+                    <div className="p-3 rounded-xl bg-slate-100 text-slate-700 space-y-1">
+                      <div className="flex items-center gap-1.5 font-bold">
+                        <AlertTriangle className="size-4 text-slate-500" />
+                        <span>Under Maintenance</span>
+                      </div>
+                      <p className="text-[11px] text-slate-500">
+                        Technician service in progress.
+                      </p>
+                    </div>
+                  )}
 
-      {/* Modal: Book Laundry Slot */}
-      {showModal && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/80 backdrop-blur-sm p-4 animate-in fade-in">
-          <div className="bg-card border border-white/15 rounded-2xl max-w-md w-full p-6 space-y-4 shadow-2xl relative">
-            <div className="flex items-center justify-between border-b border-white/10 pb-3">
+                  {/* Actions */}
+                  <div className="pt-2 flex items-center justify-between border-t border-slate-100">
+                    <button
+                      type="button"
+                      onClick={() => handleToggleStatus(machine.id, machine.status)}
+                      disabled={isPending}
+                      className="text-[11px] text-blue-700 hover:text-blue-900 font-semibold hover:underline"
+                    >
+                      Warden: Set to {isVacant ? "Occupied" : "Vacant"}
+                    </button>
+
+                    {isVacant && (
+                      <Button
+                        size="sm"
+                        onClick={() => {
+                          setSelectedMachineId(machine.id);
+                          setShowBookingModal(true);
+                        }}
+                        className="bg-blue-600 hover:bg-blue-700 text-white text-xs h-7 font-semibold px-3"
+                      >
+                        Book Slot
+                      </Button>
+                    )}
+                  </div>
+                </CardContent>
+              </Card>
+            );
+          })}
+        </div>
+      </div>
+
+      {/* Booking Modal */}
+      {showBookingModal && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-slate-950/60 backdrop-blur-sm p-4 animate-in fade-in">
+          <div className="bg-white border border-slate-200 rounded-2xl max-w-md w-full p-6 space-y-4 shadow-2xl relative">
+            <div className="flex items-center justify-between border-b border-slate-100 pb-3">
               <div className="flex items-center gap-2">
-                <CalendarClock className="size-5 text-emerald-400" />
-                <h3 className="text-lg font-bold text-foreground">Book Laundry Slot</h3>
+                <WashingIcon className="size-5 text-blue-600" />
+                <h3 className="text-lg font-bold text-slate-900">Pre-Book Washing Machine</h3>
               </div>
               <button 
                 type="button" 
-                onClick={() => setShowModal(false)}
-                className="text-muted-foreground hover:text-white"
+                onClick={() => setShowBookingModal(false)}
+                className="text-slate-400 hover:text-slate-700 font-bold"
               >
                 ✕
               </button>
             </div>
 
-            <form onSubmit={handleBook} className="space-y-3.5">
-              <div className="space-y-1">
-                <label className="text-xs font-semibold text-muted-foreground">Drop-off Date</label>
-                <input
-                  type="date"
-                  value={dateStr}
-                  onChange={(e) => setDateStr(e.target.value)}
-                  required
-                  className="w-full bg-black/60 border border-white/15 rounded-xl px-3 py-2 text-xs text-foreground focus:outline-none focus:border-emerald-500"
-                />
-              </div>
-
-              <div className="space-y-1">
-                <label className="text-xs font-semibold text-muted-foreground">Time Slot</label>
+            <div className="space-y-3.5 text-xs">
+              <div>
+                <label className="text-[11px] font-semibold text-slate-600 block mb-1">Select Machine</label>
                 <select
-                  value={slot}
-                  onChange={(e) => setSlot(e.target.value)}
-                  className="w-full bg-black/60 border border-white/15 rounded-xl px-3 py-2 text-xs text-foreground focus:outline-none focus:border-emerald-500"
+                  value={selectedMachineId}
+                  onChange={(e) => setSelectedMachineId(e.target.value)}
+                  className="w-full bg-slate-50 border border-slate-300 rounded-lg px-3 py-2 text-xs text-slate-900 focus:ring-2 focus:ring-blue-600 outline-none"
                 >
-                  <option value="09:00 AM - 11:00 AM (Morning Slot 1)">09:00 AM - 11:00 AM (Morning Slot 1)</option>
-                  <option value="11:30 AM - 01:30 PM (Morning Slot 2)">11:30 AM - 01:30 PM (Morning Slot 2)</option>
-                  <option value="02:30 PM - 04:30 PM (Afternoon Slot)">02:30 PM - 04:30 PM (Afternoon Slot)</option>
-                  <option value="05:00 PM - 07:00 PM (Evening Slot)">05:00 PM - 07:00 PM (Evening Slot)</option>
+                  {machines.map((m) => (
+                    <option key={m.id} value={m.id}>
+                      {m.machineNumber} ({m.status})
+                    </option>
+                  ))}
                 </select>
               </div>
 
-              <div className="space-y-1">
-                <label className="text-xs font-semibold text-muted-foreground">Total Pieces of Clothing</label>
+              <div>
+                <label className="text-[11px] font-semibold text-slate-600 block mb-1">Pre-Booking Slot (≥ 1 Hour Advance)</label>
+                <select
+                  value={slotTime}
+                  onChange={(e) => setSlotTime(e.target.value)}
+                  className="w-full bg-slate-50 border border-slate-300 rounded-lg px-3 py-2 text-xs text-slate-900 focus:ring-2 focus:ring-blue-600 outline-none"
+                >
+                  {availableSlots.map((s) => (
+                    <option key={s} value={s}>{s}</option>
+                  ))}
+                </select>
+              </div>
+
+              <div className="grid grid-cols-2 gap-3">
+                <div>
+                  <label className="text-[11px] font-semibold text-slate-600 block mb-1">Student Name</label>
+                  <input
+                    type="text"
+                    value={studentName}
+                    onChange={(e) => setStudentName(e.target.value)}
+                    className="w-full bg-slate-50 border border-slate-300 rounded-lg px-2.5 py-1.5 text-xs text-slate-900 focus:ring-2 focus:ring-blue-600 outline-none"
+                  />
+                </div>
+                <div>
+                  <label className="text-[11px] font-semibold text-slate-600 block mb-1">Roll Number</label>
+                  <input
+                    type="text"
+                    value={rollNo}
+                    onChange={(e) => setRollNo(e.target.value)}
+                    className="w-full bg-slate-50 border border-slate-300 rounded-lg px-2.5 py-1.5 text-xs text-slate-900 focus:ring-2 focus:ring-blue-600 outline-none"
+                  />
+                </div>
+              </div>
+
+              <div className="p-3 rounded-xl bg-blue-50 border border-blue-200 text-blue-900 space-y-1">
+                <span className="font-bold block text-[11px]">Notice:</span>
+                <p className="text-[11px] text-slate-600">
+                  Only student with Roll <strong>{rollNo}</strong> will be allowed access to this machine during the allocated time.
+                </p>
+              </div>
+
+              <div className="pt-2 flex justify-end gap-2">
+                <Button 
+                  type="button" 
+                  variant="ghost" 
+                  onClick={() => setShowBookingModal(false)}
+                  className="text-xs h-9"
+                >
+                  Cancel
+                </Button>
+                <Button
+                  onClick={handleBook}
+                  disabled={isPending}
+                  className="bg-blue-600 hover:bg-blue-700 text-white font-bold text-xs h-9 px-5 rounded-lg"
+                >
+                  {isPending ? "Reserving..." : "Confirm & Generate Access PIN"}
+                </Button>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Add Machine Modal (Warden) */}
+      {showAddModal && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-slate-950/60 backdrop-blur-sm p-4 animate-in fade-in">
+          <div className="bg-white border border-slate-200 rounded-2xl max-w-md w-full p-6 space-y-4 shadow-2xl relative">
+            <div className="flex items-center justify-between border-b border-slate-100 pb-3">
+              <h3 className="text-lg font-bold text-slate-900">Add Washing Machine Unit</h3>
+              <button 
+                type="button" 
+                onClick={() => setShowAddModal(false)}
+                className="text-slate-400 hover:text-slate-700 font-bold"
+              >
+                ✕
+              </button>
+            </div>
+
+            <form onSubmit={handleAddMachine} className="space-y-3.5 text-xs">
+              <div>
+                <label className="text-[11px] font-semibold text-slate-600 block mb-1">Machine Identifier</label>
                 <input
-                  type="number"
-                  min={1}
-                  max={15}
-                  value={itemCount}
-                  onChange={(e) => setItemCount(Number(e.target.value))}
+                  type="text"
+                  value={newMachineNo}
+                  onChange={(e) => setNewMachineNo(e.target.value)}
+                  placeholder="e.g. WM-07 (3rd Floor East Wing)"
                   required
-                  className="w-full bg-black/60 border border-white/15 rounded-xl px-3 py-2 text-xs text-foreground focus:outline-none focus:border-emerald-500 font-mono"
+                  className="w-full bg-slate-50 border border-slate-300 rounded-lg px-3 py-2 text-xs text-slate-900 focus:ring-2 focus:ring-blue-600 outline-none"
                 />
               </div>
 
-              <div className="space-y-1">
-                <label className="text-xs font-semibold text-muted-foreground">Item Breakdown</label>
+              <div>
+                <label className="text-[11px] font-semibold text-slate-600 block mb-1">Hostel Wing / Floor</label>
                 <input
                   type="text"
-                  value={clothesDetails}
-                  onChange={(e) => setClothesDetails(e.target.value)}
-                  placeholder="e.g. 3 Shirts, 2 Jeans, 1 Bedsheet"
+                  value={newFloor}
+                  onChange={(e) => setNewFloor(e.target.value)}
                   required
-                  className="w-full bg-black/60 border border-white/15 rounded-xl px-3 py-2 text-xs text-foreground focus:outline-none focus:border-emerald-500"
+                  className="w-full bg-slate-50 border border-slate-300 rounded-lg px-3 py-2 text-xs text-slate-900 focus:ring-2 focus:ring-blue-600 outline-none"
                 />
               </div>
 
@@ -334,17 +467,17 @@ export default function LaundryClient({ bookings: initialBookings }: { bookings:
                 <Button 
                   type="button" 
                   variant="ghost" 
-                  onClick={() => setShowModal(false)}
+                  onClick={() => setShowAddModal(false)}
                   className="text-xs h-9"
                 >
                   Cancel
                 </Button>
                 <Button
                   type="submit"
-                  disabled={isSubmitting}
-                  className="bg-emerald-600 hover:bg-emerald-500 text-white text-xs h-9 px-5"
+                  disabled={isPending}
+                  className="bg-blue-600 hover:bg-blue-700 text-white font-bold text-xs h-9 px-5 rounded-lg"
                 >
-                  {isSubmitting ? "Reserving..." : "Confirm & Get Token"}
+                  {isPending ? "Adding..." : "Add to Laundry Room"}
                 </Button>
               </div>
             </form>

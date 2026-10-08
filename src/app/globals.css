@@ -47,79 +47,80 @@
   --radius-3xl: calc(var(--radius) * 2.2);
   --radius-4xl: calc(var(--radius) * 2.6);
 
-  /* KIIT Brand Custom Tokens */
-  --color-kiit-green: #008738;
-  --color-kiit-emerald: #10b981;
-  --color-kiit-accent: #059669;
+  /* KIIT Institutional Brand Tokens - Blue & White Theme */
+  --color-kiit-blue: #1d4ed8;
+  --color-kiit-navy: #0f172a;
+  --color-kiit-sky: #0284c7;
+  --color-kiit-light-blue: #dbeafe;
 }
 
 :root {
   --background: #f8fafc;
-  --foreground: #09090b;
+  --foreground: #0f172a;
   --card: #ffffff;
-  --card-foreground: #09090b;
+  --card-foreground: #0f172a;
   --popover: #ffffff;
-  --popover-foreground: #09090b;
-  --primary: #008738;
+  --popover-foreground: #0f172a;
+  --primary: #1d4ed8;
   --primary-foreground: #ffffff;
-  --secondary: #f1f5f9;
-  --secondary-foreground: #0f172a;
+  --secondary: #f0f7ff;
+  --secondary-foreground: #1e3a8a;
   --muted: #f1f5f9;
   --muted-foreground: #64748b;
-  --accent: #ecfdf5;
-  --accent-foreground: #065f46;
+  --accent: #eff6ff;
+  --accent-foreground: #1d4ed8;
   --destructive: #ef4444;
   --border: #e2e8f0;
   --input: #e2e8f0;
-  --ring: #008738;
-  --chart-1: #10b981;
-  --chart-2: #059669;
-  --chart-3: #047857;
-  --chart-4: #065f46;
-  --chart-5: #022c22;
+  --ring: #2563eb;
+  --chart-1: #1d4ed8;
+  --chart-2: #0284c7;
+  --chart-3: #38bdf8;
+  --chart-4: #1e3a8a;
+  --chart-5: #0f172a;
   --radius: 0.75rem;
   --sidebar: #ffffff;
-  --sidebar-foreground: #09090b;
-  --sidebar-primary: #008738;
+  --sidebar-foreground: #0f172a;
+  --sidebar-primary: #1d4ed8;
   --sidebar-primary-foreground: #ffffff;
-  --sidebar-accent: #f1f5f9;
-  --sidebar-accent-foreground: #09090b;
+  --sidebar-accent: #eff6ff;
+  --sidebar-accent-foreground: #1d4ed8;
   --sidebar-border: #e2e8f0;
-  --sidebar-ring: #008738;
+  --sidebar-ring: #2563eb;
 }
 
 .dark {
-  --background: #080d0a;
-  --foreground: #f0fdf4;
-  --card: #0d1510;
-  --card-foreground: #f0fdf4;
-  --popover: #0d1510;
-  --popover-foreground: #f0fdf4;
-  --primary: #10b981;
-  --primary-foreground: #042f1a;
-  --secondary: #132219;
-  --secondary-foreground: #ecfdf5;
-  --muted: #132219;
+  --background: #090d16;
+  --foreground: #f8fafc;
+  --card: #0e1726;
+  --card-foreground: #f8fafc;
+  --popover: #0e1726;
+  --popover-foreground: #f8fafc;
+  --primary: #3b82f6;
+  --primary-foreground: #ffffff;
+  --secondary: #172554;
+  --secondary-foreground: #eff6ff;
+  --muted: #1e293b;
   --muted-foreground: #94a3b8;
-  --accent: #132b1e;
-  --accent-foreground: #6ee7b7;
+  --accent: #1e3a8a;
+  --accent-foreground: #bfdbfe;
   --destructive: #f87171;
-  --border: rgba(255, 255, 255, 0.08);
-  --input: rgba(255, 255, 255, 0.12);
-  --ring: #10b981;
-  --chart-1: #10b981;
-  --chart-2: #34d399;
-  --chart-3: #6ee7b7;
-  --chart-4: #059669;
-  --chart-5: #047857;
-  --sidebar: #0a110c;
-  --sidebar-foreground: #f0fdf4;
-  --sidebar-primary: #10b981;
-  --sidebar-primary-foreground: #042f1a;
-  --sidebar-accent: #132219;
-  --sidebar-accent-foreground: #ecfdf5;
-  --sidebar-border: rgba(255, 255, 255, 0.08);
-  --sidebar-ring: #10b981;
+  --border: rgba(255, 255, 255, 0.1);
+  --input: rgba(255, 255, 255, 0.14);
+  --ring: #3b82f6;
+  --chart-1: #3b82f6;
+  --chart-2: #60a5fa;
+  --chart-3: #93c5fd;
+  --chart-4: #2563eb;
+  --chart-5: #1d4ed8;
+  --sidebar: #090d16;
+  --sidebar-foreground: #f8fafc;
+  --sidebar-primary: #3b82f6;
+  --sidebar-primary-foreground: #ffffff;
+  --sidebar-accent: #172554;
+  --sidebar-accent-foreground: #eff6ff;
+  --sidebar-border: rgba(255, 255, 255, 0.1);
+  --sidebar-ring: #3b82f6;
 }
 
 @layer base {
@@ -136,12 +137,37 @@
 
 /* Glassmorphism helpers for KIIT Portal */
 .kiit-glass {
-  background: rgba(13, 21, 16, 0.7);
+  background: rgba(255, 255, 255, 0.9);
   backdrop-filter: blur(16px);
   -webkit-backdrop-filter: blur(16px);
-  border: 1px solid rgba(255, 255, 255, 0.08);
+  border: 1px solid rgba(226, 232, 240, 0.8);
 }
 
-.kiit-glow-green {
-  box-shadow: 0 0 35px -5px rgba(16, 185, 129, 0.18);
+.kiit-glow-blue {
+  box-shadow: 0 0 35px -5px rgba(37, 99, 235, 0.2);
+}
+
+/* Forced Desktop Mode on Mobile Devices */
+html.forced-desktop,
+html.forced-desktop body {
+  min-width: 1200px !important;
+  width: 1200px !important;
+  overflow-x: auto !important;
+  -webkit-text-size-adjust: 100%;
+}
+
+html.forced-desktop aside:not([aria-label="View mode controls"]) {
+  display: flex !important;
+}
+
+html.forced-desktop .md\:hidden {
+  display: none !important;
+}
+
+html.forced-desktop .hidden.md\:flex {
+  display: flex !important;
+}
+
+html.forced-desktop .hidden.sm\:block {
+  display: block !important;
 }

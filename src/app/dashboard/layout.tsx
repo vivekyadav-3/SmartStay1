@@ -3,38 +3,53 @@
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { 
-  UtensilsCrossed,
-  Clock,
-  MessageSquareWarning, 
-  CalendarClock, 
-  Megaphone,
-  Star,
-  UserSquare2,
-  IndianRupee,
-  ShieldCheck,
-  ShieldAlert,
-  QrCode,
-  LayoutDashboard,
-  Building2,
-  Menu,
-  X,
-  BarChart3,
+  BookOpen, 
+  Megaphone, 
+  Wrench, 
+  WashingMachine as WashingIcon, 
+  UtensilsCrossed, 
+  LayoutDashboard, 
+  Building2, 
+  Menu, 
+  X, 
+  ShieldAlert, 
+  UserCircle,
+  Sparkles,
+  Star
 } from "lucide-react";
 import { UserButton } from "@clerk/nextjs";
 import { cn } from "@/lib/utils";
 import { useState } from "react";
+import { RoleSwitcher } from "@/components/dashboard/role-switcher";
+import { EmergencyModal } from "@/components/dashboard/emergency-modal";
+import { SidebarFeedbackBox } from "@/components/dashboard/sidebar-feedback-box";
+import { ViewModeToggle } from "@/components/dashboard/view-mode-toggle";
 
 const residentLinks = [
-  { name: "Dashboard", href: "/dashboard", icon: LayoutDashboard },
-  { name: "Gate Pass", href: "/dashboard/timings", icon: Clock },
-  { name: "Give Feedback", href: "/dashboard/feedback", icon: Star },
-  { name: "Profile", href: "/dashboard/profile", icon: ShieldCheck },
+  { name: "Overview", href: "/dashboard", icon: LayoutDashboard },
+  { name: "Library Pass", href: "/dashboard/gate-pass", icon: BookOpen, badge: "Curfew 08:30" },
+  { name: "Notice Board", href: "/dashboard/announcements", icon: Megaphone, badge: "Events" },
+  { name: "Student Complaints", href: "/dashboard/complaints", icon: Wrench, badge: "Room Issues" },
+  { name: "Washing Machines", href: "/dashboard/laundry", icon: WashingIcon, badge: "Live Status" },
+  { name: "Mess Food Review", href: "/dashboard/food-review", icon: UtensilsCrossed, badge: "Daily Menu" },
+  { name: "Resident Profile & ID", href: "/dashboard/profile", icon: UserCircle },
 ];
 
-const managementLinks = [
-  { name: "Head Warden Analytics", href: "/dashboard/head-warden", icon: BarChart3, badge: "100 Users" },
-  { name: "Warden Approval", href: "/dashboard/warden", icon: ShieldAlert, badge: "Warden" },
-  { name: "Database Inspector", href: "/dashboard/db-inspect", icon: QrCode, badge: "SQLite" },
+const wardenLinks = [
+  { 
+    name: "Warden Control Room", 
+    href: "/dashboard/warden", 
+    icon: ShieldAlert, 
+    badge: "All Actions",
+    desc: "Pass Approvals · SOS · Machines · Complaints · Notices" 
+  },
+  { 
+    name: "App Feedback & Ratings", 
+    href: "/dashboard/feedback", 
+    icon: Star, 
+    badge: "79 Reviews",
+    desc: "Student Reviews Audit & Star Satisfaction" 
+  },
 ];
 
 export default function DashboardLayout({ children }: { children: React.ReactNode }) {
@@ -42,31 +57,34 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
 
   return (
-    <div className="flex h-screen overflow-hidden bg-background">
-      {/* Desktop Sidebar */}
-      <aside className="w-72 border-r border-white/10 bg-slate-950/80 backdrop-blur-2xl flex flex-col hidden md:flex shrink-0">
-        {/* KIIT Header Brand */}
-        <div className="h-20 flex items-center px-6 border-b border-white/10 bg-emerald-950/20">
+    <div className="flex h-screen overflow-hidden bg-slate-50 text-slate-900">
+      {/* Desktop Sidebar: Clean White & Dark Blue Palette */}
+      <aside className="w-72 border-r border-slate-200 bg-white flex flex-col hidden md:flex shrink-0 shadow-sm z-20">
+        {/* Brand Header */}
+        <div className="h-20 flex items-center px-6 border-b border-slate-200 bg-gradient-to-r from-blue-900 to-indigo-950 text-white">
           <Link className="flex items-center gap-3 group" href="/dashboard">
-            <div className="size-10 rounded-xl bg-gradient-to-br from-emerald-500 to-emerald-700 flex items-center justify-center shadow-lg shadow-emerald-500/25 group-hover:scale-105 transition-transform">
-              <Building2 className="h-5 w-5 text-white" />
+            <div className="size-10 rounded-xl bg-blue-600 flex items-center justify-center shadow-md shadow-blue-500/30 group-hover:scale-105 transition-transform text-white">
+              <Building2 className="h-5 w-5" />
             </div>
             <div className="flex flex-col">
               <span className="font-extrabold text-base tracking-tight text-white flex items-center gap-1.5">
                 KIIT SmartStay
               </span>
-              <span className="text-[10px] text-emerald-400 font-medium tracking-wide uppercase">
-                Bhubaneswar Hostels
+              <span className="text-[10px] text-blue-200 font-medium tracking-wide uppercase">
+                Hostel KP-7 · Campus 12
               </span>
             </div>
           </Link>
         </div>
-        
+
         {/* Navigation Links */}
-        <nav className="flex-1 p-3 space-y-1 overflow-y-auto custom-scrollbar">
-          <p className="px-3 py-2 text-[10px] font-bold text-muted-foreground uppercase tracking-widest">
-            Resident Portal
-          </p>
+        <nav className="flex-1 p-3.5 space-y-1.5 overflow-y-auto">
+          <div className="px-3 pt-2 pb-1 flex items-center justify-between">
+            <p className="text-[10px] font-bold text-slate-400 uppercase tracking-widest">
+              Resident Services
+            </p>
+          </div>
+
           {residentLinks.map((link) => {
             const isActive = pathname === link.href;
             const Icon = link.icon;
@@ -75,25 +93,49 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
                 key={link.name}
                 href={link.href}
                 className={cn(
-                  "flex items-center gap-3 px-3 py-2 rounded-xl text-xs font-medium transition-all group",
-                  isActive 
-                    ? "bg-emerald-500/15 text-emerald-300 border border-emerald-500/30 shadow-sm" 
-                    : "text-muted-foreground hover:text-foreground hover:bg-white/5 border border-transparent"
+                  "flex items-center justify-between px-3.5 py-2.5 rounded-xl text-xs font-semibold transition-all group",
+                  isActive
+                    ? "bg-blue-600 text-white shadow-md shadow-blue-600/20"
+                    : "text-slate-600 hover:text-blue-900 hover:bg-blue-50/70"
                 )}
               >
-                <Icon className={cn("size-4 shrink-0 transition-colors", isActive ? "text-emerald-400" : "text-muted-foreground group-hover:text-foreground")} />
-                <span className="truncate">{link.name}</span>
+                <div className="flex items-center gap-3 truncate">
+                  <Icon
+                    className={cn(
+                      "size-4 shrink-0 transition-colors",
+                      isActive ? "text-white" : "text-slate-400 group-hover:text-blue-600"
+                    )}
+                  />
+                  <span className="truncate">{link.name}</span>
+                </div>
+                {link.badge && (
+                  <span
+                    className={cn(
+                      "text-[9px] uppercase font-bold tracking-wide px-1.5 py-0.5 rounded",
+                      isActive
+                        ? "bg-blue-700/60 text-white"
+                        : "bg-slate-100 text-slate-500 group-hover:bg-blue-100 group-hover:text-blue-700"
+                    )}
+                  >
+                    {link.badge}
+                  </span>
+                )}
               </Link>
             );
           })}
 
+          {/* Student Feedback Box in Left Panel (Usersnap style) */}
+          <div className="pt-2 pb-1">
+            <SidebarFeedbackBox />
+          </div>
+
           <div className="pt-3 pb-1">
-            <p className="px-3 py-1 text-[10px] font-bold text-amber-400/90 uppercase tracking-widest flex items-center gap-1.5">
-              <span>Admin & Security</span>
+            <p className="px-3 py-1 text-[10px] font-bold text-blue-900 uppercase tracking-widest flex items-center gap-1.5">
+              <span>Authority Portal</span>
             </p>
           </div>
 
-          {managementLinks.map((link) => {
+          {wardenLinks.map((link) => {
             const isActive = pathname === link.href;
             const Icon = link.icon;
             return (
@@ -101,67 +143,115 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
                 key={link.name}
                 href={link.href}
                 className={cn(
-                  "flex items-center justify-between px-3 py-2 rounded-xl text-xs font-semibold transition-all group",
-                  isActive 
-                    ? "bg-amber-500/20 text-amber-300 border border-amber-500/40 shadow-sm" 
-                    : "text-muted-foreground hover:text-foreground hover:bg-white/5 border border-transparent"
+                  "flex flex-col gap-1 px-3.5 py-2.5 rounded-xl text-xs font-semibold transition-all group border",
+                  isActive
+                    ? "bg-blue-900 text-white border-blue-900 shadow-md shadow-blue-900/20"
+                    : "bg-blue-50/50 text-blue-950 border-blue-200/70 hover:bg-blue-100/60"
                 )}
               >
-                <div className="flex items-center gap-3 truncate">
-                  <Icon className={cn("size-4 shrink-0 transition-colors", isActive ? "text-amber-400" : "text-amber-400/70 group-hover:text-amber-300")} />
-                  <span className="truncate">{link.name}</span>
+                <div className="flex items-center justify-between">
+                  <div className="flex items-center gap-3">
+                    <Icon className={cn("size-4 shrink-0", isActive ? "text-white" : "text-blue-700")} />
+                    <span>{link.name}</span>
+                  </div>
+                  <span
+                    className={cn(
+                      "text-[9px] uppercase font-bold px-1.5 py-0.5 rounded",
+                      isActive ? "bg-blue-800 text-blue-100" : "bg-blue-200/80 text-blue-900"
+                    )}
+                  >
+                    {link.badge}
+                  </span>
                 </div>
-                <span className="text-[9px] uppercase font-bold tracking-wider px-1.5 py-0.5 rounded bg-white/10 text-muted-foreground font-mono">
-                  {link.badge}
+                <span
+                  className={cn(
+                    "text-[10px] font-normal leading-tight pl-7",
+                    isActive ? "text-blue-200" : "text-slate-500"
+                  )}
+                >
+                  {link.desc}
                 </span>
               </Link>
             );
           })}
         </nav>
 
-        {/* Footer User Info */}
-        <div className="p-4 border-t border-white/10 bg-slate-950/60 flex items-center justify-between">
-          <div className="flex items-center gap-3 min-w-0">
-            <UserButton appearance={{ elements: { userButtonAvatarBox: "size-8" } }} />
-            <div className="truncate">
-              <p className="text-xs font-semibold truncate text-foreground">KIIT Student</p>
-              <p className="text-[10px] text-emerald-400 font-mono">Campus 12</p>
+        {/* Footer User Profile & Role Switch */}
+        <div className="p-3.5 border-t border-slate-200 bg-slate-50 flex flex-col gap-2.5">
+          <div className="flex items-center justify-between">
+            <div className="flex items-center gap-2.5 min-w-0">
+              <UserButton appearance={{ elements: { userButtonAvatarBox: "size-8" } }} />
+              <div className="truncate">
+                <p className="text-xs font-bold truncate text-slate-800">Vivek Yadav</p>
+                <p className="text-[10px] text-blue-700 font-medium">KP-7 · Room 412</p>
+              </div>
             </div>
+            <Link
+              href="/dashboard/profile"
+              className="px-2 py-1 rounded bg-blue-100 text-blue-800 hover:bg-blue-200 text-[10px] font-bold"
+            >
+              ID Card
+            </Link>
           </div>
-          <Link href="/dashboard/profile" title="View Digital ID">
-            <span className="size-2 rounded-full bg-emerald-400 block animate-pulse" />
-          </Link>
         </div>
       </aside>
 
       {/* Main Content Area */}
-      <main className="flex-1 flex flex-col relative overflow-hidden">
-        {/* Mobile Header */}
-        <header className="h-16 border-b border-white/10 bg-slate-950/90 backdrop-blur-xl flex items-center justify-between px-4 md:hidden z-30">
-          <div className="flex items-center gap-2.5">
-            <button 
-              type="button" 
+      <main className="flex-1 flex flex-col relative overflow-hidden bg-slate-50">
+        {/* Top Institutional Header Bar with Emergency SOS & View Mode Switcher */}
+        <header className="h-16 border-b border-slate-200 bg-white/95 backdrop-blur-md flex items-center justify-between px-3 sm:px-4 md:px-8 z-30 shrink-0 shadow-xs">
+          {/* Mobile menu button and brand title */}
+          <div className="flex items-center gap-2 sm:gap-3 min-w-0">
+            <button
+              type="button"
               onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
-              className="p-1.5 rounded-lg border border-white/10 hover:bg-white/5"
+              className="p-1.5 rounded-lg border border-slate-200 hover:bg-slate-100 md:hidden text-slate-700 shrink-0"
+              aria-label="Toggle menu"
             >
               {mobileMenuOpen ? <X className="size-5" /> : <Menu className="size-5" />}
             </button>
-            <div className="flex items-center gap-2">
-              <div className="size-7 rounded-lg bg-emerald-600 flex items-center justify-center">
-                <Building2 className="h-4 w-4 text-white" />
+            <div className="flex items-center gap-2 truncate">
+              <div className="size-8 rounded-lg bg-blue-600 text-white flex items-center justify-center font-bold text-xs shadow-sm shrink-0">
+                KP7
               </div>
-              <span className="font-bold text-sm">KIIT SmartStay</span>
+              <div className="truncate">
+                <h1 className="text-xs sm:text-sm md:text-base font-extrabold text-blue-950 tracking-tight leading-none truncate">
+                  KIIT SmartStay
+                </h1>
+                <p className="text-[10px] text-slate-500 font-medium leading-none mt-1 truncate">
+                  Hostel KP-7 · Campus 12
+                </p>
+              </div>
             </div>
           </div>
-          <UserButton />
+
+          {/* Right Header Actions: View Mode Switcher, Medical SOS, and Role Switcher */}
+          <div className="flex items-center gap-2 sm:gap-3 shrink-0">
+            {/* View Mode Switcher (📱 Mobile / 💻 Desktop) */}
+            <ViewModeToggle variant="header" />
+
+            {/* Prominent Ambulance / Medical SOS Button */}
+            <EmergencyModal />
+
+            {/* Role Switcher */}
+            <div className="hidden sm:block">
+              <RoleSwitcher />
+            </div>
+          </div>
         </header>
 
         {/* Mobile Navigation Drawer */}
         {mobileMenuOpen && (
-          <div className="fixed inset-0 top-16 z-20 bg-background/95 backdrop-blur-2xl p-4 flex flex-col md:hidden overflow-y-auto border-t border-white/10">
-            <nav className="space-y-1 pb-10">
-              <p className="px-3 py-1 text-[10px] font-bold text-muted-foreground uppercase tracking-widest">
-                Resident Portal
+          <div className="fixed inset-0 top-16 z-40 bg-white p-4 flex flex-col md:hidden overflow-y-auto border-t border-slate-200 animate-in slide-in-from-top-4 space-y-3">
+            {/* Display Mode Switcher inside Drawer */}
+            <ViewModeToggle variant="drawer" />
+
+            <div>
+              <RoleSwitcher />
+            </div>
+            <nav className="space-y-1.5">
+              <p className="px-3 py-1 text-[10px] font-bold text-slate-400 uppercase tracking-widest">
+                Resident Services
               </p>
               {residentLinks.map((link) => {
                 const isActive = pathname === link.href;
@@ -172,22 +262,31 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
                     href={link.href}
                     onClick={() => setMobileMenuOpen(false)}
                     className={cn(
-                      "flex items-center gap-3 px-3 py-2.5 rounded-xl text-xs font-medium transition-all",
-                      isActive 
-                        ? "bg-emerald-500/15 text-emerald-300 border border-emerald-500/30" 
-                        : "text-muted-foreground hover:text-foreground hover:bg-white/5"
+                      "flex items-center justify-between px-3.5 py-2.5 rounded-xl text-xs font-semibold transition-all",
+                      isActive ? "bg-blue-600 text-white" : "text-slate-700 hover:bg-blue-50"
                     )}
                   >
-                    <Icon className={cn("size-4 shrink-0", isActive ? "text-emerald-400" : "text-muted-foreground")} />
-                    <span>{link.name}</span>
+                    <div className="flex items-center gap-3">
+                      <Icon className={cn("size-4 shrink-0", isActive ? "text-white" : "text-slate-500")} />
+                      <span>{link.name}</span>
+                    </div>
+                    {link.badge && (
+                      <span className="text-[9px] uppercase font-bold px-1.5 py-0.5 rounded bg-black/10">
+                        {link.badge}
+                      </span>
+                    )}
                   </Link>
                 );
               })}
 
-              <p className="px-3 pt-3 pb-1 text-[10px] font-bold text-amber-400 uppercase tracking-widest">
-                Admin & Security
+              <div className="pt-2 pb-1">
+                <SidebarFeedbackBox />
+              </div>
+
+              <p className="px-3 pt-3 py-1 text-[10px] font-bold text-blue-900 uppercase tracking-widest">
+                Warden Portal
               </p>
-              {managementLinks.map((link) => {
+              {wardenLinks.map((link) => {
                 const isActive = pathname === link.href;
                 const Icon = link.icon;
                 return (
@@ -196,17 +295,15 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
                     href={link.href}
                     onClick={() => setMobileMenuOpen(false)}
                     className={cn(
-                      "flex items-center justify-between px-3 py-2.5 rounded-xl text-xs font-semibold transition-all",
-                      isActive 
-                        ? "bg-amber-500/20 text-amber-300 border border-amber-500/40" 
-                        : "text-muted-foreground hover:text-foreground hover:bg-white/5"
+                      "flex items-center justify-between px-3.5 py-2.5 rounded-xl text-xs font-semibold transition-all",
+                      isActive ? "bg-blue-900 text-white" : "bg-blue-50 text-blue-950 hover:bg-blue-100"
                     )}
                   >
                     <div className="flex items-center gap-3">
-                      <Icon className="size-4 shrink-0 text-amber-400" />
+                      <Icon className="size-4 shrink-0 text-blue-700" />
                       <span>{link.name}</span>
                     </div>
-                    <span className="text-[9px] uppercase px-1.5 py-0.5 rounded bg-white/10 font-mono">
+                    <span className="text-[9px] uppercase px-1.5 py-0.5 rounded bg-blue-200 text-blue-900">
                       {link.badge}
                     </span>
                   </Link>
@@ -216,10 +313,13 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
           </div>
         )}
 
-        {/* Scrollable Page Body */}
+        {/* Scrollable Page Body with Clean Blue-White Background */}
         <div className="flex-1 overflow-y-auto p-4 md:p-8 custom-scrollbar">
-           {children}
+          {children}
         </div>
+
+        {/* Floating View Mode Switcher for Mobile Devices */}
+        <ViewModeToggle variant="floating" />
       </main>
     </div>
   );

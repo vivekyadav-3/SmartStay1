@@ -17,11 +17,11 @@ export async function requestGatePass(data: {
     if (!user) return { error: "User session not found" };
 
     const randomNum = Math.floor(1000 + Math.random() * 9000);
-    const passCode = `GP-2026-${randomNum}`;
+    const passCode = `LIB-2026-${randomNum}`;
 
-    // Standardized demo outing window: 06:15 PM to 08:15 PM (Curfew is strictly 08:30 PM)
+    // Standardized library outing window: 06:00 PM to 08:15 PM (Curfew strictly 08:30 PM)
     const departureTime = new Date();
-    departureTime.setHours(18, 15, 0, 0);
+    departureTime.setHours(18, 0, 0, 0);
 
     const returnTime = new Date();
     returnTime.setHours(20, 15, 0, 0);
@@ -46,13 +46,13 @@ export async function requestGatePass(data: {
         passCode,
         userId: studentUser.id,
         destination: data.destination || "KIIT Central Library (Campus 6)",
-        purpose: data.purpose || "Project Work",
+        purpose: data.purpose || "Central Library Study & Reading Room",
         departureTime,
         returnTime,
         status: "PENDING",   // ← Warden must approve before Security can punch
         approvedById: null,  // ← Explicitly null until Warden approves
         curfewDeadline: "08:30 PM",
-        qrData: `KIIT-PASS-${studentUser.studentProfile?.rollNo || "22051934"}-${passCode}-PENDING`,
+        qrData: `KIIT-LIB-${studentUser.studentProfile?.rollNo || "22051934"}-${passCode}-PENDING`,
       },
       include: {
         user: { include: { studentProfile: true } },
