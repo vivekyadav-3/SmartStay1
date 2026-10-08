@@ -3,6 +3,7 @@
 import { prisma } from "@/lib/db";
 import { revalidatePath } from "next/cache";
 import { cookies } from "next/headers";
+import { findKiitStudent } from "@/lib/kiit-students";
 
 export async function getDemoRole(): Promise<"STUDENT" | "WARDEN" | "HEAD_WARDEN" | "SECURITY"> {
   try {
@@ -291,31 +292,69 @@ export async function updateRoom(roomNo: string) {
 
 export async function loginWithKiitCredentials(email: string, password: string) {
   try {
-    const cleanEmail = email.trim().toLowerCase();
-    if (!cleanEmail) return { error: "Please provide a valid KIIT email address" };
+    const rawInput = email.trim().toLowerCase();
+    if (!rawInput) return { error: "Please enter your KIIT Roll Number or Email" };
     if (!password) return { error: "Please enter your password" };
 
-    let user = await prisma.user.findUnique({
-      where: { email: cleanEmail },
+    // 1. Look up student in official 4th SEM directory (4,385 students)
+    const studentInfo = findKiitStudent(rawInput);
+
+    let cleanEmail = rawInput;
+    let cleanRoll = rawInput.match(/\d+/)?.[0] || rawInput;
+
+    if (studentInfo) {
+      cleanEmail = studentInfo.email;
+      cleanRoll = studentInfo.roll;
+    } else {
+      if (!cleanEmail.includes("@")) {
+        cleanEmail = `${cleanRoll}@kiit.ac.in`;
+      }
+    }
+
+    // 2. Find in database by email OR by studentProfile rollNo
+    let user = await prisma.user.findFirst({
+      where: {
+        OR: [
+          { email: cleanEmail },
+          { studentProfile: { rollNo: cleanRoll } },
+        ],
+      },
       include: { studentProfile: { include: { hostel: true } } },
     });
 
-    // If user does not exist yet, allow ANY n number of students to login with default password Kiit@123!
+    // 3. If found and exists in 4th SEM sheet, ensure official name matches
+    if (user && studentInfo) {
+      if (user.name !== studentInfo.name || user.email !== studentInfo.email) {
+        await prisma.user.update({
+          where: { id: user.id },
+          data: { name: studentInfo.name, email: studentInfo.email },
+        });
+        user.name = studentInfo.name;
+        user.email = studentInfo.email;
+      }
+    }
+
+    // 4. If user does not exist in database yet, create new student record
     if (!user) {
       if (password !== "Kiit@123") {
         return { error: "First-time login default password for KIIT students is Kiit@123" };
       }
 
-      // Extract roll or create
-      const matchRoll = cleanEmail.match(/\d+/);
-      const rollNo = matchRoll ? matchRoll[0] : Math.floor(22051000 + Math.random() * 8999).toString();
-      const extractedName = cleanEmail.split("@")[0].replace(/[._-]/g, " ").replace(/\d+/g, "").trim();
-      const studentName = extractedName ? extractedName.charAt(0).toUpperCase() + extractedName.slice(1) : `Student ${rollNo}`;
+      const studentName = studentInfo?.name || `Student ${cleanRoll}`;
+      const hostelCode = studentInfo?.hostelCode || "KP-7";
+      const hostelName = studentInfo?.hostelName || "King's Palace 7";
+      const campus = studentInfo?.campus || "Campus 12";
+      const roomNo = studentInfo?.roomNo || `${Math.floor(100 + Math.random() * 400)}`;
+      const bedNo = studentInfo?.bedNo || "B";
+      const phone = studentInfo?.phone || "+91 98765 43210";
+      const branch = studentInfo?.branch || "Computer Science & Engineering";
 
-      let hostel = await prisma.hostel.findFirst();
+      let hostel = await prisma.hostel.findFirst({
+        where: { code: hostelCode },
+      });
       if (!hostel) {
         hostel = await prisma.hostel.create({
-          data: { name: "King's Palace 7", code: "KP-7", campus: "Campus 12" },
+          data: { name: hostelName, code: hostelCode, campus },
         });
       }
 
@@ -328,14 +367,14 @@ export async function loginWithKiitCredentials(email: string, password: string) 
           biometricStatus: "IN_HOSTEL",
           studentProfile: {
             create: {
-              rollNo,
-              branch: "Computer Science & Engineering",
-              semester: 6,
-              year: 3,
+              rollNo: cleanRoll,
+              branch,
+              semester: studentInfo?.semester || 4,
+              year: studentInfo?.year || 2,
               hostelId: hostel.id,
-              roomNo: `${Math.floor(100 + Math.random() * 400)}`,
-              bedNo: "B",
-              phone: "+91 98765 43210",
+              roomNo,
+              bedNo,
+              phone,
             },
           },
         },
@@ -377,7 +416,7 @@ export async function loginWithKiitCredentials(email: string, password: string) 
     return { success: true, user, isDefaultPassword: isDefaultPw };
   } catch (error) {
     console.error("Login error:", error);
-    return { error: "Failed to login. Please verify email and try again." };
+    return { error: "Failed to login. Please verify Roll Number or Email and try again." };
   }
 }
 

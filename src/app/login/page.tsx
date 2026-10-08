@@ -122,19 +122,20 @@ export default function LoginPage() {
 
             <form onSubmit={handleLogin} className="space-y-4">
               {/* KIIT Email */}
+              {/* KIIT Roll Number or Email */}
               <div className="space-y-1.5">
                 <label className="text-xs font-bold text-slate-700 uppercase tracking-wide flex items-center justify-between">
-                  <span>KIIT Email Address</span>
-                  <span className="text-[10px] font-normal text-slate-400">@kiit.ac.in</span>
+                  <span>KIIT Roll Number or Email</span>
+                  <span className="text-[10px] font-normal text-slate-400">e.g. 2428021 or @kiit.ac.in</span>
                 </label>
                 <div className="relative">
                   <Mail className="size-4 absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-400" />
                   <input
-                    type="email"
+                    type="text"
                     required
                     value={email}
                     onChange={(e) => setEmail(e.target.value)}
-                    placeholder="e.g. 22051934@kiit.ac.in"
+                    placeholder="Enter Roll No (e.g. 2428021) or Email"
                     className="w-full pl-10 pr-3 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-xs sm:text-sm text-slate-900 placeholder:text-slate-400 focus:outline-none focus:border-blue-600 focus:bg-white transition-colors"
                   />
                 </div>
@@ -174,10 +175,10 @@ export default function LoginPage() {
               <div className="p-3 rounded-xl bg-blue-50/70 border border-blue-200/80 text-[11px] text-blue-900 space-y-1">
                 <div className="flex items-center gap-1.5 font-bold text-blue-950">
                   <KeyRound className="size-3.5 text-blue-600" />
-                  <span>Universal Student Credentials:</span>
+                  <span>4th Semester Student Directory (4,386 Students):</span>
                 </div>
                 <p className="text-slate-600 leading-tight">
-                  Any student can log in using their KIIT email and initial password <strong className="font-mono text-blue-700">Kiit@123</strong>. You can change your password anytime after logging in.
+                  Any student in the 4th Sem directory can log in using their <strong>Roll Number</strong> (e.g. <span className="font-mono text-blue-700">2428021</span>) or official KIIT Email with initial password <strong className="font-mono text-blue-700">Kiit@123</strong>. Your official name and room will load automatically.
                 </p>
               </div>
 
@@ -197,23 +198,32 @@ export default function LoginPage() {
               <p className="text-[10px] font-bold text-slate-400 uppercase tracking-widest text-center">
                 Fast 1-Click Evaluation Logins
               </p>
-              <div className="grid grid-cols-2 gap-2">
+              <div className="grid grid-cols-3 gap-2">
+                <button
+                  type="button"
+                  onClick={() => handleQuickStudentLogin("2428021")}
+                  className="p-2.5 rounded-xl border border-slate-200 bg-slate-50 hover:bg-blue-50 hover:border-blue-300 text-left transition-all"
+                >
+                  <p className="text-xs font-bold text-slate-800 truncate">Shreyan Dutta</p>
+                  <p className="text-[10px] text-slate-500 font-mono">2428021</p>
+                </button>
+
+                <button
+                  type="button"
+                  onClick={() => handleQuickStudentLogin("2405001")}
+                  className="p-2.5 rounded-xl border border-slate-200 bg-slate-50 hover:bg-blue-50 hover:border-blue-300 text-left transition-all"
+                >
+                  <p className="text-xs font-bold text-slate-800 truncate">Abhiroop Borah</p>
+                  <p className="text-[10px] text-slate-500 font-mono">2405001</p>
+                </button>
+
                 <button
                   type="button"
                   onClick={() => handleQuickStudentLogin("22051934@kiit.ac.in")}
                   className="p-2.5 rounded-xl border border-slate-200 bg-slate-50 hover:bg-blue-50 hover:border-blue-300 text-left transition-all"
                 >
-                  <p className="text-xs font-bold text-slate-800">Vivek Yadav</p>
-                  <p className="text-[10px] text-slate-500 font-mono">22051934 (KP-7)</p>
-                </button>
-
-                <button
-                  type="button"
-                  onClick={() => handleQuickStudentLogin(`student_${Math.floor(1000 + Math.random() * 9000)}@kiit.ac.in`)}
-                  className="p-2.5 rounded-xl border border-slate-200 bg-slate-50 hover:bg-blue-50 hover:border-blue-300 text-left transition-all"
-                >
-                  <p className="text-xs font-bold text-blue-700">+ New Student</p>
-                  <p className="text-[10px] text-slate-500 font-mono">Auto-Create & Log In</p>
+                  <p className="text-xs font-bold text-slate-800 truncate">Vivek Yadav</p>
+                  <p className="text-[10px] text-slate-500 font-mono">22051934</p>
                 </button>
               </div>
 
