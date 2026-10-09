@@ -57,12 +57,25 @@ export function SidebarFeedbackBox() {
   const [searchQuery, setSearchQuery] = useState("");
   const [filterStar, setFilterStar] = useState<number | "ALL">("ALL");
 
+  const mergeLocalReviews = (serverReviews: FeedbackItem[]) => {
+    try {
+      const stored = JSON.parse(localStorage.getItem("kiit_resident_reviews") || "[]");
+      if (Array.isArray(stored) && stored.length > 0) {
+        const ids = new Set(serverReviews.map((r) => r.id));
+        const toAdd = stored.filter((s: any) => !ids.has(s.id));
+        return [...toAdd, ...serverReviews];
+      }
+    } catch {}
+    return serverReviews;
+  };
+
   useEffect(() => {
     setMounted(true);
     getFeedbacksList(150).then((data) => {
       if (data?.reviews) {
-        setReviews(data.reviews as any);
-        setTotalCount(data.totalCount || data.reviews.length);
+        const merged = mergeLocalReviews(data.reviews as any);
+        setReviews(merged);
+        setTotalCount(merged.length);
       }
     });
   }, []);
@@ -84,8 +97,9 @@ export function SidebarFeedbackBox() {
       setLoadingReviews(true);
       getFeedbacksList(150).then((data) => {
         if (data?.reviews) {
-          setReviews(data.reviews as any);
-          setTotalCount(data.totalCount || data.reviews.length);
+          const merged = mergeLocalReviews(data.reviews as any);
+          setReviews(merged);
+          setTotalCount(merged.length);
         }
         setLoadingReviews(false);
       });
@@ -128,6 +142,7 @@ export function SidebarFeedbackBox() {
       setError(res.error);
     } else {
       setSubmitted(true);
+      const fbUser = (res.feedback as any)?.user;
       const newReviewItem: FeedbackItem = {
         id: (res.feedback as any)?.id || `fb-${Date.now()}`,
         rating,
@@ -135,12 +150,12 @@ export function SidebarFeedbackBox() {
         reviewText: finalComment,
         createdAt: new Date(),
         user: {
-          name: "Verified Resident",
-          email: "student@kiit.ac.in",
+          name: fbUser?.name || "Verified Resident",
+          email: fbUser?.email || "student@kiit.ac.in",
           studentProfile: {
-            rollNo: (res.feedback as any)?.userId || "2428021",
-            roomNo: "412",
-            hostel: { name: "King's Palace 7" },
+            rollNo: fbUser?.studentProfile?.rollNo || "2428021",
+            roomNo: fbUser?.studentProfile?.roomNo || "412",
+            hostel: fbUser?.studentProfile?.hostel || { name: "King's Palace 7" },
           },
         },
       };

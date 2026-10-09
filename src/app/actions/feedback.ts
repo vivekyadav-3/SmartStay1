@@ -14,8 +14,8 @@ export async function submitStudentFeedback(data: {
   try {
     const rateCheck = await enforceRateLimit({
       action: "submit-feedback",
-      maxRequests: 2,
-      windowSeconds: 300,
+      maxRequests: 10,
+      windowSeconds: 60,
     });
     if (!rateCheck.allowed) {
       return { error: rateCheck.error };

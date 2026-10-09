@@ -24,6 +24,7 @@ import { redirect } from "next/navigation";
 import { syncUser } from "@/app/actions/user";
 import { getNotices } from "@/app/actions/notices";
 import { getWashingMachines } from "@/app/actions/washing-machine";
+import { getFeedbacksList } from "@/app/actions/feedback";
 import StudentHeader from "@/components/dashboard/student-header";
 
 export const dynamic = "force-dynamic";
@@ -33,16 +34,6 @@ export default async function DashboardPage() {
 
   if (!user) {
     redirect("/login");
-  }
-
-  if (!user) {
-    return (
-      <div className="flex flex-col items-center justify-center h-[60vh] text-center space-y-4">
-        <Building2 className="size-14 text-blue-600/30 animate-pulse" />
-        <h2 className="text-2xl font-bold text-slate-800">Setting up KIIT SmartStay...</h2>
-        <p className="text-slate-500 max-w-sm text-sm">Loading resident information and hostel services.</p>
-      </div>
-    );
   }
 
   // Fetch live notices, washing machines, latest passes and complaints
@@ -62,8 +53,9 @@ export default async function DashboardPage() {
     take: 2,
   });
 
-  const reviews = await prisma.foodReview.findMany({ take: 6, orderBy: { createdAt: "desc" } });
-  const avgRating = reviews.length ? (reviews.reduce((acc, r) => acc + r.overallRating, 0) / reviews.length).toFixed(1) : "4.3";
+  const feedbackData = await getFeedbacksList(6);
+  const reviews = feedbackData.reviews || [];
+  const avgRating = feedbackData.avgRating ? feedbackData.avgRating.toFixed(1) : "4.6";
 
   return (
     <div className="space-y-6 max-w-7xl mx-auto pb-10">
@@ -345,18 +337,18 @@ export default async function DashboardPage() {
           </CardContent>
         </Card>
 
-        {/* Right: Mess Food Review Summary */}
+        {/* Right: Resident Reviews & Ratings */}
         <Card className="bg-white border-slate-200 shadow-sm">
           <CardHeader className="pb-3 border-b border-slate-100 flex flex-row items-center justify-between">
             <div className="flex items-center gap-2">
-              <UtensilsCrossed className="size-4 text-blue-600" />
+              <Star className="size-4 text-amber-500 fill-amber-500" />
               <CardTitle className="text-sm font-bold text-slate-900">
-                Mess Food Review & Today's Rating
+                Hostel & Mess Reviews
               </CardTitle>
             </div>
-            <Link href="/dashboard/food-review">
+            <Link href="/dashboard/feedback">
               <Button size="sm" variant="outline" className="border-blue-200 text-blue-700 hover:bg-blue-50 text-xs h-7 px-3 font-semibold">
-                Submit Review
+                View All Reviews →
               </Button>
             </Link>
           </CardHeader>
@@ -369,20 +361,29 @@ export default async function DashboardPage() {
                 </span>
               </div>
               <div className="text-right text-xs text-slate-600">
-                <p className="font-semibold text-slate-800">KP-7 Central Dining Hall</p>
-                <p className="text-[11px] text-slate-500">{reviews.length} Student Reviews Analyzed</p>
+                <p className="font-semibold text-slate-800">KP-7 Student Community</p>
+                <p className="text-[11px] text-slate-500">{feedbackData.totalCount || reviews.length} Total Verified Reviews</p>
               </div>
             </div>
 
             <div className="space-y-1.5">
-              <p className="text-[11px] font-bold text-slate-600 uppercase tracking-wide">Recent Student Reviews:</p>
-              {reviews.slice(0, 2).map((rev) => (
-                <div key={rev.id} className="p-2 rounded-lg bg-slate-50 border border-slate-200 text-xs">
+              <p className="text-[11px] font-bold text-slate-600 uppercase tracking-wide">Recent Resident Reviews:</p>
+              {reviews.slice(0, 3).map((rev: any) => (
+                <div key={rev.id} className="p-2.5 rounded-lg bg-slate-50 border border-slate-200 text-xs space-y-1">
                   <div className="flex items-center justify-between text-[11px]">
-                    <span className="font-semibold text-blue-900">{rev.mealType} Rating</span>
-                    <span className="font-bold text-amber-600">★ {rev.overallRating}.0</span>
+                    <span className="font-bold text-blue-950 flex items-center gap-1.5">
+                      <span>{rev.user?.name || "Resident"}</span>
+                      {rev.user?.studentProfile?.rollNo && (
+                        <span className="px-1.5 py-0.5 rounded bg-blue-100 text-blue-800 font-mono text-[10px]">
+                          {rev.user.studentProfile.rollNo}
+                        </span>
+                      )}
+                    </span>
+                    <span className="font-bold text-amber-600">★ {rev.rating || rev.overallRating || 5}.0</span>
                   </div>
-                  <p className="text-slate-600 text-[11px] mt-0.5 italic">"{rev.comment || "Food quality was satisfactory."}"</p>
+                  <p className="text-slate-700 text-[11px] line-clamp-2">
+                    "{rev.reviewText || rev.comment || "Smooth experience with SmartStay hostel facilities."}"
+                  </p>
                 </div>
               ))}
             </div>
