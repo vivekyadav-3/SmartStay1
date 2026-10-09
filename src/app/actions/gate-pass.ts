@@ -3,6 +3,7 @@
 import { prisma } from "@/lib/db";
 import { syncUser } from "@/app/actions/user";
 import { revalidatePath } from "next/cache";
+import { enforceRateLimit } from "@/lib/rate-limiter";
 
 export async function requestGatePass(data: {
   destination: string;
@@ -13,6 +14,15 @@ export async function requestGatePass(data: {
   returnTimeStr?: string;
 }) {
   try {
+    const rateCheck = await enforceRateLimit({
+      action: "request-gate-pass",
+      maxRequests: 6,
+      windowSeconds: 60,
+    });
+    if (!rateCheck.allowed) {
+      return { error: rateCheck.error };
+    }
+
     const user = await syncUser();
     if (!user) return { error: "User session not found" };
 

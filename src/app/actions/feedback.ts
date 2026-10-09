@@ -4,6 +4,7 @@ import { prisma } from "@/lib/db";
 import { syncUser } from "@/app/actions/user";
 import { revalidatePath } from "next/cache";
 import { saveFeedbackToBackupStore, getFeedbacksFromBackupStore } from "@/lib/feedback-store";
+import { enforceRateLimit } from "@/lib/rate-limiter";
 
 export async function submitStudentFeedback(data: {
   rating: number;
@@ -11,6 +12,15 @@ export async function submitStudentFeedback(data: {
   category: "OVERALL" | "GATE_PASS" | "MESS" | "LAUNDRY" | "COMPLAINTS" | "ANNOUNCEMENTS";
 }) {
   try {
+    const rateCheck = await enforceRateLimit({
+      action: "submit-feedback",
+      maxRequests: 5,
+      windowSeconds: 60,
+    });
+    if (!rateCheck.allowed) {
+      return { error: rateCheck.error };
+    }
+
     let user = await syncUser();
     if (!user) {
       user = await prisma.user.findFirst({

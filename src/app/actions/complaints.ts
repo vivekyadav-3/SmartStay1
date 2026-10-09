@@ -3,6 +3,7 @@
 import { prisma } from "@/lib/db";
 import { syncUser } from "@/app/actions/user";
 import { revalidatePath } from "next/cache";
+import { enforceRateLimit } from "@/lib/rate-limiter";
 
 const technicianDirectory: Record<string, { name: string; contact: string }> = {
   ELECTRICAL: { name: "Ramesh Behera (Electrician, KP-7)", contact: "+91 98612 34567" },
@@ -26,6 +27,15 @@ export async function submitComplaint(formData: {
   rollNo?: string;
 }) {
   try {
+    const rateCheck = await enforceRateLimit({
+      action: "submit-complaint",
+      maxRequests: 6,
+      windowSeconds: 60,
+    });
+    if (!rateCheck.allowed) {
+      return { error: rateCheck.error };
+    }
+
     const user = await syncUser();
     if (!user) return { error: "User session not found" };
 

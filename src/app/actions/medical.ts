@@ -2,6 +2,7 @@
 
 import { prisma } from "@/lib/db";
 import { revalidatePath } from "next/cache";
+import { enforceRateLimit } from "@/lib/rate-limiter";
 
 export async function dispatchEmergencyAlert(data: {
   studentName: string;
@@ -12,6 +13,15 @@ export async function dispatchEmergencyAlert(data: {
   symptoms?: string;
 }) {
   try {
+    const rateCheck = await enforceRateLimit({
+      action: "medical-emergency-alert",
+      maxRequests: 5,
+      windowSeconds: 60,
+    });
+    if (!rateCheck.allowed) {
+      return { error: rateCheck.error };
+    }
+
     if (!data.studentName || !data.rollNo || !data.hostelName || !data.roomNo) {
       return { error: "Missing essential student emergency details" };
     }

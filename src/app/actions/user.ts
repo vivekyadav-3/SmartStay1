@@ -4,6 +4,7 @@ import { prisma } from "@/lib/db";
 import { revalidatePath } from "next/cache";
 import { cookies } from "next/headers";
 import { findKiitStudent } from "@/lib/kiit-students";
+import { enforceRateLimit } from "@/lib/rate-limiter";
 
 export async function getDemoRole(): Promise<"STUDENT" | "WARDEN" | "HEAD_WARDEN" | "SECURITY"> {
   try {
@@ -292,6 +293,15 @@ export async function updateRoom(roomNo: string) {
 
 export async function loginWithKiitCredentials(email: string, password: string) {
   try {
+    const rateCheck = await enforceRateLimit({
+      action: "student-login",
+      maxRequests: 5,
+      windowSeconds: 60,
+    });
+    if (!rateCheck.allowed) {
+      return { error: rateCheck.error };
+    }
+
     const rawInput = email.trim().toLowerCase();
     if (!rawInput) return { error: "Please enter your KIIT Roll Number or Email" };
     if (!password) return { error: "Please enter your password" };
@@ -422,6 +432,15 @@ export async function loginWithKiitCredentials(email: string, password: string) 
 
 export async function changeStudentPassword(currentPassword: string, newPassword: string) {
   try {
+    const rateCheck = await enforceRateLimit({
+      action: "change-password",
+      maxRequests: 5,
+      windowSeconds: 60,
+    });
+    if (!rateCheck.allowed) {
+      return { error: rateCheck.error };
+    }
+
     const user = await syncUser();
     if (!user) return { error: "Session expired. Please log in again." };
 

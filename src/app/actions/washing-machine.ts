@@ -2,6 +2,7 @@
 
 import { prisma } from "@/lib/db";
 import { revalidatePath } from "next/cache";
+import { enforceRateLimit } from "@/lib/rate-limiter";
 
 export async function getWashingMachines() {
   try {
@@ -87,6 +88,15 @@ export async function bookMachineSlot(data: {
   slotTime: string;
 }) {
   try {
+    const rateCheck = await enforceRateLimit({
+      action: "book-washing-machine",
+      maxRequests: 6,
+      windowSeconds: 60,
+    });
+    if (!rateCheck.allowed) {
+      return { error: rateCheck.error };
+    }
+
     if (!data.machineId || !data.studentName || !data.rollNo || !data.slotTime) {
       return { error: "Please provide all required booking information." };
     }
