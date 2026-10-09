@@ -61,10 +61,19 @@ export default function FoodReviewPage() {
       if (u) setCurrentUser(u);
     });
 
-    // 2. Load food reviews from DB
+    // 2. Load food reviews from DB & LocalStorage
     getFoodReviews(50).then((data) => {
-      if (data && data.length > 0) {
-        setReviews(data as any);
+      let list = (data || []) as any[];
+      try {
+        const stored = JSON.parse(localStorage.getItem("kiit_food_reviews") || "[]");
+        if (Array.isArray(stored) && stored.length > 0) {
+          const ids = new Set(list.map((r: any) => r.id));
+          const toAdd = stored.filter((s: any) => !ids.has(s.id));
+          list = [...toAdd, ...list];
+        }
+      } catch {}
+      if (list.length > 0) {
+        setReviews(list as any);
       }
     });
 
@@ -116,6 +125,12 @@ export default function FoodReviewPage() {
       setSubmitSuccess(true);
       setComment("");
       setTimeout(() => setSubmitSuccess(false), 5000);
+
+      try {
+        const stored = JSON.parse(localStorage.getItem("kiit_food_reviews") || "[]");
+        stored.unshift(newRev);
+        localStorage.setItem("kiit_food_reviews", JSON.stringify(stored.slice(0, 50)));
+      } catch {}
     }
     setIsSubmitting(false);
   };

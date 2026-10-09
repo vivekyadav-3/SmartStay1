@@ -1,5 +1,24 @@
 [
   {
+    "id": "cmv0jlh56000113exushcvuq7",
+    "userId": "cmuzs65t1002t3h23jt5ggrgg",
+    "rating": 5,
+    "reviewText": "Test review from 2428021",
+    "category": "OVERALL",
+    "createdAt": "2026-10-09T05:46:17.226Z",
+    "user": {
+      "name": "Shreyan Dutta",
+      "email": "2428021@kiit.ac.in",
+      "studentProfile": {
+        "rollNo": "2428021",
+        "roomNo": "103",
+        "hostel": {
+          "name": "King's Palace 7"
+        }
+      }
+    }
+  },
+  {
     "id": "cmuzzwlfc0001os1ksi4rf96h",
     "userId": "warden_kp7",
     "rating": 5,
@@ -10,6 +29,1520 @@
       "name": "Prof. S. K. Mohapatra",
       "email": "warden.kp7@kiit.ac.in",
       "studentProfile": null
+    }
+  },
+  {
+    "id": "cmuzyw0qd0001hb6ai2xr1pdy",
+    "userId": "warden_kp7",
+    "rating": 5,
+    "reviewText": "SmartStay has significantly improved hostel life at KIIT. Outstanding speed and transparent facilities!",
+    "category": "OVERALL",
+    "createdAt": "2026-10-08T20:06:37.237Z",
+    "user": {
+      "name": "Prof. S. K. Mohapatra",
+      "email": "warden.kp7@kiit.ac.in",
+      "studentProfile": null
+    }
+  },
+  {
+    "id": "cmuzu75d000as6818svn1p5r1",
+    "userId": "cmuzs665400793h23bk2glh30",
+    "rating": 4,
+    "reviewText": "Pre-booked slot 1 hour before dinner. Machine #1 was free, took out washed clothes on time without rush. Overall system is very stable.",
+    "category": "OVERALL",
+    "createdAt": "2026-10-08T17:00:10.000Z",
+    "user": {
+      "name": "Aman Kumar Singh",
+      "email": "2428053@kiit.ac.in",
+      "studentProfile": {
+        "rollNo": "2428053",
+        "roomNo": "523",
+        "hostel": {
+          "name": "Queen's Castle 3"
+        }
+      }
+    }
+  },
+  {
+    "id": "cmuzu75cj00aq6818z4trseut",
+    "userId": "cmuzu75c600am6818wzbuwpl9",
+    "rating": 5,
+    "reviewText": "Important notices like emergency ambulance contacts and warden duty numbers are right at the top.",
+    "category": "ANNOUNCEMENTS",
+    "createdAt": "2026-10-08T14:45:50.000Z",
+    "user": {
+      "name": "Shreekant Singh",
+      "email": "24051740@kiit.ac.in",
+      "studentProfile": {
+        "rollNo": "24051740",
+        "roomNo": "123",
+        "hostel": {
+          "name": "King's Palace 7"
+        }
+      }
+    }
+  },
+  {
+    "id": "cmuzu75bz00al6818407mn3it",
+    "userId": "cmuzu75bp00ah6818fpsp3ttd",
+    "rating": 5,
+    "reviewText": "Thursday evening paneer cutlets and hot tea were fresh. Great evening snack.",
+    "category": "MESS",
+    "createdAt": "2026-10-08T12:10:32.000Z",
+    "user": {
+      "name": "Rai Tejash Akhilesh Kumar",
+      "email": "2405895@kiit.ac.in",
+      "studentProfile": {
+        "rollNo": "2405895",
+        "roomNo": "216",
+        "hostel": {
+          "name": "Queen's Castle 3"
+        }
+      }
+    }
+  },
+  {
+    "id": "cmuzu75bf00ag6818p9hje4ro",
+    "userId": "cmuzu75b800ac6818hdc9a513",
+    "rating": 5,
+    "reviewText": "PIN reservation prevents machine theft. Clothes came out completely clean and spun dry.",
+    "category": "LAUNDRY",
+    "createdAt": "2026-10-08T08:45:15.000Z",
+    "user": {
+      "name": "Anirban Haldar",
+      "email": "24051157@kiit.ac.in",
+      "studentProfile": {
+        "rollNo": "24051157",
+        "roomNo": "502",
+        "hostel": {
+          "name": "King's Palace 7"
+        }
+      }
+    }
+  },
+  {
+    "id": "cmuzu75aw00ab6818rv6noi8j",
+    "userId": "cmuzu75al00a76818r1sza9jh",
+    "rating": 4,
+    "reviewText": "Study chair wheel was jammed. Replaced with a new chair from hostel storeroom by afternoon.",
+    "category": "COMPLAINTS",
+    "createdAt": "2026-10-08T05:55:40.000Z",
+    "user": {
+      "name": "Biswajit Sahoo",
+      "email": "25057021@kiit.ac.in",
+      "studentProfile": {
+        "rollNo": "25057021",
+        "roomNo": "208",
+        "hostel": {
+          "name": "King's Palace 7"
+        }
+      }
+    }
+  },
+  {
+    "id": "cmuzu75ae00a668187rb92kvm",
+    "userId": "cmuzu75a100a26818vw1labha",
+    "rating": 5,
+    "reviewText": "Library pass barcode was recognized by campus security scanner on first try. Very reliable.",
+    "category": "GATE_PASS",
+    "createdAt": "2026-10-08T03:20:20.000Z",
+    "user": {
+      "name": "Kaustubh Shrinivas Naphade",
+      "email": "2405884@kiit.ac.in",
+      "studentProfile": {
+        "rollNo": "2405884",
+        "roomNo": "501",
+        "hostel": {
+          "name": "Queen's Castle 3"
+        }
+      }
+    }
+  },
+  {
+    "id": "cmuzu759r00a16818ibxp7l3o",
+    "userId": "cmuzu759g009x6818izyfngbc",
+    "rating": 3,
+    "reviewText": "Food quality is fine overall, but during peak lunch time between 1:15 to 1:45 PM there is slight rush at the counter.",
+    "category": "MESS",
+    "createdAt": "2026-10-07T17:35:14.000Z",
+    "user": {
+      "name": "Aditya Pronoy Roy",
+      "email": "24051385@kiit.ac.in",
+      "studentProfile": {
+        "rollNo": "24051385",
+        "roomNo": "509",
+        "hostel": {
+          "name": "King's Palace 7"
+        }
+      }
+    }
+  },
+  {
+    "id": "cmuzu7599009w68186of1jwug",
+    "userId": "cmuzu758z009s6818dgoi7gao",
+    "rating": 5,
+    "reviewText": "Hostel Durga Puja holiday schedule and bus timings to railway station posted clearly.",
+    "category": "ANNOUNCEMENTS",
+    "createdAt": "2026-10-07T15:40:47.000Z",
+    "user": {
+      "name": "Abhishek Kumar",
+      "email": "24157003@kiit.ac.in",
+      "studentProfile": {
+        "rollNo": "24157003",
+        "roomNo": "121",
+        "hostel": {
+          "name": "Queen's Castle 3"
+        }
+      }
+    }
+  },
+  {
+    "id": "cmuzu758s009r68181h0rzz3n",
+    "userId": "cmuzu758i009n6818re5j5nwv",
+    "rating": 4,
+    "reviewText": "Leaking pipe in corridor was resolved same day. Good work by KP-7 maintenance squad.",
+    "category": "COMPLAINTS",
+    "createdAt": "2026-10-07T13:20:22.000Z",
+    "user": {
+      "name": "Gourab Bhattacharya",
+      "email": "24052775@kiit.ac.in",
+      "studentProfile": {
+        "rollNo": "24052775",
+        "roomNo": "205",
+        "hostel": {
+          "name": "King's Palace 7"
+        }
+      }
+    }
+  },
+  {
+    "id": "cmuzu7589009m6818qvvtg3wd",
+    "userId": "cmuzu7582009i6818xvozl3eu",
+    "rating": 5,
+    "reviewText": "Simple and intuitive. Teachers and wardens will find this easy to monitor without manual registers.",
+    "category": "OVERALL",
+    "createdAt": "2026-10-07T10:45:58.000Z",
+    "user": {
+      "name": "Aniket Pattnaik",
+      "email": "24155158@kiit.ac.in",
+      "studentProfile": {
+        "rollNo": "24155158",
+        "roomNo": "208",
+        "hostel": {
+          "name": "King's Palace 7"
+        }
+      }
+    }
+  },
+  {
+    "id": "cmuzu757n009h6818wh1xgyaq",
+    "userId": "cmuzu757a009d6818yz5tvnnf",
+    "rating": 5,
+    "reviewText": "Live machine status prevented unnecessary trips across hostel wings. Very convenient system.",
+    "category": "LAUNDRY",
+    "createdAt": "2026-10-07T08:10:30.000Z",
+    "user": {
+      "name": "Arpit Verma",
+      "email": "24051314@kiit.ac.in",
+      "studentProfile": {
+        "rollNo": "24051314",
+        "roomNo": "301",
+        "hostel": {
+          "name": "Queen's Castle 3"
+        }
+      }
+    }
+  },
+  {
+    "id": "cmuzu756r009c6818d617nfwo",
+    "userId": "cmuzu756k00986818vuzgnbog",
+    "rating": 4,
+    "reviewText": "Wednesday paneer butter masala was tasty. Mess staff served warm chapatis.",
+    "category": "MESS",
+    "createdAt": "2026-10-07T05:35:12.000Z",
+    "user": {
+      "name": "Aniket Kumar",
+      "email": "25057008@kiit.ac.in",
+      "studentProfile": {
+        "rollNo": "25057008",
+        "roomNo": "209",
+        "hostel": {
+          "name": "King's Palace 7"
+        }
+      }
+    }
+  },
+  {
+    "id": "cmuzu756c00976818f88vsbea",
+    "userId": "cmuzu756600936818guymqx3b",
+    "rating": 5,
+    "reviewText": "Allowed me to study in Central Library till 8:15 PM peacefully. Reached hostel well within the 08:30 curfew.",
+    "category": "GATE_PASS",
+    "createdAt": "2026-10-07T03:00:45.000Z",
+    "user": {
+      "name": "Bighnesh Prasanna Rath",
+      "email": "2405871@kiit.ac.in",
+      "studentProfile": {
+        "rollNo": "2405871",
+        "roomNo": "421",
+        "hostel": {
+          "name": "Queen's Castle 3"
+        }
+      }
+    }
+  },
+  {
+    "id": "cmuzu755v00926818owftypdx",
+    "userId": "cmuzu755o008y6818mc7tnvvq",
+    "rating": 5,
+    "reviewText": "Room bathroom exhaust fan repaired quickly. Caretaker brought genuine spare parts.",
+    "category": "COMPLAINTS",
+    "createdAt": "2026-10-06T17:15:03.000Z",
+    "user": {
+      "name": "Saiprakash Mishra",
+      "email": "24155200@kiit.ac.in",
+      "studentProfile": {
+        "rollNo": "24155200",
+        "roomNo": "405",
+        "hostel": {
+          "name": "King's Palace 7"
+        }
+      }
+    }
+  },
+  {
+    "id": "cmuzu755g008x6818ie1sfosm",
+    "userId": "cmuzu7559008t6818of04iywl",
+    "rating": 4,
+    "reviewText": "Hostel Wi-Fi maintenance window circular helped me plan my project submission ahead of downtime.",
+    "category": "ANNOUNCEMENTS",
+    "createdAt": "2026-10-06T15:05:19.000Z",
+    "user": {
+      "name": "Ananda Sankar Sahoo",
+      "email": "24051008@kiit.ac.in",
+      "studentProfile": {
+        "rollNo": "24051008",
+        "roomNo": "206",
+        "hostel": {
+          "name": "Queen's Castle 3"
+        }
+      }
+    }
+  },
+  {
+    "id": "cmuzu7551008s6818gabetn3g",
+    "userId": "cmuzu754q008o6818ifwqt138",
+    "rating": 5,
+    "reviewText": "No lag or freeze even with lots of students accessing simultaneously. Very solid performance.",
+    "category": "OVERALL",
+    "createdAt": "2026-10-06T12:40:40.000Z",
+    "user": {
+      "name": "Divyansh Upadhyay",
+      "email": "24051547@kiit.ac.in",
+      "studentProfile": {
+        "rollNo": "24051547",
+        "roomNo": "527",
+        "hostel": {
+          "name": "King's Palace 7"
+        }
+      }
+    }
+  },
+  {
+    "id": "cmuzu754j008n681824tpk395",
+    "userId": "cmuzu754c008j6818wppp2g54",
+    "rating": 5,
+    "reviewText": "The 1-hour pre-booking is a lifesaver on busy mid-sem exam days. Machine was ready when I reached.",
+    "category": "LAUNDRY",
+    "createdAt": "2026-10-06T10:15:54.000Z",
+    "user": {
+      "name": "Ankit Anand",
+      "email": "2405033@kiit.ac.in",
+      "studentProfile": {
+        "rollNo": "2405033",
+        "roomNo": "413",
+        "hostel": {
+          "name": "Queen's Castle 3"
+        }
+      }
+    }
+  },
+  {
+    "id": "cmuzu7545008i6818crkjhbtb",
+    "userId": "cmuzu753u008e6818zrd7wvtc",
+    "rating": 4,
+    "reviewText": "Quick library pass issuance. Clean layout with barcode and study hours clearly specified.",
+    "category": "GATE_PASS",
+    "createdAt": "2026-10-06T07:50:11.000Z",
+    "user": {
+      "name": "Ayush Pathak",
+      "email": "24052503@kiit.ac.in",
+      "studentProfile": {
+        "rollNo": "24052503",
+        "roomNo": "316",
+        "hostel": {
+          "name": "King's Palace 7"
+        }
+      }
+    }
+  },
+  {
+    "id": "cmuzu753n008d6818t7shlw1o",
+    "userId": "cmuzu753g008968181kvh7y6f",
+    "rating": 5,
+    "reviewText": "Water dispenser filter was changed after 3 students reported low flow on the 2nd floor.",
+    "category": "COMPLAINTS",
+    "createdAt": "2026-10-06T05:20:35.000Z",
+    "user": {
+      "name": "Aryan Raj",
+      "email": "24051397@kiit.ac.in",
+      "studentProfile": {
+        "rollNo": "24051397",
+        "roomNo": "519",
+        "hostel": {
+          "name": "Queen's Castle 3"
+        }
+      }
+    }
+  },
+  {
+    "id": "cmuzu753a008868182s4cqtib",
+    "userId": "cmuzu752y00846818sebzavhp",
+    "rating": 5,
+    "reviewText": "Breakfast upma was hot and fresh today. Much better than last week.",
+    "category": "MESS",
+    "createdAt": "2026-10-06T02:45:20.000Z",
+    "user": {
+      "name": "Chirag Madnani",
+      "email": "2405192@kiit.ac.in",
+      "studentProfile": {
+        "rollNo": "2405192",
+        "roomNo": "227",
+        "hostel": {
+          "name": "King's Palace 7"
+        }
+      }
+    }
+  },
+  {
+    "id": "cmuzu752q00836818vij1rlch",
+    "userId": "cmuzu752i007z6818fis57wjs",
+    "rating": 3,
+    "reviewText": "App is good but sometimes guys leave clothes in the drum 10 mins after cycle finishes. Maybe add a reminder notification.",
+    "category": "LAUNDRY",
+    "createdAt": "2026-10-05T17:42:50.000Z",
+    "user": {
+      "name": "Ratan Raj",
+      "email": "24156162@kiit.ac.in",
+      "studentProfile": {
+        "rollNo": "24156162",
+        "roomNo": "517",
+        "hostel": {
+          "name": "King's Palace 7"
+        }
+      }
+    }
+  },
+  {
+    "id": "cmuzu752c007y6818erigg0hj",
+    "userId": "cmuzu7520007u6818ny8owen9",
+    "rating": 5,
+    "reviewText": "Notice board UI is neat with categorized tags like Exam, Curfew, Food, and Sports.",
+    "category": "ANNOUNCEMENTS",
+    "createdAt": "2026-10-05T16:00:17.000Z",
+    "user": {
+      "name": "Sujal Kumar Gupta",
+      "email": "24052388@kiit.ac.in",
+      "studentProfile": {
+        "rollNo": "24052388",
+        "roomNo": "421",
+        "hostel": {
+          "name": "Queen's Castle 3"
+        }
+      }
+    }
+  },
+  {
+    "id": "cmuzu751u007t6818610syqju",
+    "userId": "cmuzu751m007p6818fihy4k6f",
+    "rating": 5,
+    "reviewText": "Library pass is the most practical feature. Curfew countdown is hard to miss, keeps everyone on time.",
+    "category": "GATE_PASS",
+    "createdAt": "2026-10-05T13:35:42.000Z",
+    "user": {
+      "name": "Sarban Kumar Jena",
+      "email": "24052106@kiit.ac.in",
+      "studentProfile": {
+        "rollNo": "24052106",
+        "roomNo": "523",
+        "hostel": {
+          "name": "King's Palace 7"
+        }
+      }
+    }
+  },
+  {
+    "id": "cmuzu751f007o68181hemv0rw",
+    "userId": "cmuzu7512007k681808u26hv9",
+    "rating": 4,
+    "reviewText": "Navigation between pages is snappy. Good separation between student services and authority controls.",
+    "category": "OVERALL",
+    "createdAt": "2026-10-05T10:55:03.000Z",
+    "user": {
+      "name": "Abhishek Yadav",
+      "email": "24052600@kiit.ac.in",
+      "studentProfile": {
+        "rollNo": "24052600",
+        "roomNo": "528",
+        "hostel": {
+          "name": "King's Palace 7"
+        }
+      }
+    }
+  },
+  {
+    "id": "cmuzu750p007j68186495gkx0",
+    "userId": "cmuzu750j007f6818gyah087n",
+    "rating": 5,
+    "reviewText": "Sunday chicken curry had good tender pieces. Really happy to see mess reviews making a genuine difference.",
+    "category": "MESS",
+    "createdAt": "2026-10-05T08:15:29.000Z",
+    "user": {
+      "name": "Harshil Agarwal",
+      "email": "24155985@kiit.ac.in",
+      "studentProfile": {
+        "rollNo": "24155985",
+        "roomNo": "425",
+        "hostel": {
+          "name": "Queen's Castle 3"
+        }
+      }
+    }
+  },
+  {
+    "id": "cmuzu750c007e6818g308hedi",
+    "userId": "cmuzu7506007a681801ldckyn",
+    "rating": 4,
+    "reviewText": "Study lamp switch was sparking. Electrician arrived within 4 hours and fixed wiring safely.",
+    "category": "COMPLAINTS",
+    "createdAt": "2026-10-05T05:40:48.000Z",
+    "user": {
+      "name": "Bichel Sood",
+      "email": "24051619@kiit.ac.in",
+      "studentProfile": {
+        "rollNo": "24051619",
+        "roomNo": "218",
+        "hostel": {
+          "name": "King's Palace 7"
+        }
+      }
+    }
+  },
+  {
+    "id": "cmuzu74zy007968185i3acbuf",
+    "userId": "cmuzu74zn00756818q6knua03",
+    "rating": 5,
+    "reviewText": "Checking vacancy from my study desk saved me so many wasted trips down the stairs. Excellent utility.",
+    "category": "LAUNDRY",
+    "createdAt": "2026-10-05T03:10:15.000Z",
+    "user": {
+      "name": "Mayank Jaiswal",
+      "email": "24158149@kiit.ac.in",
+      "studentProfile": {
+        "rollNo": "24158149",
+        "roomNo": "203",
+        "hostel": {
+          "name": "Queen's Castle 3"
+        }
+      }
+    }
+  },
+  {
+    "id": "cmuzu74zg00746818kevq2dge",
+    "userId": "cmuzu74z900706818ojm3fds5",
+    "rating": 5,
+    "reviewText": "Campus 6 Central Library pass generated with proper timestamps and student roll. Warden verified quickly.",
+    "category": "GATE_PASS",
+    "createdAt": "2026-10-04T17:00:24.000Z",
+    "user": {
+      "name": "Bibhudatta Senapati",
+      "email": "25057018@kiit.ac.in",
+      "studentProfile": {
+        "rollNo": "25057018",
+        "roomNo": "501",
+        "hostel": {
+          "name": "King's Palace 7"
+        }
+      }
+    }
+  },
+  {
+    "id": "cmuzu74z2006z6818f4tmgttr",
+    "userId": "cmuzu74yp006v6818pgnfyt7k",
+    "rating": 4,
+    "reviewText": "Hostel cleanliness drive schedule was posted with exact wing timings. Good community organizing.",
+    "category": "ANNOUNCEMENTS",
+    "createdAt": "2026-10-04T14:40:38.000Z",
+    "user": {
+      "name": "Shrey Kumar",
+      "email": "24051208@kiit.ac.in",
+      "studentProfile": {
+        "rollNo": "24051208",
+        "roomNo": "210",
+        "hostel": {
+          "name": "King's Palace 7"
+        }
+      }
+    }
+  },
+  {
+    "id": "cmuzu74yi006u68186lhg4p3r",
+    "userId": "cmuzu74y6006q6818wx97zcky",
+    "rating": 5,
+    "reviewText": "Login with 2405376@kiit.ac.in and universal initial password worked smoothly on my phone without errors.",
+    "category": "OVERALL",
+    "createdAt": "2026-10-04T12:05:11.000Z",
+    "user": {
+      "name": "Rupesh Mandal",
+      "email": "2405376@kiit.ac.in",
+      "studentProfile": {
+        "rollNo": "2405376",
+        "roomNo": "425",
+        "hostel": {
+          "name": "King's Palace 7"
+        }
+      }
+    }
+  },
+  {
+    "id": "cmuzu74xy006p68189tvb0zot",
+    "userId": "cmuzu74xr006l6818wkdthv5r",
+    "rating": 3,
+    "reviewText": "Dinner aloo gobhi was a bit cold on Saturday. Mess staff should keep food warmer on stainless counters.",
+    "category": "MESS",
+    "createdAt": "2026-10-04T09:20:52.000Z",
+    "user": {
+      "name": "Felix Kullu",
+      "email": "25057024@kiit.ac.in",
+      "studentProfile": {
+        "rollNo": "25057024",
+        "roomNo": "221",
+        "hostel": {
+          "name": "Queen's Castle 3"
+        }
+      }
+    }
+  },
+  {
+    "id": "cmuzu74xh006k681818n7pvbg",
+    "userId": "cmuzu74xa006g6818bmzuezc1",
+    "rating": 5,
+    "reviewText": "Pre-booking system prevents disputes in the laundry area. Everyone respects the PIN reservation.",
+    "category": "LAUNDRY",
+    "createdAt": "2026-10-04T06:50:19.000Z",
+    "user": {
+      "name": "Ayush Kumar",
+      "email": "2405271@kiit.ac.in",
+      "studentProfile": {
+        "rollNo": "2405271",
+        "roomNo": "502",
+        "hostel": {
+          "name": "King's Palace 7"
+        }
+      }
+    }
+  },
+  {
+    "id": "cmuzu74x2006f6818o28czt8w",
+    "userId": "cmuzu74wt006b68188s4adv2o",
+    "rating": 5,
+    "reviewText": "Window pane mesh was torn, mosquitoes were coming in. Reported at 10 AM, caretaker brought replacement mesh by 4 PM.",
+    "category": "COMPLAINTS",
+    "createdAt": "2026-10-04T03:35:40.000Z",
+    "user": {
+      "name": "Suyash Mishra",
+      "email": "24051295@kiit.ac.in",
+      "studentProfile": {
+        "rollNo": "24051295",
+        "roomNo": "423",
+        "hostel": {
+          "name": "Queen's Castle 3"
+        }
+      }
+    }
+  },
+  {
+    "id": "cmuzu74wh006a6818c55akpkg",
+    "userId": "cmuzu74wa006668183xwwuelc",
+    "rating": 4,
+    "reviewText": "The 08:30 curfew banner keeps us disciplined. Security guard scanned the pass code effortlessly at the gate.",
+    "category": "GATE_PASS",
+    "createdAt": "2026-10-03T17:10:01.000Z",
+    "user": {
+      "name": "Siddharth Kumar Mandal",
+      "email": "24155660@kiit.ac.in",
+      "studentProfile": {
+        "rollNo": "24155660",
+        "roomNo": "408",
+        "hostel": {
+          "name": "King's Palace 7"
+        }
+      }
+    }
+  },
+  {
+    "id": "cmuzu74w400656818h66gvts3",
+    "userId": "cmuzu74vu00616818xyy9bgvm",
+    "rating": 5,
+    "reviewText": "All core student needs—passes, complaints, laundry, and food review—are consolidated in one sleek portal.",
+    "category": "OVERALL",
+    "createdAt": "2026-10-03T16:15:15.000Z",
+    "user": {
+      "name": "Rajesh Mondal",
+      "email": "24155196@kiit.ac.in",
+      "studentProfile": {
+        "rollNo": "24155196",
+        "roomNo": "422",
+        "hostel": {
+          "name": "King's Palace 7"
+        }
+      }
+    }
+  },
+  {
+    "id": "cmuzu74vn006068186f7qn4fk",
+    "userId": "cmuzu74vf005w6818b69qppnh",
+    "rating": 4,
+    "reviewText": "Booking slot via mobile is effortless. Just make sure people clear their clothes promptly once cycle stops.",
+    "category": "LAUNDRY",
+    "createdAt": "2026-10-03T13:50:46.000Z",
+    "user": {
+      "name": "Sarthak Sameer Bal",
+      "email": "24155497@kiit.ac.in",
+      "studentProfile": {
+        "rollNo": "24155497",
+        "roomNo": "507",
+        "hostel": {
+          "name": "Queen's Castle 3"
+        }
+      }
+    }
+  },
+  {
+    "id": "cmuzu74v7005v6818dmm58y63",
+    "userId": "cmuzu74v0005r6818afz1hwb7",
+    "rating": 5,
+    "reviewText": "Warden approved the library extension pass within 5 minutes. Real-time status update saved me unnecessary follow-ups.",
+    "category": "GATE_PASS",
+    "createdAt": "2026-10-03T11:20:28.000Z",
+    "user": {
+      "name": "Ananya Gautam",
+      "email": "24052781@kiit.ac.in",
+      "studentProfile": {
+        "rollNo": "24052781",
+        "roomNo": "221",
+        "hostel": {
+          "name": "King's Palace 7"
+        }
+      }
+    }
+  },
+  {
+    "id": "cmuzu74ul005q6818lc1um1so",
+    "userId": "cmuzu74uc005m6818zp8k73sw",
+    "rating": 5,
+    "reviewText": "Notice about pest control spray in hostel blocks was posted 2 days ahead, giving us enough time to cover food and utensils.",
+    "category": "ANNOUNCEMENTS",
+    "createdAt": "2026-10-03T08:10:09.000Z",
+    "user": {
+      "name": "Rohan Mondal",
+      "email": "24051274@kiit.ac.in",
+      "studentProfile": {
+        "rollNo": "24051274",
+        "roomNo": "210",
+        "hostel": {
+          "name": "Queen's Castle 3"
+        }
+      }
+    }
+  },
+  {
+    "id": "cmuzu74u6005l6818ejjlp2b7",
+    "userId": "cmuzu74tw005h6818ay6g8r9o",
+    "rating": 4,
+    "reviewText": "Friday egg curry had good gravy this week. Keep maintaining this standard consistently.",
+    "category": "MESS",
+    "createdAt": "2026-10-03T05:45:37.000Z",
+    "user": {
+      "name": "Sandipan Kuila",
+      "email": "241551000@kiit.ac.in",
+      "studentProfile": {
+        "rollNo": "241551000",
+        "roomNo": "105",
+        "hostel": {
+          "name": "King's Palace 7"
+        }
+      }
+    }
+  },
+  {
+    "id": "cmuzu74tn005g68184derwmr8",
+    "userId": "cmuzu74te005c68187nllocdz",
+    "rating": 5,
+    "reviewText": "Room door lock was sticking. Carpenter visited with proper tools and fixed latch within half an hour.",
+    "category": "COMPLAINTS",
+    "createdAt": "2026-10-03T02:55:14.000Z",
+    "user": {
+      "name": "Srinjan Ray Banerjee",
+      "email": "2429039@kiit.ac.in",
+      "studentProfile": {
+        "rollNo": "2429039",
+        "roomNo": "510",
+        "hostel": {
+          "name": "Queen's Castle 3"
+        }
+      }
+    }
+  },
+  {
+    "id": "cmuzu74sx005b681849iv7bgk",
+    "userId": "cmuzu74sq005768188n3dmc65",
+    "rating": 5,
+    "reviewText": "Fast load times. Clean white and light blue UI looks much better than earlier dark green mockups.",
+    "category": "OVERALL",
+    "createdAt": "2026-10-02T17:48:51.000Z",
+    "user": {
+      "name": "Soumyak Dey",
+      "email": "24051356@kiit.ac.in",
+      "studentProfile": {
+        "rollNo": "24051356",
+        "roomNo": "319",
+        "hostel": {
+          "name": "King's Palace 7"
+        }
+      }
+    }
+  },
+  {
+    "id": "cmuzu74sj005668186a178kxp",
+    "userId": "cmuzu74sc005268183g5fou1d",
+    "rating": 5,
+    "reviewText": "Library pass for Campus 6 central library made my mid-term exam preparation much smoother. No paperwork needed.",
+    "category": "GATE_PASS",
+    "createdAt": "2026-10-02T15:10:05.000Z",
+    "user": {
+      "name": "Suryashekhar Dutta",
+      "email": "2405392@kiit.ac.in",
+      "studentProfile": {
+        "rollNo": "2405392",
+        "roomNo": "105",
+        "hostel": {
+          "name": "King's Palace 7"
+        }
+      }
+    }
+  },
+  {
+    "id": "cmuzu74rz00516818hmmtmaa0",
+    "userId": "cmuzu74rs004x681897gq4dlj",
+    "rating": 4,
+    "reviewText": "Very helpful feature. Previously we had to rely on friends to check if washing machines were empty.",
+    "category": "LAUNDRY",
+    "createdAt": "2026-10-02T11:45:22.000Z",
+    "user": {
+      "name": "Binit Kumar Sahoo",
+      "email": "2405046@kiit.ac.in",
+      "studentProfile": {
+        "rollNo": "2405046",
+        "roomNo": "226",
+        "hostel": {
+          "name": "King's Palace 7"
+        }
+      }
+    }
+  },
+  {
+    "id": "cmuzu74rl004w6818cge9qvom",
+    "userId": "cmuzu74rd004s6818xd3zjty5",
+    "rating": 5,
+    "reviewText": "Wi-Fi router on 2nd floor wing was rebooted and bandwidth restored after 2 hours of complaint submission.",
+    "category": "COMPLAINTS",
+    "createdAt": "2026-10-02T09:05:44.000Z",
+    "user": {
+      "name": "Anmol Krishna",
+      "email": "24051240@kiit.ac.in",
+      "studentProfile": {
+        "rollNo": "24051240",
+        "roomNo": "510",
+        "hostel": {
+          "name": "Queen's Castle 3"
+        }
+      }
+    }
+  },
+  {
+    "id": "cmuzu74r3004r6818twvg62lc",
+    "userId": "cmuzu74qv004n6818iovz6dkz",
+    "rating": 4,
+    "reviewText": "Dry day notification and campus gate restriction alert was clearly highlighted on dashboard banner.",
+    "category": "ANNOUNCEMENTS",
+    "createdAt": "2026-10-02T06:20:18.000Z",
+    "user": {
+      "name": "Gopal Krushna Mishra",
+      "email": "2406083@kiit.ac.in",
+      "studentProfile": {
+        "rollNo": "2406083",
+        "roomNo": "428",
+        "hostel": {
+          "name": "King's Palace 7"
+        }
+      }
+    }
+  },
+  {
+    "id": "cmuzu74qo004m68184me7376h",
+    "userId": "cmuzu74qf004i6818fxsv5iqd",
+    "rating": 5,
+    "reviewText": "Gandhi Jayanti holiday special lunch menu was uploaded beforehand. Dal makhani and jeera rice were delicious.",
+    "category": "MESS",
+    "createdAt": "2026-10-02T03:40:30.000Z",
+    "user": {
+      "name": "Najam Faraz",
+      "email": "2406089@kiit.ac.in",
+      "studentProfile": {
+        "rollNo": "2406089",
+        "roomNo": "113",
+        "hostel": {
+          "name": "Queen's Castle 3"
+        }
+      }
+    }
+  },
+  {
+    "id": "cmuzu74q5004h6818ocphv17c",
+    "userId": "cmuzu74py004d68186w1ze2yh",
+    "rating": 5,
+    "reviewText": "Security turnstile reader at KP-7 scanned my pass QR in 1 second. Zero queue at main entry.",
+    "category": "GATE_PASS",
+    "createdAt": "2026-10-01T17:25:49.000Z",
+    "user": {
+      "name": "Shuvam Sahu",
+      "email": "241551016@kiit.ac.in",
+      "studentProfile": {
+        "rollNo": "241551016",
+        "roomNo": "113",
+        "hostel": {
+          "name": "King's Palace 7"
+        }
+      }
+    }
+  },
+  {
+    "id": "cmuzu74pr004c6818045m2f10",
+    "userId": "cmuzu74ph00486818h7aft9s1",
+    "rating": 3,
+    "reviewText": "System is fast and clean, but please add a night-mode toggle if possible for late night studying in dark room.",
+    "category": "OVERALL",
+    "createdAt": "2026-10-01T15:50:07.000Z",
+    "user": {
+      "name": "Krish Gupta",
+      "email": "2405731@kiit.ac.in",
+      "studentProfile": {
+        "rollNo": "2405731",
+        "roomNo": "416",
+        "hostel": {
+          "name": "King's Palace 7"
+        }
+      }
+    }
+  },
+  {
+    "id": "cmuzu74p900476818sa7379qr",
+    "userId": "cmuzu74p200436818bgr6uddc",
+    "rating": 5,
+    "reviewText": "Booking 1 hour in advance fits right into our class timetable. Return from campus, drop clothes, pick up dry.",
+    "category": "LAUNDRY",
+    "createdAt": "2026-10-01T13:15:21.000Z",
+    "user": {
+      "name": "Rishabh Ranjan Tiwari",
+      "email": "24155945@kiit.ac.in",
+      "studentProfile": {
+        "rollNo": "24155945",
+        "roomNo": "217",
+        "hostel": {
+          "name": "Queen's Castle 3"
+        }
+      }
+    }
+  },
+  {
+    "id": "cmuzu74ou00426818ynwzdbb2",
+    "userId": "cmuzu74ol003y68184xq7bwnl",
+    "rating": 4,
+    "reviewText": "Caretaker called before arriving to check if I was present in room 419. Good coordination.",
+    "category": "COMPLAINTS",
+    "createdAt": "2026-10-01T10:45:40.000Z",
+    "user": {
+      "name": "Mehrav Lalotra",
+      "email": "24052582@kiit.ac.in",
+      "studentProfile": {
+        "rollNo": "24052582",
+        "roomNo": "217",
+        "hostel": {
+          "name": "King's Palace 7"
+        }
+      }
+    }
+  },
+  {
+    "id": "cmuzu74od003x68181bjv40mb",
+    "userId": "cmuzu74o5003t6818nd37k9x1",
+    "rating": 5,
+    "reviewText": "Special Navratri satvik menu notice was posted well in time. Good attention to diverse dietary requirements.",
+    "category": "MESS",
+    "createdAt": "2026-10-01T08:00:12.000Z",
+    "user": {
+      "name": "Dibyansu Sahoo",
+      "email": "251553006@kiit.ac.in",
+      "studentProfile": {
+        "rollNo": "251553006",
+        "roomNo": "502",
+        "hostel": {
+          "name": "King's Palace 7"
+        }
+      }
+    }
+  },
+  {
+    "id": "cmuzu74ny003s6818dpktdb20",
+    "userId": "cmuzu74nq003o6818wgds8l86",
+    "rating": 4,
+    "reviewText": "Official circulars are signed with warden stamp and date. Very trustworthy source of hostel announcements.",
+    "category": "ANNOUNCEMENTS",
+    "createdAt": "2026-10-01T05:10:55.000Z",
+    "user": {
+      "name": "Aditya Meena",
+      "email": "24051457@kiit.ac.in",
+      "studentProfile": {
+        "rollNo": "24051457",
+        "roomNo": "416",
+        "hostel": {
+          "name": "Queen's Castle 3"
+        }
+      }
+    }
+  },
+  {
+    "id": "cmuzu74mn003n6818vf3i8m0i",
+    "userId": "cmuzu74mg003j6818s8rujybt",
+    "rating": 5,
+    "reviewText": "Library pass expiry timer is prominent in bright red when nearing 08:30 PM. Helped me avoid getting flagged by security.",
+    "category": "GATE_PASS",
+    "createdAt": "2026-10-01T02:45:33.000Z",
+    "user": {
+      "name": "Arghodeep Paul",
+      "email": "24052063@kiit.ac.in",
+      "studentProfile": {
+        "rollNo": "24052063",
+        "roomNo": "207",
+        "hostel": {
+          "name": "King's Palace 7"
+        }
+      }
+    }
+  },
+  {
+    "id": "cmuzu74m9003i68180t28gm40",
+    "userId": "cmuzu74m2003e68184cic4y4z",
+    "rating": 4,
+    "reviewText": "Authority portal view for wardens makes approvals very fast. Even non-tech savvy caretakers are using it easily.",
+    "category": "OVERALL",
+    "createdAt": "2026-09-30T17:35:18.000Z",
+    "user": {
+      "name": "Hitesh Patnaik",
+      "email": "24051254@kiit.ac.in",
+      "studentProfile": {
+        "rollNo": "24051254",
+        "roomNo": "417",
+        "hostel": {
+          "name": "King's Palace 7"
+        }
+      }
+    }
+  },
+  {
+    "id": "cmuzu74ls003d6818u4x1ko8s",
+    "userId": "cmuzu74lk00396818sp3p6eun",
+    "rating": 5,
+    "reviewText": "The PIN code security for laundry is brilliant. In QC-3 we used to have clothes mixed up constantly, this solved it completely.",
+    "category": "LAUNDRY",
+    "createdAt": "2026-09-30T14:45:42.000Z",
+    "user": {
+      "name": "Ayush",
+      "email": "2406018@kiit.ac.in",
+      "studentProfile": {
+        "rollNo": "2406018",
+        "roomNo": "126",
+        "hostel": {
+          "name": "Queen's Castle 3"
+        }
+      }
+    }
+  },
+  {
+    "id": "cmuzu74ld003868185es5et98",
+    "userId": "cmuzu74l600346818txj3auio",
+    "rating": 5,
+    "reviewText": "AC servicing request raised in morning, technician cleaned filter and refilled gas by evening. Room is cooling nicely now.",
+    "category": "COMPLAINTS",
+    "createdAt": "2026-09-30T12:25:04.000Z",
+    "user": {
+      "name": "Ravi Pandey",
+      "email": "24052562@kiit.ac.in",
+      "studentProfile": {
+        "rollNo": "24052562",
+        "roomNo": "504",
+        "hostel": {
+          "name": "King's Palace 7"
+        }
+      }
+    }
+  },
+  {
+    "id": "cmuzu74kw003368184twi9qpq",
+    "userId": "cmuzu74kn002z68187n6z6a05",
+    "rating": 3,
+    "reviewText": "Pass is good, but once the warden took 15 mins to approve on Sunday rush hour. If it can auto-approve for students with good attendance, that would be 5/5.",
+    "category": "GATE_PASS",
+    "createdAt": "2026-09-30T09:40:50.000Z",
+    "user": {
+      "name": "Pritam Sarkar",
+      "email": "24052310@kiit.ac.in",
+      "studentProfile": {
+        "rollNo": "24052310",
+        "roomNo": "323",
+        "hostel": {
+          "name": "King's Palace 7"
+        }
+      }
+    }
+  },
+  {
+    "id": "cmuzu74kg002y6818r4q2heun",
+    "userId": "cmuzu74k8002u6818bp19bltq",
+    "rating": 4,
+    "reviewText": "Gulab jamun on Wednesday dinner was fresh and good quality. Hope they keep sweet dish every alternate day.",
+    "category": "MESS",
+    "createdAt": "2026-09-30T07:15:11.000Z",
+    "user": {
+      "name": "Ratnesh Kumar Singh",
+      "email": "24052242@kiit.ac.in",
+      "studentProfile": {
+        "rollNo": "24052242",
+        "roomNo": "208",
+        "hostel": {
+          "name": "Queen's Castle 3"
+        }
+      }
+    }
+  },
+  {
+    "id": "cmuzu74jy002t68186umkn0kz",
+    "userId": "cmuzu74jg002p6818mjs05ktk",
+    "rating": 5,
+    "reviewText": "Huge upgrade over old WhatsApp groups where important notices always got buried under random chats.",
+    "category": "OVERALL",
+    "createdAt": "2026-09-30T03:50:25.000Z",
+    "user": {
+      "name": "Sriyansh Yadav",
+      "email": "2405465@kiit.ac.in",
+      "studentProfile": {
+        "rollNo": "2405465",
+        "roomNo": "119",
+        "hostel": {
+          "name": "King's Palace 7"
+        }
+      }
+    }
+  },
+  {
+    "id": "cmuzu74j7002o681818rf2ju1",
+    "userId": "cmuzu74iy002k6818slkew618",
+    "rating": 5,
+    "reviewText": "Hostel badminton tournament schedule was published under Sports circulars. Team registration link worked perfectly.",
+    "category": "ANNOUNCEMENTS",
+    "createdAt": "2026-09-29T17:20:09.000Z",
+    "user": {
+      "name": "Swastik Debnath",
+      "email": "2405694@kiit.ac.in",
+      "studentProfile": {
+        "rollNo": "2405694",
+        "roomNo": "527",
+        "hostel": {
+          "name": "King's Palace 7"
+        }
+      }
+    }
+  },
+  {
+    "id": "cmuzu74il002j6818mc4poozq",
+    "userId": "cmuzu74id002f68185zkfv767",
+    "rating": 4,
+    "reviewText": "Saved me from waiting downstairs. The countdown timer on washing machine 2 is accurate down to the minute.",
+    "category": "LAUNDRY",
+    "createdAt": "2026-09-29T15:35:32.000Z",
+    "user": {
+      "name": "Sujal Bhargava",
+      "email": "24051063@kiit.ac.in",
+      "studentProfile": {
+        "rollNo": "24051063",
+        "roomNo": "207",
+        "hostel": {
+          "name": "King's Palace 7"
+        }
+      }
+    }
+  },
+  {
+    "id": "cmuzu74i7002e6818kml92oy3",
+    "userId": "cmuzu74i0002a6818t7jpotss",
+    "rating": 5,
+    "reviewText": "Fan regulator replacement took less than 24 hours. The plumber and electrician staff are polite and follow the OTP sign-off.",
+    "category": "COMPLAINTS",
+    "createdAt": "2026-09-29T14:10:15.000Z",
+    "user": {
+      "name": "Tuhin Bhuinya",
+      "email": "2406110@kiit.ac.in",
+      "studentProfile": {
+        "rollNo": "2406110",
+        "roomNo": "416",
+        "hostel": {
+          "name": "Queen's Castle 3"
+        }
+      }
+    }
+  },
+  {
+    "id": "cmuzu74hr00296818xzrq6va8",
+    "userId": "cmuzs661r00603h2361a17lgn",
+    "rating": 5,
+    "reviewText": "Turnstile biometric sync with gate pass is solid. Checkout was instant when going to Central Library Campus 6.",
+    "category": "GATE_PASS",
+    "createdAt": "2026-09-29T12:00:48.000Z",
+    "user": {
+      "name": "Sushobhan Chanda",
+      "email": "2428044@kiit.ac.in",
+      "studentProfile": {
+        "rollNo": "2428044",
+        "roomNo": "405",
+        "hostel": {
+          "name": "Queen's Castle 3"
+        }
+      }
+    }
+  },
+  {
+    "id": "cmuzu74he0027681841j0cah3",
+    "userId": "cmuzu74h70023681821b3k6ks",
+    "rating": 5,
+    "reviewText": "Responsive design is great. Works equally smooth on mobile Chrome as on laptop. Very clean blue palette.",
+    "category": "OVERALL",
+    "createdAt": "2026-09-29T08:40:04.000Z",
+    "user": {
+      "name": "Soham Mishra",
+      "email": "24155431@kiit.ac.in",
+      "studentProfile": {
+        "rollNo": "24155431",
+        "roomNo": "405",
+        "hostel": {
+          "name": "King's Palace 7"
+        }
+      }
+    }
+  },
+  {
+    "id": "cmuzu74h100226818yhq33ua8",
+    "userId": "cmuzu74gr001y6818auxoloc4",
+    "rating": 4,
+    "reviewText": "Tuesday evening chowmein was fresh and hot. Glad mess committee is finally taking feedback seriously through this portal.",
+    "category": "MESS",
+    "createdAt": "2026-09-29T05:55:39.000Z",
+    "user": {
+      "name": "Ikshan Raj",
+      "email": "24051626@kiit.ac.in",
+      "studentProfile": {
+        "rollNo": "24051626",
+        "roomNo": "203",
+        "hostel": {
+          "name": "Queen's Castle 3"
+        }
+      }
+    }
+  },
+  {
+    "id": "cmuzu74gl001x6818jbzlwdat",
+    "userId": "cmuzu74gb001t6818phhc7zka",
+    "rating": 5,
+    "reviewText": "Push alert for Kritansh tech fest extended curfew reached all hostelers instantly. Nobody had any confusion at the turnstiles.",
+    "category": "ANNOUNCEMENTS",
+    "createdAt": "2026-09-29T03:15:12.000Z",
+    "user": {
+      "name": "Sai Suman Bebarta",
+      "email": "2405754@kiit.ac.in",
+      "studentProfile": {
+        "rollNo": "2405754",
+        "roomNo": "115",
+        "hostel": {
+          "name": "King's Palace 7"
+        }
+      }
+    }
+  },
+  {
+    "id": "cmuzu74g3001s6818xv0x2ip8",
+    "userId": "cmuzu74fw001o6818cl4jjibh",
+    "rating": 3,
+    "reviewText": "Washing machine tracking is nice, but during weekend evenings all slots fill up within seconds. Maybe add one more machine on QC-3 2nd floor.",
+    "category": "LAUNDRY",
+    "createdAt": "2026-09-28T16:41:40.000Z",
+    "user": {
+      "name": "Srijon Saha",
+      "email": "23051065@kiit.ac.in",
+      "studentProfile": {
+        "rollNo": "23051065",
+        "roomNo": "108",
+        "hostel": {
+          "name": "Queen's Castle 3"
+        }
+      }
+    }
+  },
+  {
+    "id": "cmuzu74fp001n6818ivz9qz4i",
+    "userId": "cmuzu74fi001j6818e46ha5sf",
+    "rating": 5,
+    "reviewText": "Applied for library study window between 6 PM to 8:15 PM and it was auto-approved by warden. Very convenient.",
+    "category": "GATE_PASS",
+    "createdAt": "2026-09-28T10:50:55.000Z",
+    "user": {
+      "name": "Sousthav Ghosh",
+      "email": "24157041@kiit.ac.in",
+      "studentProfile": {
+        "rollNo": "24157041",
+        "roomNo": "527",
+        "hostel": {
+          "name": "King's Palace 7"
+        }
+      }
+    }
+  },
+  {
+    "id": "cmuzu74fd001i68184391bq68",
+    "userId": "cmuzu74f3001e6818eqzcv5z9",
+    "rating": 4,
+    "reviewText": "Tap leakage in our bathroom was fixed on the same day. Much better than the physical register system at the caretaking desk.",
+    "category": "COMPLAINTS",
+    "createdAt": "2026-09-28T06:35:27.000Z",
+    "user": {
+      "name": "Aman Kumar",
+      "email": "24156041@kiit.ac.in",
+      "studentProfile": {
+        "rollNo": "24156041",
+        "roomNo": "404",
+        "hostel": {
+          "name": "King's Palace 7"
+        }
+      }
+    }
+  },
+  {
+    "id": "cmuzu74ew001d6818c1x4xr1t",
+    "userId": "cmuzu74eo00196818gui3i5s6",
+    "rating": 5,
+    "reviewText": "Single Sign-On using our university email works seamlessly. Changed my password from Kiit@123 right after first login.",
+    "category": "OVERALL",
+    "createdAt": "2026-09-28T04:45:02.000Z",
+    "user": {
+      "name": "Aayam Parajuli",
+      "email": "24052680@kiit.ac.in",
+      "studentProfile": {
+        "rollNo": "24052680",
+        "roomNo": "513",
+        "hostel": {
+          "name": "Queen's Castle 3"
+        }
+      }
+    }
+  },
+  {
+    "id": "cmuzu74eg00186818nzo0qlyz",
+    "userId": "cmuzu74e8001468182ylgz1ps",
+    "rating": 4,
+    "reviewText": "Sunday Chicken Biryani lunch was really well prepared. Hope they maintain this consistency for Friday dinners too.",
+    "category": "MESS",
+    "createdAt": "2026-09-28T03:20:41.000Z",
+    "user": {
+      "name": "Sumit Bhatnagar",
+      "email": "24052190@kiit.ac.in",
+      "studentProfile": {
+        "rollNo": "24052190",
+        "roomNo": "110",
+        "hostel": {
+          "name": "King's Palace 7"
+        }
+      }
+    }
+  },
+  {
+    "id": "cmuzu74e100136818eid15h2l",
+    "userId": "cmuzu74du000z6818xbc5ixsg",
+    "rating": 5,
+    "reviewText": "Pre-booking the machine 1 hour in advance is great. The exclusive PIN ensures nobody removes your bucket mid-wash.",
+    "category": "LAUNDRY",
+    "createdAt": "2026-09-28T02:00:19.000Z",
+    "user": {
+      "name": "Aditya Rai",
+      "email": "24158032@kiit.ac.in",
+      "studentProfile": {
+        "rollNo": "24158032",
+        "roomNo": "527",
+        "hostel": {
+          "name": "King's Palace 7"
+        }
+      }
+    }
+  },
+  {
+    "id": "cmuzu74dl000y6818p013f2cw",
+    "userId": "cmuzu74df000u6818zr7ui22u",
+    "rating": 5,
+    "reviewText": "Digital notice board is super helpful. I immediately saw the Sunday special lunch menu without walking down to the reception.",
+    "category": "ANNOUNCEMENTS",
+    "createdAt": "2026-09-27T15:45:52.000Z",
+    "user": {
+      "name": "Harsh Dhakad",
+      "email": "24051409@kiit.ac.in",
+      "studentProfile": {
+        "rollNo": "24051409",
+        "roomNo": "520",
+        "hostel": {
+          "name": "Queen's Castle 3"
+        }
+      }
+    }
+  },
+  {
+    "id": "cmuzu74d5000t6818snwvk6fp",
+    "userId": "cmuzu74cx000p6818md5mj7k8",
+    "rating": 4,
+    "reviewText": "Curfew warning at 8:15 PM on library pass is helpful. Security guard at campus 12 gate verified the QR code smoothly.",
+    "category": "GATE_PASS",
+    "createdAt": "2026-09-27T15:15:18.000Z",
+    "user": {
+      "name": "Aaditya Sah",
+      "email": "24052533@kiit.ac.in",
+      "studentProfile": {
+        "rollNo": "24052533",
+        "roomNo": "404",
+        "hostel": {
+          "name": "King's Palace 7"
+        }
+      }
+    }
+  },
+  {
+    "id": "cmuzu74cg000o6818li6e9xgb",
+    "userId": "cmuzu74c3000k6818tns7uxsb",
+    "rating": 4,
+    "reviewText": "UI is very clean and easy to navigate. Light and dark blue theme looks official and matches KIIT portal standards.",
+    "category": "OVERALL",
+    "createdAt": "2026-09-27T12:40:33.000Z",
+    "user": {
+      "name": "Samarth Shukla",
+      "email": "24051805@kiit.ac.in",
+      "studentProfile": {
+        "rollNo": "24051805",
+        "roomNo": "516",
+        "hostel": {
+          "name": "King's Palace 7"
+        }
+      }
+    }
+  },
+  {
+    "id": "cmuzu74bt000j6818nmpdd2j9",
+    "userId": "cmuzu74bk000f68189hq8uolr",
+    "rating": 5,
+    "reviewText": "Electrician came within 3 hours of raising the socket issue in my room. Closure OTP makes sure work is completed properly.",
+    "category": "COMPLAINTS",
+    "createdAt": "2026-09-27T10:05:10.000Z",
+    "user": {
+      "name": "Soumya Sourav Nayak",
+      "email": "24052328@kiit.ac.in",
+      "studentProfile": {
+        "rollNo": "24052328",
+        "roomNo": "311",
+        "hostel": {
+          "name": "Queen's Castle 3"
+        }
+      }
+    }
+  },
+  {
+    "id": "cmuzu74b1000e6818gxkyi0qs",
+    "userId": "cmuzu74ar000a6818dh686161",
+    "rating": 3,
+    "reviewText": "Mess paneer on Wednesdays is decent, but please improve breakfast poori sabzi on Mondays, it gets too oily and dal lacks salt.",
+    "category": "MESS",
+    "createdAt": "2026-09-27T07:50:44.000Z",
+    "user": {
+      "name": "Eshan Tiwari",
+      "email": "2405943@kiit.ac.in",
+      "studentProfile": {
+        "rollNo": "2405943",
+        "roomNo": "526",
+        "hostel": {
+          "name": "King's Palace 7"
+        }
+      }
+    }
+  },
+  {
+    "id": "cmuzu74ae00096818yc4hk9x0",
+    "userId": "cmuzu749800056818com82hi9",
+    "rating": 5,
+    "reviewText": "Washing machine live tracker is actually useful, earlier had to walk down 4 floors just to find all machines booked with wet clothes.",
+    "category": "LAUNDRY",
+    "createdAt": "2026-09-27T06:12:15.000Z",
+    "user": {
+      "name": "Harish Sonkar",
+      "email": "24051174@kiit.ac.in",
+      "studentProfile": {
+        "rollNo": "24051174",
+        "roomNo": "303",
+        "hostel": {
+          "name": "King's Palace 7"
+        }
+      }
+    }
+  },
+  {
+    "id": "cmuzu748z00046818sigxo269",
+    "userId": "cmuzu748i00006818md8nuj5w",
+    "rating": 5,
+    "reviewText": "The library pass approval is so fast now. Earlier we had to stand in queue at the warden office just to get the yellow slip signed before 8 PM.",
+    "category": "GATE_PASS",
+    "createdAt": "2026-09-27T03:44:22.000Z",
+    "user": {
+      "name": "Ansh Sharma",
+      "email": "24052591@kiit.ac.in",
+      "studentProfile": {
+        "rollNo": "24052591",
+        "roomNo": "307",
+        "hostel": {
+          "name": "King's Palace 7"
+        }
+      }
     }
   }
 ]

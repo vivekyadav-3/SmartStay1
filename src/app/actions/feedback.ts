@@ -3,6 +3,7 @@
 import { prisma } from "@/lib/db";
 import { syncUser } from "@/app/actions/user";
 import { revalidatePath } from "next/cache";
+import { cookies } from "next/headers";
 import { saveFeedbackToBackupStore, getFeedbacksFromBackupStore } from "@/lib/feedback-store";
 import { enforceRateLimit } from "@/lib/rate-limiter";
 
@@ -67,6 +68,38 @@ export async function submitStudentFeedback(data: {
         studentProfile: user.studentProfile,
       },
     });
+
+    // Save to universal cookie for instant cross-container serverless persistence
+    try {
+      const cookieStore = await cookies();
+      const existingRaw = cookieStore.get("kiit_community_feedbacks")?.value;
+      let existingList: any[] = [];
+      if (existingRaw) {
+        try {
+          existingList = JSON.parse(decodeURIComponent(existingRaw));
+          if (!Array.isArray(existingList)) existingList = [];
+        } catch {}
+      }
+      const newReviewItem = {
+        id: feedback.id,
+        rating: feedback.rating,
+        reviewText: feedback.reviewText,
+        category: feedback.category,
+        createdAt: feedback.createdAt.toISOString(),
+        user: {
+          name: user.name,
+          email: user.email,
+          studentProfile: user.studentProfile,
+        },
+      };
+      existingList = [newReviewItem, ...existingList.filter((x: any) => x.id !== feedback.id)].slice(0, 20);
+      cookieStore.set("kiit_community_feedbacks", encodeURIComponent(JSON.stringify(existingList)), {
+        path: "/",
+        maxAge: 60 * 60 * 24 * 30,
+      });
+    } catch (err) {
+      console.warn("Cookie sync error:", err);
+    }
 
     revalidatePath("/dashboard");
     revalidatePath("/dashboard/feedback");
@@ -258,6 +291,28 @@ export async function getFeedbacksList(limit: number = 200, category?: string) {
         }
       }
     }
+
+    // Add universal cookie community feedbacks
+    try {
+      const cookieStore = await cookies();
+      const cookieRaw = cookieStore.get("kiit_community_feedbacks")?.value;
+      if (cookieRaw) {
+        const cookieList = JSON.parse(decodeURIComponent(cookieRaw));
+        if (Array.isArray(cookieList)) {
+          for (const c of cookieList) {
+            if (c?.id && !existingIds.has(c.id)) {
+              if (!category || category === "ALL" || c.category === category) {
+                existingIds.add(c.id);
+                unifiedReviews.unshift({
+                  ...c,
+                  createdAt: new Date(c.createdAt),
+                });
+              }
+            }
+          }
+        }
+      }
+    } catch {}
 
     // Sort by createdAt desc
     unifiedReviews.sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime());

@@ -27,7 +27,14 @@ function getStoreFilePath(): string {
   );
 
   if (isServerless) {
-    return "/tmp/kiit-persistent-feedbacks.json";
+    const tmpPath = "/tmp/kiit-persistent-feedbacks.json";
+    const bundledPath = path.join(process.cwd(), "prisma", "custom-feedbacks.json");
+    try {
+      if (!fs.existsSync(tmpPath) && fs.existsSync(bundledPath)) {
+        fs.copyFileSync(bundledPath, tmpPath);
+      }
+    } catch {}
+    return tmpPath;
   }
 
   return path.join(process.cwd(), "prisma", "custom-feedbacks.json");
@@ -60,12 +67,44 @@ export function saveFeedbackToBackupStore(feedback: PersistedFeedback) {
 
 export function getFeedbacksFromBackupStore(): PersistedFeedback[] {
   try {
-    const filePath = getStoreFilePath();
-    if (!fs.existsSync(filePath)) return [];
+    const items: PersistedFeedback[] = [];
+    const seen = new Set<string>();
 
-    const raw = fs.readFileSync(filePath, "utf-8");
-    const parsed = JSON.parse(raw);
-    return Array.isArray(parsed) ? parsed : [];
+    // 1. Read from bundled static store
+    const bundledPath = path.join(process.cwd(), "prisma", "custom-feedbacks.json");
+    if (fs.existsSync(bundledPath)) {
+      try {
+        const raw = fs.readFileSync(bundledPath, "utf-8");
+        const parsed = JSON.parse(raw);
+        if (Array.isArray(parsed)) {
+          for (const item of parsed) {
+            if (item?.id && !seen.has(item.id)) {
+              seen.add(item.id);
+              items.push(item);
+            }
+          }
+        }
+      } catch {}
+    }
+
+    // 2. Read from active store (/tmp in serverless or custom-feedbacks.json)
+    const filePath = getStoreFilePath();
+    if (filePath !== bundledPath && fs.existsSync(filePath)) {
+      try {
+        const raw = fs.readFileSync(filePath, "utf-8");
+        const parsed = JSON.parse(raw);
+        if (Array.isArray(parsed)) {
+          for (const item of parsed) {
+            if (item?.id && !seen.has(item.id)) {
+              seen.add(item.id);
+              items.unshift(item); // dynamic items go first
+            }
+          }
+        }
+      } catch {}
+    }
+
+    return items;
   } catch (err) {
     console.error("[FeedbackStore] Failed to read backup feedbacks:", err);
     return [];
