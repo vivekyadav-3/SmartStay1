@@ -15,8 +15,8 @@ export async function dispatchEmergencyAlert(data: {
   try {
     const rateCheck = await enforceRateLimit({
       action: "medical-emergency-alert",
-      maxRequests: 5,
-      windowSeconds: 60,
+      maxRequests: 2,
+      windowSeconds: 180,
     });
     if (!rateCheck.allowed) {
       return { error: rateCheck.error };

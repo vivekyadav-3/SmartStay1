@@ -293,18 +293,19 @@ export async function updateRoom(roomNo: string) {
 
 export async function loginWithKiitCredentials(email: string, password: string) {
   try {
+    const rawInput = email.trim().toLowerCase();
+    if (!rawInput) return { error: "Please enter your KIIT Roll Number or Email" };
+    if (!password) return { error: "Please enter your password" };
+
     const rateCheck = await enforceRateLimit({
       action: "student-login",
-      maxRequests: 5,
-      windowSeconds: 60,
+      maxRequests: 3,
+      windowSeconds: 120,
+      secondaryIdentifier: rawInput,
     });
     if (!rateCheck.allowed) {
       return { error: rateCheck.error };
     }
-
-    const rawInput = email.trim().toLowerCase();
-    if (!rawInput) return { error: "Please enter your KIIT Roll Number or Email" };
-    if (!password) return { error: "Please enter your password" };
 
     // 1. Look up student in official 4th SEM directory (4,385 students)
     const studentInfo = findKiitStudent(rawInput);
@@ -434,8 +435,8 @@ export async function changeStudentPassword(currentPassword: string, newPassword
   try {
     const rateCheck = await enforceRateLimit({
       action: "change-password",
-      maxRequests: 5,
-      windowSeconds: 60,
+      maxRequests: 2,
+      windowSeconds: 300,
     });
     if (!rateCheck.allowed) {
       return { error: rateCheck.error };

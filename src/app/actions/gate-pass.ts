@@ -16,8 +16,8 @@ export async function requestGatePass(data: {
   try {
     const rateCheck = await enforceRateLimit({
       action: "request-gate-pass",
-      maxRequests: 6,
-      windowSeconds: 60,
+      maxRequests: 3,
+      windowSeconds: 300,
     });
     if (!rateCheck.allowed) {
       return { error: rateCheck.error };
