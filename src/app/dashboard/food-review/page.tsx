@@ -402,7 +402,7 @@ export default function FoodReviewPage() {
                         <span>Hygiene: <strong className="text-slate-800">{rev.hygieneRating}/5</strong></span>
                         <span>Portion: <strong className="text-slate-800">{rev.quantityRating}/5</strong></span>
                       </div>
-                      <span className="text-[10px] text-slate-400 font-mono">
+                      <span suppressHydrationWarning className="text-[10px] text-slate-400 font-mono">
                         {new Date(rev.createdAt).toLocaleDateString("en-IN", {
                           day: "numeric",
                           month: "short",

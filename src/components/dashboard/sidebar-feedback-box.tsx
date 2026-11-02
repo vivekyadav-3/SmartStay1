@@ -470,7 +470,7 @@ export function SidebarFeedbackBox() {
                       </p>
                       <div className="flex items-center justify-between text-[10px] text-slate-400 pt-0.5">
                         <span className="font-semibold text-slate-500 font-mono">Roll: {roll}</span>
-                        <span>{formattedDate}</span>
+                        <span suppressHydrationWarning>{formattedDate}</span>
                       </div>
                     </div>
                   );

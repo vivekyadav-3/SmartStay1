@@ -62,7 +62,7 @@ export default function FeesClient({ fees, role }: { fees: any[], role: string }
                                 {f.type} FEE - {f.month} 
                                 {isAdmin && f.user && <Badge variant="secondary" className="text-[10px]">{f.user.name}</Badge>}
                              </h4>
-                             <p className="text-xs text-muted-foreground mt-1">
+                             <p suppressHydrationWarning className="text-xs text-muted-foreground mt-1">
                                 Due by: {new Date(f.dueDate).toLocaleDateString()}
                              </p>
                           </div>

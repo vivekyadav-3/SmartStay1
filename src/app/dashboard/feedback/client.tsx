@@ -631,7 +631,7 @@ export function FeedbackClient({ initialReviews, currentUser }: FeedbackClientPr
                       <Badge variant="outline" className="bg-slate-50 text-blue-700 border-blue-200 py-0 text-[10px] font-semibold">
                         {item.category.replace("_", " ")}
                       </Badge>
-                      <span className="text-slate-400 font-mono">{formattedDate}</span>
+                      <span suppressHydrationWarning className="text-slate-400 font-mono">{formattedDate}</span>
                     </div>
 
                     {/* Review Content */}

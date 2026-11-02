@@ -583,7 +583,7 @@ export default function WardenControlRoomPage() {
                           <span className="text-emerald-700 font-medium font-mono">
                             ✓ Verified Resident
                           </span>
-                          <span>{formattedDate}</span>
+                          <span suppressHydrationWarning>{formattedDate}</span>
                         </div>
                       </CardContent>
                     </Card>

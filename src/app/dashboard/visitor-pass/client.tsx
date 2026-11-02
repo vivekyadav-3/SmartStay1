@@ -87,7 +87,7 @@ export default function VisitorPassClient({ passes, role }: { passes: any[], rol
                   </div>
                   <div>
                     <h4 className="font-medium">{p.visitorName}</h4>
-                    <p className="text-sm text-muted-foreground mt-1">
+                    <p suppressHydrationWarning className="text-sm text-muted-foreground mt-1">
                       {role === "ADMIN" && p.user ? <strong>Requested by: {p.user.name} • </strong> : ""}
                       Visiting on: {new Date(p.date).toLocaleDateString()}
                     </p>

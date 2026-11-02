@@ -169,7 +169,7 @@ export default function DigitalNoticeBoardPage() {
                       {item.category.replace(/_/g, " ")}
                     </span>
                   </div>
-                  <span className="text-xs text-slate-400 flex items-center gap-1 font-mono">
+                  <span suppressHydrationWarning className="text-xs text-slate-400 flex items-center gap-1 font-mono">
                     <Calendar className="size-3" />
                     {new Date(item.createdAt).toLocaleDateString()}
                   </span>
