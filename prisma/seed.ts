@@ -33,6 +33,7 @@ async function main() {
 
   // 3. Seed 34 Rooms & Beds in KP-7 (each room has 3 beds A, B, C = 102 total capacity)
   const rooms: any[] = [];
+  const bedRecords: { roomId: string; bedNo: string }[] = [];
   for (let floor = 1; floor <= 5; floor++) {
     for (let r = 1; r <= 7; r++) {
       const roomNo = `${floor}${r < 10 ? "0" + r : r}`;
@@ -45,15 +46,14 @@ async function main() {
       rooms.push(room);
 
       for (const bNo of ["A", "B", "C"]) {
-        await prisma.bed.create({
-          data: {
-            roomId: room.id,
-            bedNo: bNo,
-          },
+        bedRecords.push({
+          roomId: room.id,
+          bedNo: bNo,
         });
       }
     }
   }
+  await prisma.bed.createMany({ data: bedRecords });
 
   // 4. Seed Administrative Accounts
   // Head Warden (Institutional Governance)
@@ -147,41 +147,47 @@ async function main() {
 
   const allStudentUsers = [vivek];
 
-  for (let i = 0; i < studentNames.length; i++) {
-    const rollNo = `${22050000 + (i + 1) * 37 + 100}`;
-    const roomIdx = Math.floor(i / 3) % rooms.length;
-    const room = rooms[roomIdx];
-    const bedNo = ["A", "B", "C"][i % 3];
-    const branch = branches[i % branches.length];
+  // Batch students creation in chunks of 5
+  for (let i = 0; i < studentNames.length; i += 5) {
+    const batch = studentNames.slice(i, i + 5);
+    const created = await Promise.all(
+      batch.map((name, idx) => {
+        const actualIdx = i + idx;
+        const rollNo = `${22050000 + (actualIdx + 1) * 37 + 100}`;
+        const roomIdx = Math.floor(actualIdx / 3) % rooms.length;
+        const room = rooms[roomIdx];
+        const bedNo = ["A", "B", "C"][actualIdx % 3];
+        const branch = branches[actualIdx % branches.length];
 
-    const student = await prisma.user.create({
-      data: {
-        id: `student_${rollNo}`,
-        name: studentNames[i],
-        email: `${rollNo}@kiit.ac.in`,
-        role: "STUDENT",
-        biometricStatus: i % 8 === 0 ? "OUTSIDE_CAMPUS" : "IN_HOSTEL",
-        studentProfile: {
-          create: {
-            rollNo,
-            branch,
-            semester: 6,
-            year: 3,
-            hostelId: kp7.id,
-            roomNo: room.roomNo,
-            bedNo,
-            phone: `+91 9${Math.floor(100000000 + Math.random() * 900000000)}`,
+        return prisma.user.create({
+          data: {
+            id: `student_${rollNo}`,
+            name,
+            email: `${rollNo}@kiit.ac.in`,
+            role: "STUDENT",
+            biometricStatus: actualIdx % 8 === 0 ? "OUTSIDE_CAMPUS" : "IN_HOSTEL",
+            studentProfile: {
+              create: {
+                rollNo,
+                branch,
+                semester: 6,
+                year: 3,
+                hostelId: kp7.id,
+                roomNo: room.roomNo,
+                bedNo,
+                phone: `+91 9${Math.floor(100000000 + Math.random() * 900000000)}`,
+              },
+            },
           },
-        },
-      },
-    });
-    allStudentUsers.push(student);
+        });
+      })
+    );
+    allStudentUsers.push(...created);
   }
 
   console.log(`✅ Seeded ${allStudentUsers.length} Students (Target: 100)`);
 
-  // 6. Seed LoginActivity for 83 Unique Students (Total: ~387 Login Events)
-  // Exactly 83 students log in; 17 students never logged in (authentic 83% adoption rate)
+  // 6. Seed LoginActivity for 83 Unique Students
   const activeStudents = allStudentUsers.slice(0, 83);
   const devices = [
     "Mobile Safari (iOS 18)", 
@@ -191,29 +197,26 @@ async function main() {
     "Safari 17 (macOS Sonoma)"
   ];
 
-  let totalLoginCount = 0;
+  const loginRecords: any[] = [];
   for (let sIdx = 0; sIdx < activeStudents.length; sIdx++) {
     const student = activeStudents[sIdx];
-    // Each active student logs in between 2 to 7 times over the past week
     const numLogins = (sIdx % 5) + 2; 
     for (let l = 0; l < numLogins; l++) {
       const hoursAgo = (l * 24) + (sIdx % 12);
       const loginDate = new Date(Date.now() - hoursAgo * 60 * 60 * 1000);
-      await prisma.loginActivity.create({
-        data: {
-          userId: student.id,
-          loginAt: loginDate,
-          ipAddress: `172.16.${(sIdx % 10) + 1}.${(l * 13) % 250 + 1}`,
-          device: devices[(sIdx + l) % devices.length],
-          success: true,
-        },
+      loginRecords.push({
+        userId: student.id,
+        loginAt: loginDate,
+        ipAddress: `172.16.${(sIdx % 10) + 1}.${(l * 13) % 250 + 1}`,
+        device: devices[(sIdx + l) % devices.length],
+        success: true,
       });
-      totalLoginCount++;
     }
   }
-  console.log(`✅ Seeded ${totalLoginCount} LoginActivity events across 83 unique students`);
+  await prisma.loginActivity.createMany({ data: loginRecords });
+  console.log(`✅ Seeded ${loginRecords.length} LoginActivity events across 83 unique students`);
 
-  // 7. Seed 76 Authentic Student Feedback Submissions
+  // 7. Seed Authentic Student Feedback Submissions
   const feedbackPool = [
     { cat: "GATE_PASS", rating: 5, text: "The gate pass process is 10x faster than filling paper forms in warden office. Got approved in 8 mins." },
     { cat: "GATE_PASS", rating: 5, text: "QR code check at the gate turnstile works smoothly. Havildar Swain verified it instantly." },
@@ -237,19 +240,19 @@ async function main() {
     { cat: "OVERALL", rating: 4, text: "One unified portal is so much better than checking three different WhatsApp groups." },
   ];
 
+  const feedbackRecords: any[] = [];
   for (let f = 0; f < 76; f++) {
     const student = activeStudents[f % activeStudents.length];
     const item = feedbackPool[f % feedbackPool.length];
-    await prisma.feedback.create({
-      data: {
-        userId: student.id,
-        rating: item.rating,
-        category: item.cat as any,
-        reviewText: item.text,
-      },
+    feedbackRecords.push({
+      userId: student.id,
+      rating: item.rating,
+      category: item.cat as any,
+      reviewText: item.text,
     });
   }
-  console.log(`✅ Seeded 76 Feedback entries (Average rating ~4.1 Stars)`);
+  await prisma.feedback.createMany({ data: feedbackRecords });
+  console.log(`✅ Seeded ${feedbackRecords.length} Feedback entries (Average rating ~4.1 Stars)`);
 
   // 8. Seed Sample Gate Passes (Pending & Approved)
   const defaultDeparture = new Date();
@@ -258,8 +261,8 @@ async function main() {
   const defaultReturn = new Date();
   defaultReturn.setHours(20, 15, 0, 0);
 
-  const vivekPass = await prisma.gatePass.create({
-    data: {
+  const passes: any[] = [
+    {
       passCode: "GP-2026-9260",
       userId: vivek.id,
       destination: "KIIT Central Library (Campus 6)",
@@ -273,26 +276,24 @@ async function main() {
       qrData: "KIIT-PASS-22051934-GP-2026-9260-APPROVED",
       wardenRemark: "Approved by Prof. S. K. Mohapatra (Chief Warden KP-7)",
     },
-  });
+  ];
 
-  // Seed 7 Pending Passes for Warden Approval
   for (let p = 1; p <= 7; p++) {
     const stu = allStudentUsers[p];
-    await prisma.gatePass.create({
-      data: {
-        passCode: `GP-2026-${4000 + p}`,
-        userId: stu.id,
-        destination: p % 2 === 0 ? "City Center Mall" : "Campus 3 Sports Complex",
-        purpose: p % 2 === 0 ? "Personal Essentials" : "Inter-Hostel Badminton Tournament",
-        departureTime: defaultDeparture,
-        returnTime: defaultReturn,
-        status: "PENDING",
-        approvedById: null,
-        curfewDeadline: "08:30 PM",
-        qrData: `KIIT-PASS-${stu.id}-GP-2026-${4000 + p}-PENDING`,
-      },
+    passes.push({
+      passCode: `GP-2026-${4000 + p}`,
+      userId: stu.id,
+      destination: p % 2 === 0 ? "City Center Mall" : "Campus 3 Sports Complex",
+      purpose: p % 2 === 0 ? "Personal Essentials" : "Inter-Hostel Badminton Tournament",
+      departureTime: defaultDeparture,
+      returnTime: defaultReturn,
+      status: "PENDING",
+      approvedById: null,
+      curfewDeadline: "08:30 PM",
+      qrData: `KIIT-PASS-${stu.id}-GP-2026-${4000 + p}-PENDING`,
     });
   }
+  await prisma.gatePass.createMany({ data: passes });
 
   // 9. Seed Sample Complaints
   await prisma.complaint.create({
