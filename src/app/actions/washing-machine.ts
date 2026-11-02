@@ -90,8 +90,8 @@ export async function bookMachineSlot(data: {
   try {
     const rateCheck = await enforceRateLimit({
       action: "book-washing-machine",
-      maxRequests: 3,
-      windowSeconds: 300,
+      maxRequests: 10,
+      windowSeconds: 60,
     });
     if (!rateCheck.allowed) {
       return { error: rateCheck.error };

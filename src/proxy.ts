@@ -10,10 +10,11 @@ interface ProxyClientRecord {
 // In-memory rate limiting store for Edge / Proxy
 const proxyIpStore = new Map<string, ProxyClientRecord>();
 
-// Tight rate limits
+// Intelligent rate limits suited for high-interaction dashboards & campus networks
 const WINDOW_MS = 60 * 1000; // 1 minute
-const MAX_MUTATION_PER_MINUTE = 15; // 15 POST/action requests / min
-const MAX_PAGE_GET_PER_MINUTE = 45; // 45 page requests / min
+const MAX_SERVER_ACTIONS_PER_MINUTE = 120; // Server actions / RPC
+const MAX_MUTATION_PER_MINUTE = 60; // General API mutations
+const MAX_PAGE_GET_PER_MINUTE = 150; // Navigation & RSC fetches
 
 // Known automated malicious scanners / bot signatures
 const SUSPICIOUS_UA_PATTERNS = [
@@ -42,7 +43,17 @@ export default function proxy(request: NextRequest) {
     }
   }
 
-  // 2. Extract and sanitize client IP
+  // 2. Allow Next.js router prefetch requests without consuming user quotas
+  const isPrefetch =
+    request.headers.get("x-middleware-prefetch") === "1" ||
+    request.headers.get("purpose") === "prefetch" ||
+    request.headers.get("sec-purpose") === "prefetch";
+
+  if (isPrefetch) {
+    return NextResponse.next();
+  }
+
+  // 3. Extract and sanitize client IP
   const forwardedFor = request.headers.get("x-forwarded-for");
   const ip =
     (forwardedFor ? forwardedFor.split(",")[0].trim() : null) ||
@@ -57,7 +68,7 @@ export default function proxy(request: NextRequest) {
     proxyIpStore.set(ip, record);
   }
 
-  // 3. Check active security lockout
+  // 4. Check active security lockout
   if (record.blockedUntil > now) {
     const retryAfter = Math.ceil((record.blockedUntil - now) / 1000);
     return new NextResponse(
@@ -78,23 +89,30 @@ export default function proxy(request: NextRequest) {
     );
   }
 
-  // 4. Prune timestamps outside rolling 1-minute window
+  // 5. Prune timestamps outside rolling 1-minute window
   record.timestamps = record.timestamps.filter((ts) => now - ts < WINDOW_MS);
 
-  // 5. Apply threshold depending on request method
+  // 6. Apply threshold depending on request type
+  const isServerAction = Boolean(request.headers.get("next-action"));
   const isMutation = request.method === "POST" || request.method === "PUT" || request.method === "DELETE";
-  const maxAllowed = isMutation ? MAX_MUTATION_PER_MINUTE : MAX_PAGE_GET_PER_MINUTE;
+
+  let maxAllowed = MAX_PAGE_GET_PER_MINUTE;
+  if (isServerAction) {
+    maxAllowed = MAX_SERVER_ACTIONS_PER_MINUTE;
+  } else if (isMutation) {
+    maxAllowed = MAX_MUTATION_PER_MINUTE;
+  }
 
   if (record.timestamps.length >= maxAllowed) {
     record.strikes += 1;
 
-    // Escalating lockout duration:
-    // Strike 1 = 60s
-    // Strike 2 = 5 minutes
-    // Strike 3+ = 15 minutes lockout
-    let penaltyMs = 60 * 1000;
-    if (record.strikes === 2) penaltyMs = 5 * 60 * 1000;
-    else if (record.strikes >= 3) penaltyMs = 15 * 60 * 1000;
+    // Graceful lockout penalty:
+    // Strike 1 = 15s cooldown
+    // Strike 2 = 45s cooldown
+    // Strike 3+ = 2m lockout
+    let penaltyMs = 15 * 1000;
+    if (record.strikes === 2) penaltyMs = 45 * 1000;
+    else if (record.strikes >= 3) penaltyMs = 2 * 60 * 1000;
 
     record.blockedUntil = now + penaltyMs;
     const retryAfter = Math.ceil(penaltyMs / 1000);

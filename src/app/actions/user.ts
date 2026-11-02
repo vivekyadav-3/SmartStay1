@@ -299,8 +299,8 @@ export async function loginWithKiitCredentials(email: string, password: string) 
 
     const rateCheck = await enforceRateLimit({
       action: "student-login",
-      maxRequests: 3,
-      windowSeconds: 120,
+      maxRequests: 10,
+      windowSeconds: 60,
       secondaryIdentifier: rawInput,
     });
     if (!rateCheck.allowed) {
