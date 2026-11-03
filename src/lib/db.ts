@@ -3,6 +3,11 @@ import fs from "fs";
 import path from "path";
 
 function getDatabaseUrl(): string {
+  // If PostgreSQL / cloud database URL is configured, use it directly!
+  if (process.env.DATABASE_URL && !process.env.DATABASE_URL.startsWith("file:")) {
+    return process.env.DATABASE_URL;
+  }
+
   const isServerless = Boolean(
     process.env.VERCEL ||
     process.env.AWS_LAMBDA_FUNCTION_NAME ||
@@ -41,11 +46,13 @@ const globalForPrisma = global as unknown as { prisma: PrismaClient };
 export const prisma =
   globalForPrisma.prisma ||
   new PrismaClient({
-    datasources: {
-      db: {
-        url: getDatabaseUrl(),
-      },
-    },
+    datasources: process.env.DATABASE_URL && !process.env.DATABASE_URL.startsWith("file:")
+      ? undefined // Native PostgreSQL connection via DATABASE_URL
+      : {
+          db: {
+            url: getDatabaseUrl(),
+          },
+        },
     log: process.env.NODE_ENV === "development" ? ["query", "error", "warn"] : ["error"],
   });
 
